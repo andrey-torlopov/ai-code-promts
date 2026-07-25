@@ -6,6 +6,10 @@ Use for crashes, runtime errors, logs and incorrect behavior after startup.
 
 Load language and platform packs only after identifying the affected stack.
 
+For Apple-platform crash, hang or stackshot artifacts read
+`KNOWLEDGE/swift/debugging/hex-codes.md` before interpreting any hex constant
+(`Termination Reason` code, `Exception Codes`, fault address, register value, file magic).
+
 ## References
 
 - `../references/log-analysis.md`

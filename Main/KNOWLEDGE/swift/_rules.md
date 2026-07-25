@@ -10,3 +10,5 @@
 8. Use typed models for stable API data instead of `[String: Any]`.
 9. Verification should be focused and named explicitly.
 10. Load pattern categories only when concrete signals appear.
+11. When a crash report or log contains a hex constant, decode it from `debugging/hex-codes.md`; never guess the meaning of a code.
+12. Treat a decoded termination code as the kill reason, not the root cause; the root cause stays in the backtrace.

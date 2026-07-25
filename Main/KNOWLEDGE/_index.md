@@ -6,6 +6,7 @@ Load knowledge only when the selected skill or scope needs it.
 |---|---|
 | Xcode build-time optimization, slow clean build, slow incremental build, `.build-benchmark/` | `swift`, `ios` |
 | `.swift`, `Package.swift`, `Package.resolved` | `swift` |
+| crash report, hang report, stackshot, `.ips`/`.crash`/`.diag`, `Termination Reason`, `EXC_*`, unexplained hex constant, watchdog, jetsam, thermal kill, dyld launch failure | `swift/debugging/hex-codes.md` |
 | `.xcodeproj`, `.xcworkspace`, Tuist, iOS app modules | `swift`, `ios` |
 | `.gitlab-ci.yml`, `.github/workflows`, CI logs, runners | `devops` |
 | deploy, release, publish, rollout | `devops`, project-specific deploy docs |
