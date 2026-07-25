@@ -5,10 +5,12 @@
 1. Capture the exact failing command or job name when available.
 2. Identify the first meaningful error, not only the final summary.
 3. Separate primary failure from cascading failures.
-4. Decode every hex constant from its own field before reasoning about it; for Apple
-   platforms use `KNOWLEDGE/swift/debugging/hex-codes.md`.
-5. Link each hypothesis to a log line, file or command result.
-6. State missing evidence explicitly.
+4. Classify a crash artifact before interpreting it; on Apple platforms start from
+   `KNOWLEDGE/swift/debugging/crash-triage.md`.
+5. Decode every hex constant from the field it appeared in, using
+   `KNOWLEDGE/swift/debugging/hex-codes.md`.
+6. Link each hypothesis to a log line, file or command result.
+7. State missing evidence explicitly, including symbolication status and build configuration.
 
 ## Anti-Patterns
 

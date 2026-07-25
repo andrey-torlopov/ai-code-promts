@@ -1,31 +1,37 @@
 # Swift/iOS Debugging Knowledge
 
-Lazy-loaded pack for crash and log diagnosis on Apple platforms.
-This is a lookup pack, not an active skill and not a fix guide.
+Lazy-loaded pack for crash, hang and memory diagnosis on Apple platforms.
+Lookup and methodology only; it does not authorize code changes.
 
 > **Lazy Load Protocol:** read a file only after a concrete signal appears in the artifact
-> being analyzed. Preloading the pack is prohibited (Token Economy).
+> being analyzed. Preloading the whole pack is prohibited (Token Economy).
 
 ## Available Files
 
-| File | Use when | Answers |
+| File | Read when | Answers |
 |---|---|---|
-| `hex-codes.md` | a crash report, hang report, stackshot, device log, register dump or file header contains an unexplained hex constant | what killed the process, what a fault address pattern means, which artifact a magic number belongs to |
+| `crash-triage.md` | any crash, hang, spin or stackshot artifact is opened | which exception class this is, which field to read next, what the exception subtype and `pc` versus fault address mean, which namespace killed the process |
+| `hex-codes.md` | a constant needs a meaning: termination code, fault address pattern, register value, file magic | what the number means in the field it came from, and how trustworthy that meaning is |
+| `memory-diagnostics.md` | the class is a memory bug, or backtraces differ every run | which sanitizer or malloc switch to enable, how to read ASan shadow bytes, how to symbolicate |
 
 ## Signals
 
-Read `hex-codes.md` when any of these appear:
+| Signal in the artifact | Load |
+|---|---|
+| `Exception Type`, `EXC_BAD_ACCESS`, `EXC_BREAKPOINT`, `EXC_CRASH`, `EXC_RESOURCE`, `EXC_GUARD` | `crash-triage.md` |
+| `Termination Reason`, watchdog, jetsam, thermal, force-quit, dyld or code-signing kill | `crash-triage.md`, then `hex-codes.md` |
+| `Fatal error:`, `Simultaneous accesses`, textless trap, exit code 132 | `crash-triage.md` |
+| A bare 8 or 16 digit hex constant anywhere | `hex-codes.md` |
+| `0x55...`, `0xaa...`, `0xdd...`, `objc_msgSend` crash, backtraces that differ every run | `hex-codes.md`, then `memory-diagnostics.md` |
+| ASan or TSan report, shadow bytes, `leaks`, `malloc_history` | `memory-diagnostics.md` |
+| "corrupted" binary, framework, asset or download | `hex-codes.md` |
 
-- `Termination Reason`, `Exception Type`, `Exception Codes`, `EXC_BAD_ACCESS`, `EXC_CRASH`,
-  `EXC_BREAKPOINT`, `EXC_GUARD`, `EXC_RESOURCE`
-- a bare hex constant of 8 or 16 digits in a log, register, or fault address
-- watchdog, jetsam, thermal, force-quit, dyld launch failure, code-signing kill
-- `.ips`, `.crash`, `.diag`, `.hang`, `sysdiagnose` artifacts
-- "corrupted" binary, framework, asset or download
+Non-Apple stacks: Zig panics and `0xaa` fills are in `KNOWLEDGE/zig/debugging.md`.
 
 ## Protocol
 
-1. Identify the field the constant came from before looking it up.
-2. Read only `hex-codes.md`, then quote the matched row in the diagnosis.
-3. Treat a decoded code as evidence about the killer, never as the root cause.
-4. If a constant is not listed, report it as unknown with the missing evidence named.
+1. Classify with `crash-triage.md` before decoding anything.
+2. Identify the field a constant came from, then read only the matching table.
+3. Quote the matched row and its provenance tier in the diagnosis.
+4. Treat a decoded code as evidence about the killer, never as the root cause.
+5. If a constant is not listed, report it as unknown and name the missing evidence.
