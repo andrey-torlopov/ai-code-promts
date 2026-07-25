@@ -39,7 +39,7 @@ TRACE:
 | standalone research, comparison, external sources | `analysis-plan` | `research` | optional | Source-backed report |
 | design spec, brainstorm, product or technical spec | `analysis-plan` | `spec` | optional/domain-specific | Design/spec artifact |
 | implement, do from plan, apply fix, concrete edit | `implementation-from-plan` | none | language/project-specific | Changed files plus verification |
-| build fails, CI fails, runtime error, crash, logs, root cause | `debug-diagnose` | `build/ci/runtime/environment` | logs/build/CI/language-specific; `swift/debugging/hex-codes.md` for Apple crash artifacts | Root cause plus fix plan |
+| build fails, CI fails, runtime error, crash, logs, root cause | `debug-diagnose` | `build/ci/runtime/environment` | logs/build/CI/language-specific; `swift/debugging/` for Apple crash artifacts; `zig` for Zig panics and builds | Root cause plus fix plan |
 | macOS, shell, files, zsh, brew, mise, local diagnosis | `mac-local-ops` | none | `shell`, macOS/project-specific | Safe local action/report |
 | deploy, release, publish, rollout, production/staging operation | `deploy-ops` | none | `devops`, project-specific deploy docs | Gated deploy/release action |
 | create/update/audit skills, instruction set, registry, lint | `skill-maintenance` | `authoring/audit/registry/lint/ai-context-init` | AI instruction rules | Changed skills or audit report |

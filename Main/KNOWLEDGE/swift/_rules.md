@@ -10,5 +10,8 @@
 8. Use typed models for stable API data instead of `[String: Any]`.
 9. Verification should be focused and named explicitly.
 10. Load pattern categories only when concrete signals appear.
-11. When a crash report or log contains a hex constant, decode it from `debugging/hex-codes.md`; never guess the meaning of a code.
-12. Treat a decoded termination code as the kill reason, not the root cause; the root cause stays in the backtrace.
+11. For any crash, hang or stackshot artifact, classify with `debugging/crash-triage.md` before decoding constants or reading a backtrace.
+12. Decode hex constants from `debugging/hex-codes.md` using the field they came from; never guess a code and never quote a community-only code as documented.
+13. Treat a decoded termination code as the kill reason, not the root cause; the root cause stays in the backtrace of the blocked or faulting thread.
+14. Do not quote an unsymbolicated backtrace as evidence; state symbolication status first.
+15. When backtraces differ across otherwise identical crashes, escalate to `debugging/memory-diagnostics.md` instead of reading individual stacks.

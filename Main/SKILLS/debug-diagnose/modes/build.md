@@ -7,6 +7,7 @@ Use for compiler, linker, package and local build failures.
 Load by project:
 
 - Swift/SPM/Xcode: `../../../KNOWLEDGE/swift/verification.md`
+- Zig (`build.zig`, `build.zig.zon`): `../../../KNOWLEDGE/zig/verification.md` and `../../../KNOWLEDGE/zig/_rules.md`; record `zig version` before quoting stdlib API names
 - Shell/toolchain symptoms: `../../../KNOWLEDGE/shell/_rules.md`
 
 ## References
