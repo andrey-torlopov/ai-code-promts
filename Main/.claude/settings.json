@@ -1,26 +1,17 @@
 {
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
-      "Bash(grep *)",
-      "Bash(rg *)",
-      "Bash(find *)",
-      "Bash(awk *)",
-      "Bash(sed -n *)",
-      "Bash(ls *)",
-      "Bash(wc *)",
-      "Bash(cat *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Bash(ruby -c *)",
-      "Bash(ruby -ryaml *)",
-      "Bash(python3 -c *)",
+      "Bash",
+      "Read",
+      "Glob",
+      "Grep",
+      "Skill",
+      "WebFetch",
+      "WebSearch",
       "mcp__acp__Write",
       "mcp__acp__Edit",
       "mcp__acp__Bash"
-    ],
-    "deny": [
-      "Bash(rm -rf *)",
-      "Bash(git push *)"
     ]
   },
   "hooks": {
