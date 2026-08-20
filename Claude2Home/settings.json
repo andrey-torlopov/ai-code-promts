@@ -1,0 +1,80 @@
+{
+  "model": "opus[1m]",
+  "effortLevel": "high",
+  "theme": "auto",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "agentPushNotifEnabled": true,
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash",
+      "Read",
+      "Glob",
+      "Grep",
+      "Skill",
+      "WebFetch",
+      "WebSearch",
+      "mcp__acp__Write",
+      "mcp__acp__Edit",
+      "mcp__acp__Bash"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(mkfs*)",
+      "Bash(diskutil erase*)",
+      "Bash(shutdown *)",
+      "Bash(reboot *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Read(//Users/at/.ssh/**)",
+      "Edit(//Users/at/.ssh/**)",
+      "Read(//Users/at/.aws/**)",
+      "Edit(//Users/at/.aws/**)",
+      "Edit(//Users/at/.claude/hooks/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|mcp__acp__Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.claude/hooks/bash-guard.sh\"",
+            "timeout": 10,
+            "statusMessage": "bash-guard"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|mcp__acp__Write|mcp__acp__Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "H=\"$HOME/.claude/hooks/skill-lint.sh\"; [ -f \"$H\" ] || exit 0; sh \"$H\"",
+            "timeout": 10,
+            "statusMessage": "skill-lint"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "H=\"$HOME/.claude/hooks/skill-context-lint.sh\"; [ -f \"$H\" ] || exit 0; sh \"$H\" \"${CLAUDE_PROJECT_DIR:-.}\"",
+            "timeout": 10,
+            "statusMessage": "skill-context-lint"
+          }
+        ]
+      }
+    ]
+  }
+}
