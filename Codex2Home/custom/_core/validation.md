@@ -30,7 +30,9 @@ reference target. Exit code 0 means clean.
 14. `$CODEX_HOME/AGENTS.md` is the only required global runtime anchor.
 15. Native discovery links are managed separately in `$HOME/.agents/skills/`; the
     validator checks canonical skill contents under `$CODEX_HOME/skills/`.
-16. `SKILL CONTEXT` templates require a `PROJECT:` line.
+16. `$CODEX_HOME/hooks.json` registers the `SessionStart` project-context hook and
+    `$CODEX_HOME/hooks/project-context.sh` exists.
+17. `SKILL CONTEXT` templates require a `PROJECT:` line.
 
 ## Regression Prompts
 

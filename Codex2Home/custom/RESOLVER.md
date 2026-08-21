@@ -77,7 +77,7 @@ TRACE:
 $CODEX_HOME/AGENTS.md  (then project AGENTS.override.md / AGENTS.md layers)
   -> $CODEX_HOME/custom/CORE.md
   -> $CODEX_HOME/custom/RESOLVER.md
-  -> project PROJECT.md when the repository provides one
+  -> project PROJECT.md when the repository provides one (injected on SessionStart)
   -> $CODEX_HOME/skills/<selected-skill>/SKILL.md
   -> references/scripts/assets named by selected skill
   -> $CODEX_HOME/custom/KNOWLEDGE/<domain> packs named by resolver or selected skill

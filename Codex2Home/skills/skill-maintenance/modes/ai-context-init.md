@@ -30,7 +30,7 @@ A project therefore gets a thin anchor plus verified facts, not a second copy of
 ## Naming
 
 The facts file is `PROJECT.md` in the repository root.
-Use `.claude/PROJECT.md` only when a `PROJECT.md` already exists there for another purpose.
+Use `.codex/PROJECT.md` only when a root `PROJECT.md` already exists for another purpose.
 Do not invent alternative names; the global system reads only these two paths.
 
 ## Stop

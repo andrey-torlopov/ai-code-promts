@@ -10,6 +10,8 @@
 #
 # Payload -> destination:
 #   AGENTS.md -> <target>/AGENTS.md
+#   hooks.json -> <target>/hooks.json                (merge managed entry)
+#   hooks/*.sh -> <target>/hooks/<name>.sh           (only shipped hooks)
 #   custom/   -> <target>/custom/                   (replaced wholesale)
 #   skills/   -> <target>/skills/<name>/            (only shipped skills)
 #   links     -> <user-skills-dir>/<name>            (one symlink per shipped skill)
@@ -17,8 +19,9 @@
 # Default target: ${CODEX_HOME:-$HOME/.codex}
 # Default user skill discovery: ${CODEX_USER_SKILLS_DIR:-$HOME/.agents/skills}
 #
-# Codex state not listed above is left untouched, including config.toml, auth.json,
-# history, sessions, plugins, caches, logs and skills not shipped by this template.
+# Existing hooks.json entries not managed by Codex2Home are preserved. Codex state not
+# listed above is left untouched, including config.toml, auth.json, history, sessions,
+# plugins, caches, logs and skills not shipped by this template.
 
 set -euo pipefail
 
@@ -103,8 +106,16 @@ esac
 [ -f "$SRC/AGENTS.md" ] || die "not a Codex Home template: missing $SRC/AGENTS.md"
 [ -f "$SRC/custom/CORE.md" ] || die "not a Codex Home template: missing $SRC/custom/CORE.md"
 [ -f "$SRC/custom/RESOLVER.md" ] || die "not a Codex Home template: missing $SRC/custom/RESOLVER.md"
+[ -f "$SRC/hooks.json" ] || die "not a Codex Home template: missing $SRC/hooks.json"
+[ -f "$SRC/hooks/project-context.sh" ] || \
+  die "not a Codex Home template: missing project-context hook"
+[ -f "$SRC/scripts/merge_hooks.py" ] || \
+  die "not a Codex Home template: missing hooks merger"
 [ -f "$SRC/skills/skill-maintenance/scripts/skill-lint.sh" ] || \
   die "not a Codex Home template: missing validator"
+
+PYTHON_BIN="$(command -v python3 || true)"
+[ -n "$PYTHON_BIN" ] || die "python3 is required to merge hooks.json safely"
 
 STAMP="$(date +%Y%m%d-%H%M%S)-$$"
 
@@ -174,12 +185,21 @@ if [ "$DRY_RUN" -eq 0 ]; then
 fi
 BACKUP_DIR="$TARGET/backups/codex2home-$STAMP"
 
-if [ -L "$TARGET/skills" ]; then
-  die "refusing to write through symlink: $TARGET/skills"
+for owned_dir in "$TARGET/skills" "$TARGET/hooks"; do
+  if [ -L "$owned_dir" ]; then
+    die "refusing to write through symlink: $owned_dir"
+  fi
+  if [ -e "$owned_dir" ] && [ ! -d "$owned_dir" ]; then
+    die "expected a directory: $owned_dir"
+  fi
+done
+if [ -L "$TARGET/hooks.json" ]; then
+  die "refusing to replace symlink: $TARGET/hooks.json"
 fi
-if [ -e "$TARGET/skills" ] && [ ! -d "$TARGET/skills" ]; then
-  die "expected a directory: $TARGET/skills"
+if [ -e "$TARGET/hooks.json" ] && [ ! -f "$TARGET/hooks.json" ]; then
+  die "expected a regular file: $TARGET/hooks.json"
 fi
+"$PYTHON_BIN" "$SRC/scripts/merge_hooks.py" --check "$SRC/hooks.json" "$TARGET/hooks.json"
 if [ -s "$TARGET/AGENTS.override.md" ]; then
   say "warning: $TARGET/AGENTS.override.md will shadow the installed AGENTS.md" >&2
 fi
@@ -190,6 +210,21 @@ run cp -a "$SRC/AGENTS.md" "$TARGET/AGENTS.md"
 say "installed: AGENTS.md"
 
 install_directory "$SRC/custom" "$TARGET/custom" "custom"
+
+run mkdir -p "$TARGET/hooks"
+backup_as "$TARGET/hooks/project-context.sh" "hooks/project-context.sh"
+remove_exact_path "$TARGET/hooks/project-context.sh"
+run cp -a "$SRC/hooks/project-context.sh" "$TARGET/hooks/project-context.sh"
+run chmod +x "$TARGET/hooks/project-context.sh"
+say "installed: hooks/project-context.sh"
+
+backup_as "$TARGET/hooks.json" "hooks.json"
+if [ "$DRY_RUN" -eq 1 ]; then
+  say "  would: merge Codex2Home SessionStart entry into $TARGET/hooks.json"
+else
+  "$PYTHON_BIN" "$SRC/scripts/merge_hooks.py" "$SRC/hooks.json" "$TARGET/hooks.json"
+fi
+say "installed: hooks.json (managed SessionStart entry merged)"
 
 run mkdir -p "$TARGET/skills"
 

@@ -46,7 +46,8 @@ For every non-trivial task, use this read order:
    when native invocation is unavailable.
 4. Load only the references, scripts, assets and
    `$CODEX_HOME/custom/KNOWLEDGE/` packs named by that skill.
-5. Read the project's `PROJECT.md` when the repository provides one.
+5. Use the project's `PROJECT.md` when the repository provides one; the
+   `SessionStart` hook injects it into developer context.
 
 Rules:
 
@@ -55,8 +56,8 @@ Rules:
 - Project `AGENTS.override.md` and `AGENTS.md` files loaded later in the Codex
   instruction chain may add or override project-specific guidance.
 - Project skills in `.agents/skills/` may override a global skill with the same name.
-- A project may add `PROJECT.md` with facts and project rules; it adds context and
-  never relaxes the core safety gates.
+- A project may add `PROJECT.md` (or `.codex/PROJECT.md`) with facts and project
+  rules; it adds context and never relaxes the core safety gates.
 - Trivial conversational turns skip the router; substantial work does not.
 
 ## graphify

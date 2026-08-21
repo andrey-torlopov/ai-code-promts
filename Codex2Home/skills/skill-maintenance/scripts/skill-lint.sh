@@ -40,6 +40,22 @@ require_file "$CUSTOM/COMMON.md"
 require_file "$CUSTOM/KNOWLEDGE/_index.md"
 require_file "$REGISTRY"
 require_file "$ROOT/AGENTS.md"
+require_file "$ROOT/hooks.json"
+require_file "$ROOT/hooks/project-context.sh"
+
+if [ -f "$ROOT/hooks.json" ]; then
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m json.tool "$ROOT/hooks.json" >/dev/null 2>&1 || fail "hooks.json: invalid JSON"
+  else
+    warn "hooks.json: Python 3 unavailable; JSON syntax was not validated"
+  fi
+  contains "$ROOT/hooks.json" '"SessionStart"' || fail "hooks.json: missing SessionStart hook"
+  contains "$ROOT/hooks.json" 'hooks/project-context.sh' || fail "hooks.json: missing project-context command"
+fi
+
+if [ -f "$ROOT/hooks/project-context.sh" ] && [ ! -x "$ROOT/hooks/project-context.sh" ]; then
+  fail "hooks/project-context.sh: not executable"
+fi
 
 if [ -s "$ROOT/AGENTS.override.md" ]; then
   warn "AGENTS.override.md: shadows AGENTS.md in the global Codex scope"
