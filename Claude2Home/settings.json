@@ -30,11 +30,11 @@
       "Bash(reboot *)",
       "Bash(git push --force*)",
       "Bash(git push -f *)",
-      "Read(//Users/at/.ssh/**)",
-      "Edit(//Users/at/.ssh/**)",
-      "Read(//Users/at/.aws/**)",
-      "Edit(//Users/at/.aws/**)",
-      "Edit(//Users/at/.claude/hooks/**)"
+      "Read(/{{HOME}}/.ssh/**)",
+      "Edit(/{{HOME}}/.ssh/**)",
+      "Read(/{{HOME}}/.aws/**)",
+      "Edit(/{{HOME}}/.aws/**)",
+      "Edit(/{{HOME}}/.claude/hooks/**)"
     ]
   },
   "hooks": {

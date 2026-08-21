@@ -1,0 +1,27 @@
+# F-NN — {{FILL_VERIFIED_CLAIM}}
+
+**Статус:** подтверждено
+**Проверено:** {{FILL_DATE_AND_METHOD}}
+**Область:** {{FILL_SCOPE_REVISION_ENVIRONMENT}}
+
+## Утверждение
+
+{{FILL_ATOMIC_CLAIM}}
+
+## Доказательства
+
+- {{FILL_DURABLE_EVIDENCE_FILE_LINE_COMMAND_OR_OBSERVATION}}.
+
+## Числа
+
+{{FILL_FULL_FORMULA_WITH_NUMERATOR_DENOMINATOR_RESULT_OR_NOT_APPLICABLE}}
+
+## Чем грозит
+
+{{FILL_CONSEQUENCE}}
+
+## Что не проверено
+
+{{FILL_WHAT_THIS_DOES_NOT_PROVE}}
+
+Связано: {{FILL_RELATED_ENTITY_LINKS_OR_NONE}}

@@ -6,7 +6,8 @@ Use the first concrete deliverable match. If several rows match, choose the skil
 
 ## Invocation
 
-The seven workflow skills are installed as native user skills in `~/.claude/skills/`.
+The seven workflow skills below, plus the `task-lab` state layer, are installed as native user
+skills in `~/.claude/skills/`.
 Selecting a row means invoking that skill through the runtime's skill mechanism when one exists,
 otherwise reading `~/.claude/skills/<skill>/SKILL.md` directly. Both paths are equivalent;
 the `SKILL CONTEXT` block is mandatory either way.
@@ -74,9 +75,10 @@ A request whose entire deliverable is the folder itself — create, resume, audi
 | deploy, release, publish, rollout | `deploy-ops` | gated action plus `Step-XX-result.md` |
 | macOS, shell, local diagnosis | `mac-local-ops` | report plus `Notes/` |
 
-`task-lab` ships outside this instruction system, so it stays out of
-`~/.claude/custom/_core/active-skills.txt` and is not structurally linted here, exactly like
-`graphify`.
+`task-lab` is shipped and versioned by this instruction system: it is listed in
+`~/.claude/custom/_core/active-skills.txt` and structurally linted like any workflow skill, even
+though it never consumes a routing row. `graphify` is shipped too but stays out of the registry and
+out of the structural lint; it is invoked directly, not through this table.
 
 ## Skill Context Template
 

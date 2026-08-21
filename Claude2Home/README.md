@@ -1,7 +1,8 @@
-# Home
+# Claude2Home
 
-Image of `~/.claude`. Everything here is copied into a Claude Code home directory
-by `init_claude.sh`, the way `Templates/init_ai.sh` copies `Templates/Main` into a project.
+Image of `~/.claude`. Everything here is copied into a Claude Code home directory by
+`init_claude.sh`. This is the only supported way to deploy the instruction system; the older
+project-level route (`Templates/Main` + `init_ai.sh`) is archived and must not be used.
 
 ## Install
 
@@ -25,8 +26,7 @@ After copying, the installer runs the validator and fails loudly if anything is 
 | `custom/` | `~/.claude/custom/` | wholesale |
 
 Not touched in the target: `projects/`, `sessions/`, `history.jsonl`, `plugins/`,
-`file-history/`, `todos/`, and any skill not shipped here, such as `skills/graphify/`
-and `skills/task-lab/`.
+`file-history/`, `todos/`, and any skill not shipped here.
 
 Not copied at all: this `README.md` and `init_claude.sh`.
 
@@ -41,7 +41,8 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 │   ├── skill-lint.sh         PostToolUse: validates instruction files
 │   ├── project-context.sh    SessionStart: injects PROJECT.md when the repository has one
 │   └── skill-context-lint.sh Stop: every active skill still requires SKILL CONTEXT + TRACE
-├── skills/                   7 workflow skills, auto-discovered by Claude Code
+├── skills/                   7 workflow skills + task-lab (state layer) + graphify,
+│                             auto-discovered by Claude Code
 └── custom/
     ├── CORE.md               SSOT for global rules
     ├── RESOLVER.md           routing table: request signal -> skill
@@ -76,10 +77,12 @@ is one file until a task actually needs routing.
 
 ## Machine-Specific Values
 
-`settings.json` carries deny rules with an absolute home path copied from the working
-config, for example `Read(//Users/at/.ssh/**)`. On a different machine or user name those
-rules match nothing. Update them after restoring on new hardware; the `Bash(...)` deny
-rules and `hooks/bash-guard.sh` are path-independent and keep working either way.
+`settings.json` needs absolute home paths in its deny rules, but the template must stay portable,
+so it stores them as `{{HOME}}`, for example `Read(/{{HOME}}/.ssh/**)` — `{{HOME}}` expands to
+`/Users/<name>`, leading slash included, so the template writes one slash and gets two. `init_claude.sh` substitutes
+the real `$HOME` after copying, so the installed `~/.claude/settings.json` always matches the machine
+it runs on. Never hand-write a literal user path here — it silently stops matching on other hardware.
+The `Bash(...)` deny rules and `hooks/bash-guard.sh` are path-independent either way.
 
 ## Editing
 

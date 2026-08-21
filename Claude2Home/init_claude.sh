@@ -13,8 +13,11 @@
 #   skills/        -> <target>/skills/          (only the skills shipped here)
 #   custom/        -> <target>/custom/          (replaced wholesale)
 #
+# settings.json carries {{HOME}} placeholders so the template stays portable; they are
+# substituted with the real $HOME right after the copy.
+#
 # Anything already in <target> and not listed above is left untouched:
-# projects/, sessions/, history.jsonl, plugins/, other skills such as graphify.
+# projects/, sessions/, history.jsonl, plugins/, and any skill not shipped here.
 
 set -euo pipefail
 
@@ -58,9 +61,30 @@ backup() {
 }
 
 # --- single files -----------------------------------------------------------
+case "$HOME" in
+  *"|"*) echo "HOME contains '|', cannot substitute placeholders safely: $HOME" >&2; exit 1 ;;
+esac
+
+substitute_home() {
+  file="$1"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    say "  would: substitute {{HOME}} -> $HOME in ${file#"$TARGET"/}"
+    return 0
+  fi
+  grep -q '{{HOME}}' "$file" || return 0
+  sed "s|{{HOME}}|$HOME|g" "$file" > "$file.tmp.$$"
+  mv "$file.tmp.$$" "$file"
+  if grep -q '{{HOME}}' "$file"; then
+    echo "placeholder substitution failed in $file" >&2
+    exit 1
+  fi
+  say "  resolved:  {{HOME}} -> $HOME"
+}
+
 for f in CLAUDE.md settings.json; do
   backup "$TARGET/$f"
   run cp -a "$SRC/$f" "$TARGET/$f"
+  substitute_home "$TARGET/$f"
   say "installed: $f"
 done
 
