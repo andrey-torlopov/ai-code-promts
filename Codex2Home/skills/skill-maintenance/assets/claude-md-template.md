@@ -1,0 +1,22 @@
+# <Project Name>
+
+Project anchor for Claude-compatible runtimes.
+
+## Read Order
+
+1. `CORE.md` - project-local standalone SSOT.
+2. `RESOLVER.md` - project-local workflow router.
+3. `PROJECT.md` - facts specific to this repository, imported below.
+4. Only the references and `KNOWLEDGE/` packs named by the selected skill.
+
+## Project Overrides
+
+<Only rules that differ from the global set. Delete this section when there are none.>
+
+Do not assume that Claude Code has `CODEX_HOME`; keep cross-runtime project context standalone.
+
+## Project Context
+
+@PROJECT.md
+
+<Delete this section when the repository has no PROJECT.md.>

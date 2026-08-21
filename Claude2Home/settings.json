@@ -38,6 +38,19 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "H=\"$HOME/.claude/hooks/project-context.sh\"; [ -f \"$H\" ] || exit 0; sh \"$H\"",
+            "timeout": 10,
+            "statusMessage": "project-context"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash|mcp__acp__Bash",

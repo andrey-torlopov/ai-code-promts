@@ -36,6 +36,19 @@ initai
 
 Скрипт должен быть исполняемым (`chmod +x init_ai.sh`). Вызывайте его напрямую, а не через `source` — внутри стоит `set -euo pipefail`, и при сорсинге эти опции остаются в интерактивном shell.
 
+## Глобальная установка для Codex
+
+Чтобы не копировать `Main/` в каждый проект, установите глобальную Codex-версию:
+
+```bash
+./Codex2Home/init_codex.sh
+```
+
+По умолчанию инструкции и каноничные skills устанавливаются в
+`${CODEX_HOME:-$HOME/.codex}`. Произвольный Codex home задаётся через
+`--target DIR`; подробности, backup-стратегия и discovery skills описаны в
+[`Codex2Home/README.md`](Codex2Home/README.md).
+
 ## Структура
 
 ### Entrypoints

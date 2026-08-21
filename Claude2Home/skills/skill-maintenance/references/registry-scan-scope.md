@@ -6,8 +6,8 @@ Include:
 - `~/.claude/skills/*/references/*.md`
 - `~/.claude/skills/*/scripts/*`
 - `~/.claude/skills/*/assets/*`
-- global anchors: `~/.claude/CLAUDE.md`, `~/.claude/custom/AGENTS.md`, `~/.claude/custom/GEMINI.md`
-- project anchors if present: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `PROJECT.md`
+- global anchor: `~/.claude/CLAUDE.md`
+- project anchors if present: `CLAUDE.md`, `AGENTS.md`, `PROJECT.md`
 - core files: `~/.claude/custom/CORE.md`, `~/.claude/custom/RESOLVER.md`, `~/.claude/custom/COMMON.md`
 - `~/.claude/custom/_core/*.md`
 - `~/.claude/custom/KNOWLEDGE/**/*.md`

@@ -6,7 +6,7 @@ Project anchor for Gemini-compatible runtimes.
 
 1. `~/.claude/custom/CORE.md` - global SSOT.
 2. `~/.claude/custom/RESOLVER.md` - pick one workflow skill.
-3. `PROJECT.md` - facts specific to this repository.
+3. `PROJECT.md` - facts specific to this repository. Read it when present.
 4. Only the references and `KNOWLEDGE/` packs named by the selected skill.
 
 ## Project Overrides

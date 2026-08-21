@@ -40,12 +40,15 @@ Read order for any non-trivial task:
 2. `~/.claude/custom/RESOLVER.md` — pick exactly one workflow skill.
 3. The selected `~/.claude/skills/<skill-name>/SKILL.md`.
 4. Only the references, scripts, assets and `~/.claude/custom/KNOWLEDGE/` packs named by that skill.
+5. The project's `PROJECT.md` when the repository provides one; it is injected on session start.
 
 Rules:
 
 - Do not copy core rules into this file; they live in `CORE.md`.
 - Unknown or unclear tasks route through `RESOLVER.md`.
 - A project's own `CLAUDE.md`, `.claude/settings.json` and `.claude/skills/` override the global set.
+- A project may add `PROJECT.md` (or `.claude/PROJECT.md`) with facts and project rules;
+  it adds context and never relaxes the core safety gates.
 - Trivial conversational turns skip the router; substantial work does not.
 
 # graphify

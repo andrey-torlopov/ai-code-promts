@@ -38,14 +38,13 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 ├── hooks/
 │   ├── bash-guard.sh         PreToolUse: deny/ask gate for destructive shell commands
 │   ├── skill-lint.sh         PostToolUse: validates instruction files
+│   ├── project-context.sh    SessionStart: injects PROJECT.md when the repository has one
 │   └── skill-context-lint.sh Stop: every active skill still requires SKILL CONTEXT + TRACE
 ├── skills/                   7 workflow skills, auto-discovered by Claude Code
 └── custom/
     ├── CORE.md               SSOT for global rules
     ├── RESOLVER.md           routing table: request signal -> skill
     ├── COMMON.md             compatibility bridge
-    ├── AGENTS.md             anchor for Codex-compatible runtimes
-    ├── GEMINI.md             anchor for Gemini-compatible runtimes
     ├── _core/                skill-context, handoff, validation, destructive-action policy
     │   └── active-skills.txt registry read by all three linters
     └── KNOWLEDGE/            lazy-loaded domain packs (swift, ios, devops, shell, python, zig)
@@ -57,6 +56,8 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 2. Its `# AI Runtime` section sends the agent to `~/.claude/custom/CORE.md`, then `RESOLVER.md`.
 3. `RESOLVER.md` picks exactly one skill from `~/.claude/skills/`.
 4. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names.
+5. When the repository provides `PROJECT.md` (or `.claude/PROJECT.md`), the `SessionStart`
+   hook injects it; without it nothing extra is read.
 
 Nothing outside step 1 is read eagerly, so the token cost of the whole system
 is one file until a task actually needs routing.
@@ -74,16 +75,6 @@ is one file until a task actually needs routing.
 config, for example `Read(//Users/at/.ssh/**)`. On a different machine or user name those
 rules match nothing. Update them after restoring on new hardware; the `Bash(...)` deny
 rules and `hooks/bash-guard.sh` are path-independent and keep working either way.
-
-## Other Runtimes
-
-`custom/AGENTS.md` and `custom/GEMINI.md` are not auto-loaded by their runtimes.
-Point them at the files:
-
-```sh
-ln -s ~/.claude/custom/AGENTS.md ~/.codex/AGENTS.md
-ln -s ~/.claude/custom/GEMINI.md ~/.gemini/GEMINI.md
-```
 
 ## Editing
 

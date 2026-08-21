@@ -28,6 +28,9 @@ reference target. Exit code 0 means clean.
 12. Skills not in the registry (graphify, plugin skills) are never structurally linted.
 13. Every absolute `~/.claude/...` reference resolves to an existing file.
 14. `~/.claude/settings.json` hook paths point at existing scripts in `~/.claude/hooks/`.
+15. `~/.claude/settings.json` registers the `SessionStart` project-context hook and
+    `~/.claude/hooks/project-context.sh` exists.
+16. `SKILL CONTEXT` templates require a `PROJECT:` line.
 
 ## Regression Prompts
 

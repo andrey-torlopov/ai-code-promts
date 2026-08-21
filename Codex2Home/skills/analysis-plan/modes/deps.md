@@ -1,0 +1,28 @@
+# Mode: deps
+
+Use for dependency inventory, version constraints, duplication, compatibility and update risk.
+
+## Knowledge
+
+Load by scope:
+
+- Swift dependency files: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
+- CI or release impact: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
+
+## References
+
+- `../references/dependency-categories.md`
+- `../references/dependency-version-risk-model.md`
+- `../references/dependency-report-format.md`
+
+## Workflow
+
+1. Locate dependency manager files.
+2. Inventory dependency names, constraints, resolved versions and target usage when available.
+3. Classify dependencies by category.
+4. Detect strict pins, branch dependencies, revision dependencies, duplicate managers and platform concerns.
+5. In `online-latest` mode, verify latest versions from current primary sources before recommending updates.
+
+## Stop
+
+If no dependency manager files exist, report checked paths. Do not review source behavior.

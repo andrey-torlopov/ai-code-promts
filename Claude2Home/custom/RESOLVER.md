@@ -21,6 +21,7 @@ Substantial work must start with this flat block:
 ```text
 SKILL: <skill> (mode=<mode-or-none>)
 REASON: <why this skill owns the deliverable>
+PROJECT: <project context file path or none>
 KNOWLEDGE: <loaded packs or none>
 SKIPPED: <relevant packs intentionally not loaded>
 REFERENCES: <local references loaded or none>
@@ -71,9 +72,10 @@ TRACE:
 ## Canonical Read Order
 
 ```text
-~/.claude/CLAUDE.md  (or project CLAUDE.md / AGENTS.md / GEMINI.md)
+~/.claude/CLAUDE.md  (or project CLAUDE.md / AGENTS.md)
   -> ~/.claude/custom/CORE.md
   -> ~/.claude/custom/RESOLVER.md
+  -> project PROJECT.md when the repository provides one (injected on SessionStart)
   -> ~/.claude/skills/<selected-skill>/SKILL.md
   -> references/scripts/assets named by selected skill
   -> ~/.claude/custom/KNOWLEDGE/<domain> packs named by resolver or selected skill

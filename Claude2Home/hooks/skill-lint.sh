@@ -50,7 +50,7 @@ esac
 
 case "$FILE_PATH" in
   */stale-reference-signatures.md) exit 0 ;;
-  */CORE.md|*/RESOLVER.md|*/COMMON.md|*/AGENTS.md|*/CLAUDE.md|*/GEMINI.md) ;;
+  */CORE.md|*/RESOLVER.md|*/COMMON.md|*/AGENTS.md|*/CLAUDE.md) ;;
   */SKILL.md) ;;
   */modes/*.md|*/references/*.md) ;;
   */KNOWLEDGE/*.md|*/KNOWLEDGE/*/*.md|*/KNOWLEDGE/*/*/*.md) ;;
@@ -76,7 +76,7 @@ if [ "$FILENAME" = "SKILL.md" ]; then
 fi
 
 case "$FILENAME" in
-  AGENTS.md|CLAUDE.md|GEMINI.md)
+  AGENTS.md|CLAUDE.md)
     if ! grep -q 'CORE.md' "$FILE_PATH"; then
       FINDINGS="${FINDINGS}
  CRITICAL: Anchor must point to CORE.md"

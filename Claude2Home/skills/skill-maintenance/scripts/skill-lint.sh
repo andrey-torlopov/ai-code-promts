@@ -37,14 +37,12 @@ contains() {
 require_file "$CUSTOM/CORE.md"
 require_file "$CUSTOM/RESOLVER.md"
 require_file "$CUSTOM/COMMON.md"
-require_file "$CUSTOM/AGENTS.md"
-require_file "$CUSTOM/GEMINI.md"
 require_file "$CUSTOM/KNOWLEDGE/_index.md"
 require_file "$REGISTRY"
 require_file "$ROOT/CLAUDE.md"
 require_file "$ROOT/settings.json"
 
-for anchor in "$ROOT/CLAUDE.md" "$CUSTOM/AGENTS.md" "$CUSTOM/GEMINI.md"; do
+for anchor in "$ROOT/CLAUDE.md"; do
   [ -f "$anchor" ] || continue
   rel="${anchor#"$ROOT"/}"
   contains "$anchor" "CORE.md"     || fail "$rel: anchor must point to CORE.md"
