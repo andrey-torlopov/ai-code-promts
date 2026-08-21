@@ -6,12 +6,15 @@ Use the first concrete deliverable match. If several rows match, choose the skil
 
 ## Invocation
 
-The seven workflow skills have their canonical copies in `$CODEX_HOME/skills/`.
-`init_codex.sh` exposes each one to Codex discovery through a symlink in the configured
-user skill directory, which defaults to `$HOME/.agents/skills/`. Selecting a row means
+The seven workflow skills below, plus the `task-lab` state layer, have their canonical copies in
+`$CODEX_HOME/skills/`. `init_codex.sh` exposes each one to Codex discovery through a symlink in the
+configured user skill directory, which defaults to `$HOME/.agents/skills/`. Selecting a row means
 invoking that native skill when available; otherwise read
 `$CODEX_HOME/skills/<skill>/SKILL.md` directly. Both paths are equivalent, and the
 `SKILL CONTEXT` block is mandatory either way.
+
+`graphify` is shipped in the same directory and exposed through the same discovery mechanism, but
+it is invoked directly by its own signal and consumes no workflow routing row.
 
 For any native skill, use the skill root exposed by Codex rather than reconstructing its path.
 `<selected-skill>` below means that resolved root. The `$CODEX_HOME/skills/<skill>/` fallback is
@@ -28,14 +31,14 @@ context loss. It does not consume a routing row: the table below still names exa
 skill for the deliverable, and the layer only decides where that deliverable and its evidence are
 recorded.
 
-Availability is a precondition, never an assumption. Resolve `task-lab` from the native skill list
-and use the file path Codex exposes. Native local candidates are the nearest
+Resolve `task-lab` from the native skill list and use the file path Codex exposes. Native local
+candidates are the nearest
 `.agents/skills/task-lab/` from the current directory up to the repository root and then
-`$HOME/.agents/skills/task-lab/`; a plugin skill has its own exposed root. A manually installed
-`$CODEX_HOME/skills/task-lab/` containing `SKILL.md` is a direct-read compatibility fallback, not
-a standard Codex discovery location unless it is linked into a scanned directory. `<task-lab>`
-below means the resolved skill root. When it is absent, route normally, declare `TASK: none`, and
-never hand-emulate the folder contract.
+`$HOME/.agents/skills/task-lab/`; a plugin skill has its own exposed root. The shipped
+`$CODEX_HOME/skills/task-lab/` is the canonical direct-read fallback when native discovery is
+disabled or unavailable. `<task-lab>` below means the resolved skill root. If an incomplete
+installation leaves it unavailable, route normally, declare `TASK: none`, and never hand-emulate
+the folder contract.
 
 ### Auto-Activation
 
@@ -85,9 +88,10 @@ A request whose entire deliverable is the folder itself — create, resume, audi
 | deploy, release, publish, rollout | `deploy-ops` | gated action plus `Step-XX-result.md` |
 | macOS, shell, local diagnosis | `mac-local-ops` | report plus `Notes/` |
 
-`task-lab` ships outside this instruction system, so it stays out of
-`$CODEX_HOME/custom/_core/active-skills.txt` and is not structurally linted here, exactly like
-`graphify`.
+`task-lab` is shipped and versioned by this instruction system: it is listed in
+`$CODEX_HOME/custom/_core/active-skills.txt` and structurally linted like any workflow skill, even
+though it never consumes a routing row. `graphify` is shipped too but stays out of the registry and
+out of the structural lint; it is invoked directly, not through this table.
 
 ## Skill Context Template
 

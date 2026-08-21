@@ -21,7 +21,7 @@
 #
 # Existing hooks.json entries not managed by Codex2Home are preserved. Codex state not
 # listed above is left untouched, including config.toml, auth.json, history, sessions,
-# plugins, caches, logs and skills not shipped by this template.
+# plugins, caches, logs and any skill not shipped by this template.
 
 set -euo pipefail
 

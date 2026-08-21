@@ -1,6 +1,7 @@
 # Active global workflow skills, one per line.
 # Read by skills/skill-maintenance/scripts/skill-lint.sh.
-# Skills not listed here (graphify, plugin skills) are never structurally linted.
+# graphify and plugin skills are shipped or installed outside this contract and are
+# never structurally linted.
 analysis-plan
 swift-build-optimization
 implementation-from-plan
@@ -8,3 +9,4 @@ debug-diagnose
 mac-local-ops
 deploy-ops
 skill-maintenance
+task-lab

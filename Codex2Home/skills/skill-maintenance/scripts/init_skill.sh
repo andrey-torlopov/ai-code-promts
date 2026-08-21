@@ -8,7 +8,11 @@ fi
 
 NAME="$1"
 DESCRIPTION="$2"
-ROOT="${3:-/Users/andreytorlopov/Dev/AI/Templates/Main/SKILLS}"
+# Default target: the skills/ directory of whichever tree this script lives in — the Home
+# template source or the installed $CODEX_HOME. Never a hard-coded machine path.
+SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+TREE_ROOT="$(cd "$SELF_DIR/../../.." && pwd)"
+ROOT="${3:-$TREE_ROOT/skills}"
 
 case "$NAME" in
   *[!a-z0-9-]*|''|*-| -*)

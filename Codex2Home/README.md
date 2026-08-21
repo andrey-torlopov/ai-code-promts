@@ -1,10 +1,10 @@
 # Codex2Home
 
-Переносимый шаблон глобальных инструкций, lifecycle hooks, skills и knowledge packs
-для Codex.
-Он заменяет копирование `Templates/Main` в каждый проект: Codex автоматически
-загружает глобальный `AGENTS.md` из `CODEX_HOME` и добавляет проектные инструкции
-поверх глобальных.
+Переносимый шаблон глобальных инструкций, lifecycle hooks, skills и knowledge packs для Codex.
+Установка через `init_codex.sh` — единственный поддерживаемый способ развернуть эту систему;
+старый project-level маршрут (`Templates/Main` + `init_ai.sh`) архивирован и использоваться не
+должен. Codex автоматически загружает глобальный `AGENTS.md` из `CODEX_HOME` и добавляет
+проектные инструкции поверх глобальных.
 
 ## Установка
 
@@ -92,8 +92,7 @@ Codex поддерживает symlink-каталоги skills. Для изол�
 | link каждого skill | `<user-skills-dir>/<name>` | заменить только одноимённый путь с backup |
 
 Установщик не изменяет `config.toml`, `auth.json`, историю, сессии, плагины,
-логи, кэши, посторонние hook handlers и skills, которых нет в этом шаблоне,
-например внешние `graphify` и `task-lab`.
+логи, кэши, посторонние hook handlers и skills, которых нет в этом шаблоне.
 Каталог `scripts/` используется только самим установщиком и в `<target>` не копируется.
 
 Backup заменяемых путей создаётся в
@@ -114,7 +113,7 @@ backup явно.
 │   ├── COMMON.md             compatibility bridge
 │   ├── _core/                validation, handoff, skill context, safety
 │   └── KNOWLEDGE/            lazy-loaded доменные packs
-└── skills/                   7 поставляемых workflow skills
+└── skills/                   7 workflow skills + task-lab (state layer) + graphify
 ```
 
 ## Порядок загрузки
@@ -123,7 +122,7 @@ backup явно.
 $CODEX_HOME/AGENTS.md
   -> $CODEX_HOME/custom/CORE.md
   -> $CODEX_HOME/custom/RESOLVER.md
-  -> внешний task-lab, только если запрос содержит TaskID или task-folder и skill установлен
+  -> поставляемый task-lab, если запрос содержит TaskID или task-folder
   -> PROJECT.md или .codex/PROJECT.md через SessionStart
   -> один выбранный skill
   -> только названные references/scripts/assets
@@ -131,10 +130,14 @@ $CODEX_HOME/AGENTS.md
   -> более близкие project AGENTS.md overrides
 ```
 
-`task-lab` является опциональным state layer, а не восьмым workflow skill. При наличии
-TaskID или пути task-folder `RESOLVER.md` сначала восстанавливает durable task state,
-после чего обычный workflow skill остаётся единственным владельцем deliverable. Если
-`task-lab` не установлен, routing работает без этого слоя и объявляет `TASK: none`.
+`task-lab` поставляется и версионируется вместе с системой, но остаётся state layer, а не восьмым
+workflow skill. При наличии TaskID или пути task-folder `RESOLVER.md` сначала восстанавливает
+durable task state, после чего обычный workflow skill остаётся единственным владельцем
+deliverable. При неполной установке без `task-lab` routing деградирует безопасно: работает без
+state layer и объявляет `TASK: none`.
+
+`graphify` тоже поставляется вместе с шаблоном, но не входит в workflow-реестр: он вызывается
+напрямую по `/graphify` или для запросов к уже построенному `graphify-out/`.
 
 `AGENTS.override.md` имеет приоритет над `AGENTS.md` на соответствующем уровне.
 Не помещайте глобальный `AGENTS.override.md` рядом с установленным `AGENTS.md`,
