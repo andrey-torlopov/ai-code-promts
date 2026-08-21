@@ -25,7 +25,8 @@ After copying, the installer runs the validator and fails loudly if anything is 
 | `custom/` | `~/.claude/custom/` | wholesale |
 
 Not touched in the target: `projects/`, `sessions/`, `history.jsonl`, `plugins/`,
-`file-history/`, `todos/`, and any skill not shipped here, such as `skills/graphify/`.
+`file-history/`, `todos/`, and any skill not shipped here, such as `skills/graphify/`
+and `skills/task-lab/`.
 
 Not copied at all: this `README.md` and `init_claude.sh`.
 
@@ -58,6 +59,10 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 4. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names.
 5. When the repository provides `PROJECT.md` (or `.claude/PROJECT.md`), the `SessionStart`
    hook injects it; without it nothing extra is read.
+6. When the request carries a TaskID or points into a task folder and a `task-lab` skill is
+   installed, `RESOLVER.md` also activates it as a state layer: the folder is resolved and
+   restored before the subject, and the selected skill's deliverable is recorded there.
+   Without that skill installed, routing is unchanged.
 
 Nothing outside step 1 is read eagerly, so the token cost of the whole system
 is one file until a task actually needs routing.

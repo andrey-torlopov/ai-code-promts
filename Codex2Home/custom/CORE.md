@@ -7,9 +7,16 @@ to every project on this machine.
 
 1. Read this file.
 2. Read `$CODEX_HOME/custom/RESOLVER.md`.
-3. Read exactly one selected `$CODEX_HOME/skills/<skill>/SKILL.md`.
-4. Load only references, scripts or assets named by that selected skill.
-5. Load only `$CODEX_HOME/custom/KNOWLEDGE/<domain>` packs selected by `$CODEX_HOME/custom/RESOLVER.md` or the selected skill.
+3. When the resolver activates `task-lab`, invoke that native skill or read its resolved
+   `SKILL.md` before inspecting the task subject. It owns durable task state, never the subject
+   deliverable.
+4. Invoke exactly one workflow skill for the deliverable, or read its resolved `SKILL.md`.
+   Shipped workflow skills fall back to `$CODEX_HOME/skills/<skill>/SKILL.md`. When the entire
+   deliverable is task-folder lifecycle work, `task-lab` is the sole selected skill and this step
+   is skipped.
+5. Load only references, scripts or assets named by the skills that are actually active.
+6. Load only `$CODEX_HOME/custom/KNOWLEDGE/<domain>` packs selected by
+   `$CODEX_HOME/custom/RESOLVER.md` or the deliverable-owning workflow skill.
 
 ## Scope And Precedence
 
@@ -46,7 +53,10 @@ When presenting calculated metrics, show numerator, denominator and total.
 
 ## Skill Contract
 
-Skills are atomic. A selected skill must not require reading sibling skill folders to complete its core deliverable.
+Skills are atomic. A selected skill must not require reading sibling skill folders to complete its
+core deliverable. Resolver-level composition may activate `task-lab` plus one workflow skill, but
+the workflow skill must not load `task-lab` itself and must still complete its work when that layer
+is absent. Task-folder lifecycle requests select `task-lab` alone.
 
 ## Knowledge Contract
 

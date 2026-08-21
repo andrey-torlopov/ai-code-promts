@@ -8,6 +8,8 @@ to every project on this machine.
 1. Read this file.
 2. Read `~/.claude/custom/RESOLVER.md`.
 3. Read exactly one selected `~/.claude/skills/<skill>/SKILL.md`.
+   The router may additionally activate one state layer (`task-lab`) when the request carries a
+   TaskID or a task folder; the layer owns durable task state, never the deliverable.
 4. Load only references, scripts or assets named by that selected skill.
 5. Load only `~/.claude/custom/KNOWLEDGE/<domain>` packs selected by `~/.claude/custom/RESOLVER.md` or the selected skill.
 
@@ -43,6 +45,8 @@ When presenting calculated metrics, show numerator, denominator and total.
 ## Skill Contract
 
 Skills are atomic. A selected skill must not require reading sibling skill folders to complete its core deliverable.
+A state layer activated by the router is not a sibling dependency: it carries no deliverable of its
+own, and the selected skill must still complete its work when the layer is absent.
 
 ## Knowledge Contract
 

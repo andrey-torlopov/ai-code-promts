@@ -92,7 +92,8 @@ Codex поддерживает symlink-каталоги skills. Для изол�
 | link каждого skill | `<user-skills-dir>/<name>` | заменить только одноимённый путь с backup |
 
 Установщик не изменяет `config.toml`, `auth.json`, историю, сессии, плагины,
-логи, кэши, посторонние hook handlers и skills, которых нет в этом шаблоне.
+логи, кэши, посторонние hook handlers и skills, которых нет в этом шаблоне,
+например внешние `graphify` и `task-lab`.
 Каталог `scripts/` используется только самим установщиком и в `<target>` не копируется.
 
 Backup заменяемых путей создаётся в
@@ -122,12 +123,18 @@ backup явно.
 $CODEX_HOME/AGENTS.md
   -> $CODEX_HOME/custom/CORE.md
   -> $CODEX_HOME/custom/RESOLVER.md
+  -> внешний task-lab, только если запрос содержит TaskID или task-folder и skill установлен
   -> PROJECT.md или .codex/PROJECT.md через SessionStart
   -> один выбранный skill
   -> только названные references/scripts/assets
   -> только релевантные custom/KNOWLEDGE packs
   -> более близкие project AGENTS.md overrides
 ```
+
+`task-lab` является опциональным state layer, а не восьмым workflow skill. При наличии
+TaskID или пути task-folder `RESOLVER.md` сначала восстанавливает durable task state,
+после чего обычный workflow skill остаётся единственным владельцем deliverable. Если
+`task-lab` не установлен, routing работает без этого слоя и объявляет `TASK: none`.
 
 `AGENTS.override.md` имеет приоритет над `AGENTS.md` на соответствующем уровне.
 Не помещайте глобальный `AGENTS.override.md` рядом с установленным `AGENTS.md`,

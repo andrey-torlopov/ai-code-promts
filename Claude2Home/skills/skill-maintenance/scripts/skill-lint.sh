@@ -56,6 +56,10 @@ if [ -f "$CUSTOM/COMMON.md" ]; then
   contains "$CUSTOM/COMMON.md" "RESOLVER.md"          || fail "custom/COMMON.md: must point to RESOLVER.md"
 fi
 
+contains "$CUSTOM/RESOLVER.md" "TASK:" || fail "custom/RESOLVER.md: missing TASK context field"
+contains "$CUSTOM/_core/skill-context.md" "TASK:" || fail "custom/_core/skill-context.md: missing TASK context field"
+contains "$CUSTOM/_core/skill-context.md" "PROJECT:" || fail "custom/_core/skill-context.md: missing PROJECT context field"
+
 if [ ! -f "$REGISTRY" ]; then
   rm -f "$LIST_FILE"
   exit 1

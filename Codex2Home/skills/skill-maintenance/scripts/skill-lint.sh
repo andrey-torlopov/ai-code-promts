@@ -75,6 +75,13 @@ if [ -f "$CUSTOM/COMMON.md" ]; then
   contains "$CUSTOM/COMMON.md" "RESOLVER.md"          || fail "custom/COMMON.md: must point to RESOLVER.md"
 fi
 
+contains "$CUSTOM/RESOLVER.md" "TASK:" || fail "custom/RESOLVER.md: missing TASK context field"
+contains "$CUSTOM/RESOLVER.md" '<task-lab>/SKILL.md' || fail "custom/RESOLVER.md: task-lab must load its resolved SKILL.md"
+contains "$CUSTOM/RESOLVER.md" '.agents/skills/task-lab/' || fail "custom/RESOLVER.md: missing native task-lab discovery path"
+contains "$CUSTOM/RESOLVER.md" 'direct-read compatibility fallback' || fail "custom/RESOLVER.md: task-lab fallback must not be described as native discovery"
+contains "$CUSTOM/_core/skill-context.md" "TASK:" || fail "custom/_core/skill-context.md: missing TASK context field"
+contains "$CUSTOM/_core/skill-context.md" "PROJECT:" || fail "custom/_core/skill-context.md: missing PROJECT context field"
+
 if [ ! -f "$REGISTRY" ]; then
   rm -f "$LIST_FILE"
   exit 1

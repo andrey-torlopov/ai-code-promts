@@ -30,7 +30,7 @@ reference target. Exit code 0 means clean.
 14. `~/.claude/settings.json` hook paths point at existing scripts in `~/.claude/hooks/`.
 15. `~/.claude/settings.json` registers the `SessionStart` project-context hook and
     `~/.claude/hooks/project-context.sh` exists.
-16. `SKILL CONTEXT` templates require a `PROJECT:` line.
+16. `SKILL CONTEXT` templates require `TASK:` and `PROJECT:` lines.
 
 ## Regression Prompts
 

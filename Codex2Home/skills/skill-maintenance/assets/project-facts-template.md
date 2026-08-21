@@ -1,6 +1,7 @@
 # PROJECT.md
 
-Verified facts about this repository. No rules, no persona text, no invented commands.
+Verified facts and project-specific operational constraints. No persona text, response rules
+or invented commands.
 Every line must be checked against the repository before it is written.
 This file is loaded before substantial work; keep it under 200 lines and move deep
 domain material into `KNOWLEDGE/<domain>/`.
@@ -46,4 +47,5 @@ domain material into `KNOWLEDGE/<domain>/`.
 ## Notes
 
 Facts the agent cannot derive from the repository: decisions already made, known traps,
-external systems, historical context. Facts only, no persona text and no response rules.
+external systems, historical context. Facts and operational constraints only; they cannot
+relax global safety gates.

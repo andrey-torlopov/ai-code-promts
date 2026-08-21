@@ -32,7 +32,9 @@ reference target. Exit code 0 means clean.
     validator checks canonical skill contents under `$CODEX_HOME/skills/`.
 16. `$CODEX_HOME/hooks.json` registers the `SessionStart` project-context hook and
     `$CODEX_HOME/hooks/project-context.sh` exists.
-17. `SKILL CONTEXT` templates require a `PROJECT:` line.
+17. `SKILL CONTEXT` templates require `TASK:` and `PROJECT:` lines.
+18. `task-lab` composition reads the resolved native `SKILL.md`, keeps the workflow skill as the
+    deliverable owner, and treats `$CODEX_HOME/skills/task-lab/` only as a direct-read fallback.
 
 ## Regression Prompts
 
@@ -49,3 +51,8 @@ Check routing for:
 9. Gated deploy/release task.
 10. Skill maintenance or audit task.
 11. Xcode clean or incremental build-time optimization.
+12. TaskID plus implementation request: `task-lab` state layer and `implementation-from-plan`
+    deliverable owner.
+13. Create, resume or audit the task folder itself: `task-lab` alone.
+14. Version, port, PR, issue, line or quantity containing a number: no `task-lab` activation
+    without task wording or one exact task-folder match.

@@ -14,12 +14,77 @@ the `SKILL CONTEXT` block is mandatory either way.
 A project may override a global skill by defining a skill with the same name in its own
 `.claude/skills/`. The project version wins.
 
+## Task State Layer
+
+`task-lab` is a state layer, not a deliverable owner. It keeps durable task state on disk — a task
+folder with `Context/`, `Knowledge/`, `Steps/`, `Results/`, `Notes/`, `Inbox/` — so work survives
+context loss. It does not consume a routing row: the table below still names exactly one workflow
+skill for the deliverable, and the layer only decides where that deliverable and its evidence are
+recorded.
+
+Availability is a precondition, never an assumption. The layer is active only when a `task-lab`
+skill is installed, as `~/.claude/skills/task-lab/` or as a plugin skill of that name; `<task-lab>`
+below means that skill root. When it is absent, route normally, declare `TASK: none`, and never
+hand-emulate the folder contract.
+
+### Auto-Activation
+
+Activate the layer without being asked when any signal holds:
+
+| Signal | Example |
+|---|---|
+| the request names a TaskID as a task | `задача 123`, `по APP-001`, `task 42`, `bug 77` |
+| a bare ID resolves to exactly one folder | `<task-lab>/scripts/resolve_task.py 123` exits 0 with one path |
+| the request points into a task folder | a path whose root holds `index.md`, `steps.md` and `Steps/` |
+| the working directory is that folder or below it | same shape at `cwd` or an ancestor |
+| the user creates, resumes, audits or closes durable work | «заведи задачу», «продолжим», «что там по …», «закрой задачу» |
+| the user requires the work to outlive this session | stated in the request |
+
+Run the resolver from the workspace that holds task folders and pass `--workspace <root>` when they
+live elsewhere; exit code 2 means no match or an ambiguous ID.
+
+Do not activate on a number that is a version, port, PR or issue, line, date, size or quantity. A
+bare number with no exact folder match and no task wording is not a TaskID: continue without the
+layer. Do not scaffold a folder for work that fits one short session; say why instead.
+
+### Composition
+
+1. State before subject: resolve the folder, run `<task-lab>/scripts/restore_task.py`, perform the
+   drift check, and only then read the project.
+2. The routing table still picks the deliverable owner. The layer adds state, not a second
+   deliverable, and never overrides that skill's stop gate.
+3. Every durable change inside the task folder happens under one open `Step-XX.md` and closes with
+   `Step-XX-result.md`. A question the reply itself answers opens no step.
+4. Artifacts land by kind: exports in `Results/`, verified claims as `Knowledge/F-NN`, open ones as
+   `H-NN`, raw logs and measurements in `Notes/`, task-local scripts in `Context/tools/`, incoming
+   material in `Inbox/`.
+5. Project files outside the task folder keep their normal location; the step result records what
+   changed there.
+6. Finish the turn with the skill's audit and restore before reporting; report the folder path.
+
+A request whose entire deliverable is the folder itself — create, resume, audit, restructure, close
+— routes to `task-lab` alone: `SKILL: task-lab`, no second skill, no workflow row consumed.
+
+| Request inside an active task | Deliverable owner | Where it lands |
+|---|---|---|
+| study, plan, review, research, spec | `analysis-plan` | `Results/` plus `Knowledge/` |
+| implement, apply an approved plan | `implementation-from-plan` | project files plus `Step-XX-result.md` |
+| build, CI, runtime or crash failure | `debug-diagnose` | root cause as `F-NN`, fix plan in `Results/` |
+| Xcode/Swift build time | `swift-build-optimization` | benchmarks in `Notes/`, numbers as `F-NN` |
+| deploy, release, publish, rollout | `deploy-ops` | gated action plus `Step-XX-result.md` |
+| macOS, shell, local diagnosis | `mac-local-ops` | report plus `Notes/` |
+
+`task-lab` ships outside this instruction system, so it stays out of
+`~/.claude/custom/_core/active-skills.txt` and is not structurally linted here, exactly like
+`graphify`.
+
 ## Skill Context Template
 
 Substantial work must start with this flat block:
 
 ```text
 SKILL: <skill> (mode=<mode-or-none>)
+TASK: <TaskID -> absolute task-folder path, or none>
 REASON: <why this skill owns the deliverable>
 PROJECT: <project context file path or none>
 KNOWLEDGE: <loaded packs or none>
@@ -35,6 +100,7 @@ Final reports for substantial work must include:
 ```text
 TRACE:
 - Skill:
+- Task folder:
 - References read:
 - Knowledge read:
 - Patterns/policies applied:
@@ -68,6 +134,9 @@ TRACE:
 7. `implementation-from-plan` does not change architecture beyond the approved plan or concrete directive.
 8. Do not create a new top-level skill for a new language or stack; add `~/.claude/custom/KNOWLEDGE/<domain>/` first.
 9. Xcode build-time optimization routes to `swift-build-optimization` before generic `analysis-plan`, `debug-diagnose` or `implementation-from-plan`; its approval gate decides whether the turn stops at a plan or proceeds to edits.
+10. `task-lab` never replaces the deliverable owner; it wraps it. Only a request about the task folder itself routes to `task-lab` alone.
+11. When the layer is active, the deliverable is written into the task folder, but the selected skill's stop gate still decides whether project files may change at all.
+12. An unresolvable TaskID stops the turn: ask for the path or the search root instead of inventing a folder.
 
 ## Canonical Read Order
 
@@ -75,6 +144,7 @@ TRACE:
 ~/.claude/CLAUDE.md  (or project CLAUDE.md / AGENTS.md)
   -> ~/.claude/custom/CORE.md
   -> ~/.claude/custom/RESOLVER.md
+  -> ~/.claude/skills/task-lab/ when the task state layer is active (state before subject)
   -> project PROJECT.md when the repository provides one (injected on SessionStart)
   -> ~/.claude/skills/<selected-skill>/SKILL.md
   -> references/scripts/assets named by selected skill

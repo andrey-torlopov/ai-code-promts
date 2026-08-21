@@ -4,6 +4,7 @@ Use this block before substantial work.
 
 ```text
 SKILL: <skill> (mode=<mode-or-none>)
+TASK: <TaskID -> absolute task-folder path, or none>
 REASON: <why this skill owns the deliverable>
 PROJECT: <project context file path or none>
 KNOWLEDGE: <loaded packs or none>
@@ -19,6 +20,7 @@ Use this trace after substantial work.
 ```text
 TRACE:
 - Skill:
+- Task folder:
 - References read:
 - Knowledge read:
 - Patterns/policies applied:
@@ -33,6 +35,7 @@ A substantial response is invalid if it omits:
 1. selected skill;
 2. mode, if applicable;
 3. the project context file or explicit `none`;
-4. loaded `KNOWLEDGE` packs or explicit `none`;
-5. stop gate;
-6. deliverable boundary.
+4. the task folder or explicit `none`;
+5. loaded `KNOWLEDGE` packs or explicit `none`;
+6. stop gate;
+7. deliverable boundary.

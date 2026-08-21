@@ -48,6 +48,8 @@ initai
 `${CODEX_HOME:-$HOME/.codex}`. Произвольный Codex home задаётся через
 `--target DIR`; подробности, backup-стратегия и discovery skills описаны в
 [`Codex2Home/README.md`](Codex2Home/README.md).
+Установщик также добавляет нативный `SessionStart` hook: он загружает
+`.codex/PROJECT.md` или корневой `PROJECT.md`, сохраняя посторонние entries в `hooks.json`.
 
 ## Структура
 

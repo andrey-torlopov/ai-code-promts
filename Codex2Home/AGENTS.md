@@ -59,6 +59,8 @@ Rules:
 - A project may add `PROJECT.md` (or `.codex/PROJECT.md`) with facts and project
   rules; it adds context and never relaxes the core safety gates.
 - Trivial conversational turns skip the router; substantial work does not.
+- A TaskID (`123`, `APP-001`) or a task-folder path is never a trivial turn: route it
+  and let `RESOLVER.md` decide whether the optional `task-lab` state layer applies.
 
 ## graphify
 
