@@ -4,188 +4,213 @@
 
 # Templates
 
-Шаблон AI-контекста для Claude Code, Codex и других agent-рантаймов.
+Два переносимых Home-шаблона одной instruction-системы:
 
-Инструкции ставятся **в домашний каталог рантайма**, а не копируются в каждый проект:
+- [`Claude2Home/`](Claude2Home/) устанавливается в домашний каталог Claude Code;
+- [`Codex2Home/`](Codex2Home/) устанавливается в `CODEX_HOME` и публикует skills в нативный
+  discovery-каталог Codex.
 
-| Шаблон | Устанавливает в | Скрипт |
-|---|---|---|
-| [`Claude2Home/`](Claude2Home/) | `~/.claude` | `./Claude2Home/init_claude.sh` |
-| [`Codex2Home/`](Codex2Home/) | `${CODEX_HOME:-~/.codex}` | `./Codex2Home/init_codex.sh` |
+Оба шаблона используют один архитектурный контракт: глобальный anchor → `CORE.md` →
+`RESOLVER.md` → ровно один workflow skill → только объявленные им references и knowledge packs.
+`task-lab` может дополнительно обернуть работу durable state-слоем, но не заменяет владельца
+результата.
 
-Проект после этого не содержит инструкций вообще — только опциональный `PROJECT.md` с
-проверенными фактами, который подхватывается хуком на старте сессии.
+Установка Home-шаблона — единственный поддерживаемый способ развернуть систему. Legacy-маршрут с
+копированием `Main/` и `_ai/layers/` в каждый проект больше не является частью текущей топологии.
+Проекту не нужна локальная копия глобальных инструкций; при необходимости он добавляет только
+собственные `PROJECT.md`, `AGENTS.md` или runtime-specific overrides.
 
-Архитектура: **один SSOT → один роутер → ровно один skill → только объявленные им references и
-knowledge packs.** Ничего лишнего в контекст не загружается.
+## Быстрый старт
 
-> Прежний маршрут «копировать `Main/` в каждый проект скриптом `init_ai.sh`» выведен из
-> обращения и лежит в `Archive/`. Он использует структуру `SKILLS/` и `_ai/layers/`, которую
-> текущий валидатор помечает как запрещённую. Не используйте его.
+Запускайте команды из корня этого репозитория:
 
-## Установка
+```sh
+./Claude2Home/init_claude.sh --dry-run
+./Claude2Home/init_claude.sh
 
-```bash
-./Claude2Home/init_claude.sh --dry-run   # показать, что изменится
-./Claude2Home/init_claude.sh             # установить в ~/.claude
+./Codex2Home/init_codex.sh --dry-run
+./Codex2Home/init_codex.sh
 ```
 
-Заменяемые файлы сначала копируются в `~/.claude/backups/home-template-<timestamp>/`.
-После копирования установщик прогоняет валидатор и падает, если что-то сломано.
-Произвольная цель — `--target DIR`; подробности в [`Claude2Home/README.md`](Claude2Home/README.md).
+`--dry-run` ничего не изменяет. Оба установщика создают backup заменяемых путей, если явно не
+передан `--no-backup`, и запускают validator после реальной установки.
 
-Для Codex — [`Codex2Home/README.md`](Codex2Home/README.md): тот же набор скиллов, нативный
-`SessionStart` hook и symlink-discovery в `${CODEX_USER_SKILLS_DIR:-~/.agents/skills}`.
+Подробные параметры:
 
-## Что попадает в `~/.claude`
+- [установка Claude2Home](Claude2Home/README.md);
+- [установка Codex2Home](Codex2Home/README.md).
+
+## Сравнение рантаймов
+
+| Контракт | Claude2Home | Codex2Home |
+|---|---|---|
+| Каталог источника | `Claude2Home/` | `Codex2Home/` |
+| Цель по умолчанию | `${CLAUDE_CONFIG_DIR:-$HOME/.claude}` | `${CODEX_HOME:-$HOME/.codex}` |
+| Глобальный anchor | `CLAUDE.md` | `AGENTS.md` |
+| Конфигурация hooks | `settings.json`, заменяется целиком | `hooks.json`, управляемый `project-context` entry сливается с существующими entries |
+| Hook scripts | четыре скрипта в `hooks/` | `hooks/project-context.sh` |
+| Project override | `.claude/PROJECT.md`, затем `PROJECT.md` | `.codex/PROJECT.md`, затем `PROJECT.md` |
+| Каноничные skills | `<target>/skills/<name>` | `<target>/skills/<name>` |
+| Native discovery | напрямую из `~/.claude/skills/` | symlink в `${CODEX_USER_SKILLS_DIR:-$HOME/.agents/skills}` |
+| Backup | `<target>/backups/home-template-<timestamp>/` | `<target>/backups/codex2home-<timestamp>-<pid>/` |
+| Дополнительная зависимость | `jq` для разбора Bash-команд в `bash-guard` | Python 3 для безопасного merge `hooks.json` |
+
+Claude installer переносит `CLAUDE.md`, `settings.json`, поставляемые hooks, `custom/` и каждый
+поставляемый skill. Он подставляет реальный `$HOME` вместо `{{HOME}}` в машинно-зависимых deny
+paths.
+
+Codex installer не изменяет `config.toml`, `auth.json`, историю, сессии, плагины, кэши и
+посторонние hooks. После первой установки или изменения определения hook откройте `/hooks` в Codex
+и подтвердите `project-context`: доверие привязано к hash определения.
+
+## Общая структура
+
+Обе папки поставляют одинаковые логические слои, адаптированные к путям и lifecycle-механизмам
+своего рантайма:
 
 ```text
-~/.claude/
-├── CLAUDE.md                 anchor: личные правила + read order в custom/
-├── settings.json             модель, permissions, регистрация хуков
-├── hooks/                    4 хука, см. ниже
-├── skills/                   7 workflow-скиллов + task-lab + graphify
-└── custom/
-    ├── CORE.md               SSOT глобальных правил
-    ├── RESOLVER.md           таблица маршрутизации + tie-breakers
-    ├── COMMON.md             compatibility bridge, новых правил не несёт
-    ├── _core/                skill-context, handoff, validation, destructive-actions
-    │   └── active-skills.txt реестр, который читают все три линтера
-    └── KNOWLEDGE/            lazy-loaded доменные паки
+<runtime-home>/
+├── <anchor>                  CLAUDE.md или AGENTS.md
+├── <hook configuration>      settings.json или hooks.json
+├── hooks/                    runtime-specific lifecycle handlers
+├── custom/
+│   ├── CORE.md               SSOT глобальных правил
+│   ├── RESOLVER.md           request signal -> один workflow skill
+│   ├── COMMON.md             compatibility bridge
+│   ├── _core/                validation, skill context, handoff, safety
+│   └── KNOWLEDGE/            lazy-loaded доменные packs
+└── skills/
+    ├── <seven workflow skills>
+    ├── task-lab/             durable state layer
+    └── graphify/             direct-invocation skill
 ```
 
-### Core
+`custom/` при установке заменяется целиком с предварительным backup. Поставляемые skills
+заменяются поимённо; посторонние skills остаются нетронутыми.
 
-- `custom/CORE.md` — SSOT: read order, 8 core rules, языковая политика, контракты skill,
-  knowledge и project context.
-- `custom/RESOLVER.md` — таблица маршрутизации в один workflow skill, слой состояния `task-lab`,
-  tie-breakers, шаблоны `SKILL CONTEXT` и `TRACE`.
-- `custom/COMMON.md` — compatibility bridge на `CORE.md` и `RESOLVER.md`.
-- `custom/_core/` — общие блоки: `skill-context.md`, `handoff-template.md`, `validation.md`,
-  `destructive-actions-policy.md`, `instruction-style.md`, `active-skills.txt`.
+## Порядок загрузки
 
-### Хуки
+Для существенной задачи применяется следующий контракт:
 
-| Хук | Событие | Что делает |
-|---|---|---|
-| `bash-guard.sh` | `PreToolUse` на `Bash` | Разбирает команду целиком, а не по префиксу: `deny` для катастрофического, `ask` для необратимого. Требует `jq` |
-| `project-context.sh` | `SessionStart` | Инжектит `PROJECT.md` или `.claude/PROJECT.md` проекта, помечая тело как данные. Обрезает на 20000 байт |
-| `skill-lint.sh` | `PostToolUse` на `Write`/`Edit` | Быстрая проверка одного изменённого instruction-файла. Exit 2 возвращает findings агенту |
-| `skill-context-lint.sh` | `Stop` | Каждый зарегистрированный `SKILL.md` обязан требовать `SKILL CONTEXT` и финальный `TRACE` |
-
-Все хуки безопасны вне шаблона: нет файла — `exit 0`.
-
-Полная валидация вручную:
-
-```bash
-sh Claude2Home/skills/skill-maintenance/scripts/skill-lint.sh Claude2Home   # исходное дерево
-sh ~/.claude/skills/skill-maintenance/scripts/skill-lint.sh                 # установленная система
+```text
+runtime anchor
+  -> custom/CORE.md
+  -> custom/RESOLVER.md
+  -> task-lab/SKILL.md, только если активирован durable state layer
+  -> PROJECT.md или runtime-specific PROJECT.md, если файл существует
+  -> один deliverable-owning workflow SKILL.md
+  -> только названные references, modes, scripts и assets
+  -> только релевантные custom/KNOWLEDGE packs
 ```
 
-### Skills
+Запрещены скрытые переходы `selected skill -> sibling skill`, legacy prompt layers и
+произвольные role-файлы. Project context добавляет проверенные факты и сужает scope, но не может
+отменить destructive-action, deploy и global-config gates из `CORE.md`.
 
-Живут в `Claude2Home/skills/`, ставятся в `~/.claude/skills/`. Skills атомарны: выбранный skill
-не читает соседние.
+## Skills
+
+Обе папки содержат одинаковый набор workflow skills:
 
 | Skill | Modes | Назначение |
 |---|---|---|
-| `swift-build-optimization` | `benchmark/analyze/fix/verify` | Замер и оптимизация времени сборки Xcode/Swift/iOS/macOS, SPM overhead, аудит build settings |
-| `analysis-plan` | `plan/refactor/architecture/scout/deps/review/research/spec` | Анализ, планы, review, research, repo scout, dependency report, спеки. Read-only, кроме явно запрошенного Markdown-артефакта |
-| `implementation-from-plan` | — | Правки по утверждённому плану или прямой директиве + верификация |
-| `debug-diagnose` | `build/ci/runtime/environment` | Диагностика build/CI/runtime/environment. Root cause и fix plan без скрытого перехода к правкам |
-| `mac-local-ops` | — | Безопасные локальные shell/filesystem операции с destructive-action gate |
-| `deploy-ops` | — | Deploy/release/publish/rollout с явным gate, rollback и верификацией |
-| `skill-maintenance` | `authoring/audit/lint/registry/ai-context-init` | Обслуживание самой instruction/skill системы |
+| `swift-build-optimization` | `benchmark/analyze/fix/verify` | Замер и оптимизация Xcode/Swift build time, SPM overhead и build settings |
+| `analysis-plan` | `plan/refactor/architecture/scout/deps/review/research/spec` | Анализ, планы, review, research, repository scout и спецификации |
+| `implementation-from-plan` | — | Реализация утверждённого плана или прямой concrete-edit директивы с верификацией |
+| `debug-diagnose` | `build/ci/runtime/environment` | Root cause и fix plan без автоматического изменения кода |
+| `mac-local-ops` | — | Безопасные локальные shell/filesystem операции |
+| `deploy-ops` | — | Deploy/release/publish/rollout с confirmation, rollback и verification gates |
+| `skill-maintenance` | `authoring/audit/lint/registry/ai-context-init` | Создание, аудит и обслуживание instruction-системы |
 
-Сверх семи workflow-маршрутов:
+Специальные skills:
 
-- **`task-lab`** — слой состояния, а не владелец результата. Держит папку задачи на диске
-  (`Context/`, `Knowledge/`, `Steps/`, `Results/`, `Notes/`, `Inbox/`), чтобы работа пережила
-  потерю контекста. Активируется по TaskID или пути в папку задачи, routing-строку не занимает.
-  Зарегистрирован в `active-skills.txt` и линтуется наравне с workflow-скиллами.
-- **`graphify`** — построение графа знаний по произвольному входу. Версионируется шаблоном, но
-  вне реестра и вне структурного линта; вызывается напрямую.
+- `task-lab` — поставляемый и зарегистрированный state layer. Он хранит `Context/`, `Knowledge/`,
+  `Steps/`, `Results/`, `Notes/` и `Inbox/`, активируется по TaskID или task-folder и не занимает
+  routing-строку. Его scripts включают init, resolve, restore, audit и self-test.
+- `graphify` — поставляемый direct-invocation skill для графа знаний. Он вызывается по
+  `/graphify` или при работе с существующим `graphify-out/`, но не входит в workflow-реестр и
+  структурный lint.
 
-`swift-build-optimization` дополнительно несёт Python-скрипты (`benchmark_builds.py`,
-`diagnose_compilation.py`, `summarize_build_timing.py`, `check_spm_pins.py`, генераторы отчётов)
-и JSON-схему бенчмарка. `analysis-plan` несёт скрипты визуального компаньона (`server.cjs`,
-`start-server.sh`, `stop-server.sh`, `frame-template.html`). `task-lab` несёт
-`init_task.py`, `resolve_task.py`, `restore_task.py`, `audit_task.py`, `self_test.py`.
+## Knowledge packs
 
-### Knowledge
-
-Lazy-loaded доменные правила в `custom/KNOWLEDGE/`. Загружаются только по сигналу из
-`KNOWLEDGE/_index.md` или по требованию выбранного skill; загруженные и пропущенные packs
-показываются в `SKILL CONTEXT`.
+`custom/KNOWLEDGE/` в обоих шаблонах содержит домены:
 
 | Pack | Содержимое |
 |---|---|
-| `swift/` | Конвенции, верификация, `swift/debugging/` + каталог паттернов `swift/patterns/` |
-| `ios/` | Feature-first архитектура, CI/CD |
-| `devops/` | CI pipelines, deploy checks, verification |
-| `shell/` | zsh, brew, mise |
-| `python/` | Правила и верификация |
-| `zig/` | Правила, отладка, верификация |
+| `swift/` | Конвенции, verification, debugging и каталог code-review patterns |
+| `ios/` | Feature-first архитектура и CI/CD |
+| `devops/` | CI pipelines, deploy checks и verification |
+| `shell/` | zsh, Homebrew и mise |
+| `python/` | Базовые правила и verification |
+| `zig/` | Правила, debugging и verification |
 
-#### Каталог Swift-паттернов
-
-`KNOWLEDGE/swift/patterns/` — 39 файлов в шести категориях, каждый с Bad/Good Example. Читается
-по одному файлу при обнаружении сигнала, превентивная загрузка всего каталога запрещена
-(token economy).
-
-| Категория | Файлов | Фокус |
-|---|---|---|
-| `common/` | 10 | Гигиена кода, конвенции именования, дисциплина тестов |
-| `performance/` | 10 | Горячие пути, строки, обход файловой системы, generic-константы |
-| `networking/` | 7 | URLSession, Codable, валидация ответов, обёртка ошибок |
-| `platform/` | 6 | Swift Concurrency и XCTest, flaky-тесты, таймауты |
-| `best-practices/` | 3 | `final`, `let` по умолчанию, value types |
-| `security/` | 3 | PII, логирование, утечки через ошибки |
-
-## Роутинг
-
-Рантайм читает строго по цепочке:
+Swift-каталог содержит 39 rule-файлов:
 
 ```text
-~/.claude/CLAUDE.md  (или проектный CLAUDE.md / AGENTS.md)
-  -> ~/.claude/custom/CORE.md
-  -> ~/.claude/custom/RESOLVER.md
-  -> ~/.claude/skills/task-lab/ когда активен слой состояния (state before subject)
-  -> PROJECT.md проекта, если он есть (инжектится хуком на SessionStart)
-  -> ~/.claude/skills/<selected-skill>/SKILL.md
-  -> references/modes/scripts/assets, объявленные этим skill
-  -> ~/.claude/custom/KNOWLEDGE/<domain> packs, названные резолвером или skill
+common(10) + performance(10) + networking(7) + platform(6) + best-practices(3) + security(3) = 39
 ```
 
-Запрещено: выбранный skill → соседний skill, legacy prompt-слои, произвольные role-заметки.
+Паки загружаются только по detection signal или требованию выбранного skill. Загруженные и
+намеренно пропущенные паки объявляются в `SKILL CONTEXT`.
 
-### Ключевые границы
+## Lifecycle hooks
 
-- Analysis/review/planning **не** подразумевает implementation.
-- Deploy/release/publish/rollout **никогда** не идёт через `mac-local-ops`.
-- Debug + «почини сейчас» → сначала `debug-diagnose`, передача в `implementation-from-plan`
-  только после сформулированного root cause.
-- Оптимизация времени сборки Xcode перехватывается `swift-build-optimization` раньше общих
-  `analysis-plan` / `debug-diagnose`.
-- Новый язык или стек не создаёт новый top-level skill — сначала добавляется `KNOWLEDGE/<domain>/`.
-- `task-lab` не заменяет владельца результата, а оборачивает его.
-- Деструктивные операции требуют явного confirmation gate из `_core/destructive-actions-policy.md`.
-- Изменения под `~/.claude/` требуют явного намерения пользователя (core rule 8).
+### Claude2Home
 
-## Проектный контекст
+| Hook | Событие | Назначение |
+|---|---|---|
+| `project-context.sh` | `SessionStart` | Загружает `.claude/PROJECT.md` или `PROJECT.md`, максимум 20 000 байт |
+| `bash-guard.sh` | `PreToolUse` для Bash | `deny` для катастрофических и `ask` для необратимых команд; без `jq` безопасно деградирует в `ask` |
+| `skill-lint.sh` | `PostToolUse` для Write/Edit | Проверяет изменённые instruction-файлы |
+| `skill-context-lint.sh` | `Stop` | Проверяет `SKILL CONTEXT` и финальный `TRACE` у зарегистрированных skills |
 
-Репозиторий может положить в корень `PROJECT.md` (или `.claude/PROJECT.md`) с проверенными
-фактами: стек, команды, layout, CI, глоссарий, ограничения, запретные пути. Хук
-`project-context.sh` инжектит его на старте сессии; агент объявляет путь в `SKILL CONTEXT`
-как `PROJECT:`.
+### Codex2Home
 
-Файл добавляет факты и сужает scope, но не переопределяет core rules 5, 7 и 8. Держите его
-короче 200 строк, глубокий домен — в `KNOWLEDGE/<domain>/`. Сгенерировать по шаблону:
-`skill-maintenance` mode `ai-context-init`.
+`SessionStart` hook загружает `.codex/PROJECT.md` или `PROJECT.md` из корня Git-репозитория при
+`startup`, `resume`, `clear` и `compact`. Содержимое ограничивается первыми 20 000 байтами и
+добавляется как developer context. Остальные entries существующего `hooks.json` сохраняются.
 
-## Обязательные блоки ответа
+## Project context
 
-Перед существенной работой рантайм печатает `SKILL CONTEXT` (skill, mode, task folder, причина,
-project context, загруженные и пропущенные knowledge packs, references, правила, артефакт,
-stop-граница), после — `TRACE` (что прочитано, какие паттерны применены, верификация, остаточный
-риск). Шаблоны — в `custom/RESOLVER.md` и `custom/_core/skill-context.md`.
+`PROJECT.md` хранит только проверенные проектные факты и правила: стек, команды, layout, CI,
+глоссарий, ограничения и запретные пути. Runtime-specific файл имеет приоритет над общим:
+
+- Claude Code: `.claude/PROJECT.md` → `PROJECT.md`;
+- Codex: `.codex/PROJECT.md` → `PROJECT.md`.
+
+Глубокие доменные инструкции должны жить в `KNOWLEDGE/<domain>/`, а не раздувать `PROJECT.md`.
+Рекомендуемый предел самого project context — 200 строк; hook всё равно обрезает инъекцию после
+20 000 байт.
+
+## Проверка
+
+Из корня репозитория:
+
+```sh
+sh Claude2Home/skills/skill-maintenance/scripts/skill-lint.sh Claude2Home
+CODEX_HOME="$PWD/Codex2Home" sh Codex2Home/skills/skill-maintenance/scripts/skill-lint.sh Codex2Home
+
+python3 Claude2Home/skills/task-lab/scripts/self_test.py
+python3 Codex2Home/skills/task-lab/scripts/self_test.py
+
+bash -n Claude2Home/init_claude.sh
+bash -n Codex2Home/init_codex.sh
+python3 -m json.tool Claude2Home/settings.json >/dev/null
+python3 -m json.tool Codex2Home/hooks.json >/dev/null
+python3 Codex2Home/scripts/merge_hooks.py --check Codex2Home/hooks.json Codex2Home/hooks.json
+git diff --check
+```
+
+После изменения исходного дерева повторно запустите соответствующий installer. Не редактируйте
+установленную копию как каноничный источник: следующая установка перезапишет поставляемые файлы.
+
+## Обновление системы
+
+При изменении общего контракта синхронизируйте обе runtime-копии, но не копируйте механизмы
+буквально:
+
+- пути `~/.claude/...` и `$CODEX_HOME/...` должны оставаться runtime-specific;
+- Claude permissions/hooks живут в `settings.json`, Codex lifecycle entries — в `hooks.json`;
+- Claude обнаруживает user skills напрямую, Codex installer дополнительно управляет symlink-links;
+- workflow skill добавляется в `active-skills.txt` и `RESOLVER.md` обеих систем;
+- direct-invocation skill может оставаться вне workflow-реестра, если это явно отражено в
+  resolver и validation docs.
