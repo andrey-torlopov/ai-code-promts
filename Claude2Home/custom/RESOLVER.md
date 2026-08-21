@@ -139,6 +139,23 @@ TRACE:
 10. `task-lab` never replaces the deliverable owner; it wraps it. Only a request about the task folder itself routes to `task-lab` alone.
 11. When the layer is active, the deliverable is written into the task folder, but the selected skill's stop gate still decides whether project files may change at all.
 12. An unresolvable TaskID stops the turn: ask for the path or the search root instead of inventing a folder.
+13. On a name or signal collision, a skill from `~/.claude/skills/` wins over a plugin or built-in
+    skill of the same purpose, because only the local one carries the `SKILL CONTEXT` and `TRACE`
+    contract. Known collisions and their winners:
+
+| Signal | Use | Not |
+|---|---|---|
+| review a diff or PR | `analysis-plan` mode `review` | `code-review`, `engineering:code-review` |
+| build/CI/runtime failure, crash, logs | `debug-diagnose` | `engineering:debug` |
+| write docs, README, runbook | `analysis-plan` mode `spec` | `engineering:documentation` |
+| test plan, coverage strategy | `analysis-plan` mode `plan` | `engineering:testing-strategy` |
+| architecture, ADR, system design | `analysis-plan` mode `architecture` | `engineering:architecture`, `engineering:system-design` |
+| deploy, release checklist | `deploy-ops` | `engineering:deploy-checklist` |
+| create or audit a skill | `skill-maintenance` | `anthropic-skills:skill-creator` |
+
+14. Rule 13 yields to rule 1: naming a plugin skill explicitly (`/engineering:code-review`) is an
+    explicit selection and wins. A plugin skill that has no local counterpart — Office documents,
+    scheduling, artifacts, browser work — is used normally and consumes no routing row.
 
 ## Canonical Read Order
 

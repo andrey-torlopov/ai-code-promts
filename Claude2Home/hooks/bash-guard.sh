@@ -11,8 +11,11 @@ set -u
 
 input=$(cat)
 
+# Без jq разобрать команду нечем. Деградируем в `ask`, а не в тишину: молчание здесь означало бы
+# полностью открытый Bash, потому что в settings.json стоит голый allow "Bash".
+# JSON собираем вручную — строка фиксированная, экранировать нечего.
 if ! command -v jq >/dev/null 2>&1; then
-  printf '%s\n' '{"systemMessage":"bash-guard: jq не найден, защита отключена"}'
+  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"bash-guard: jq не найден, команда не разобрана. Подтвердите вручную или установите jq (brew install jq)."}}'
   exit 0
 fi
 
