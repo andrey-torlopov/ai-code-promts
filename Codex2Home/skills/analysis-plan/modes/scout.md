@@ -9,6 +9,7 @@ Load by scope:
 - Swift repository: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
 - iOS or Xcode signals: `$CODEX_HOME/custom/KNOWLEDGE/ios/_rules.md`
 - CI files: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
+- No matching domain pack: `$CODEX_HOME/custom/KNOWLEDGE/general/_rules.md`
 
 ## References
 

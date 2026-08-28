@@ -128,11 +128,11 @@ TRACE:
 | Request signal | Skill | Mode | Knowledge packs | Deliverable |
 |---|---|---|---|---|
 | optimize Xcode/iOS/macOS build time, slow clean build, slow incremental build, Swift compile hotspots, Xcode build settings audit, SPM build overhead | `swift-build-optimization` | `benchmark/analyze/fix/verify` | `swift`, `ios` | Benchmark artifacts, optimization plan, approved fixes plus re-benchmark |
-| study, analyze, plan, RND, architecture, dependency, repo scout | `analysis-plan` | `plan/refactor/architecture/deps/scout` | selected by scope | Markdown report or plan |
-| review, PR review, diff review, find issues without edits | `analysis-plan` | `review` | language-specific patterns | Findings/report |
+| study, analyze, plan, RND, architecture, dependency, repo scout | `analysis-plan` | `plan/refactor/architecture/deps/scout` | selected by scope; `general` fallback | Markdown report or plan |
+| review, PR review, diff review, find issues without edits | `analysis-plan` | `review` | language-specific patterns; `general` fallback | Findings/report |
 | standalone research, comparison, external sources | `analysis-plan` | `research` | optional | Source-backed report |
 | design spec, brainstorm, product or technical spec | `analysis-plan` | `spec` | optional/domain-specific | Design/spec artifact |
-| implement, do from plan, apply fix, concrete edit | `implementation-from-plan` | none | language/project-specific | Changed files plus verification |
+| implement, do from plan, apply fix, concrete edit | `implementation-from-plan` | none | language/project-specific; `general` fallback | Changed files plus verification |
 | build fails, CI fails, runtime error, crash, logs, root cause | `debug-diagnose` | `build/ci/runtime/environment` | logs/build/CI/language-specific; `swift/debugging/` for Apple crash artifacts; `zig` for Zig panics and builds | Root cause plus fix plan |
 | macOS, shell, files, zsh, brew, mise, local diagnosis | `mac-local-ops` | none | `shell`, macOS/project-specific | Safe local action/report |
 | deploy, release, publish, rollout, production/staging operation | `deploy-ops` | none | `devops`, project-specific deploy docs | Gated deploy/release action |

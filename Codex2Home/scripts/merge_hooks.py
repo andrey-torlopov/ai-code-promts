@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Safely merge the Codex2Home-managed SessionStart hook into hooks.json."""
+"""Safely merge the Codex2Home-managed hook entries into hooks.json.
+
+Managed entries live under any event section (SessionStart, PreToolUse, ...). Entries not
+managed by Codex2Home are preserved untouched; managed ones are replaced wholesale.
+"""
 
 from __future__ import annotations
 
@@ -12,8 +16,11 @@ import stat
 import tempfile
 from typing import Any
 
-MANAGED_SCRIPT = "/hooks/project-context.sh"
-MANAGED_STATUS = "project-context"
+MANAGED_HANDLERS = (
+    ("/hooks/project-context.sh", "project-context"),
+    ("/hooks/rules-context.sh", "rules-context"),
+    ("/hooks/route-guard.sh", "route-guard"),
+)
 
 
 class HooksConfigError(ValueError):
@@ -38,7 +45,7 @@ def load_json(path: Path, *, missing_ok: bool) -> dict[str, Any]:
     return value
 
 
-def session_start_groups(config: dict[str, Any], path: Path) -> list[Any]:
+def event_groups(config: dict[str, Any], path: Path, event: str) -> list[Any]:
     hooks = config.get("hooks")
     if hooks is None:
         hooks = {}
@@ -46,12 +53,12 @@ def session_start_groups(config: dict[str, Any], path: Path) -> list[Any]:
     if not isinstance(hooks, dict):
         raise HooksConfigError(f"{path}: hooks must be an object")
 
-    groups = hooks.get("SessionStart")
+    groups = hooks.get(event)
     if groups is None:
         groups = []
-        hooks["SessionStart"] = groups
+        hooks[event] = groups
     if not isinstance(groups, list):
-        raise HooksConfigError(f"{path}: hooks.SessionStart must be an array")
+        raise HooksConfigError(f"{path}: hooks.{event} must be an array")
     return groups
 
 
@@ -65,13 +72,14 @@ def is_managed_group(group: Any) -> bool:
         if not isinstance(handler, dict):
             continue
         command = handler.get("command")
-        if (
-            handler.get("type") == "command"
-            and handler.get("statusMessage") == MANAGED_STATUS
-            and isinstance(command, str)
-            and MANAGED_SCRIPT in command
-        ):
-            return True
+        for managed_script, managed_status in MANAGED_HANDLERS:
+            if (
+                handler.get("type") == "command"
+                and handler.get("statusMessage") == managed_status
+                and isinstance(command, str)
+                and managed_script in command
+            ):
+                return True
     return False
 
 
@@ -81,15 +89,20 @@ def merge(
     source_path: Path,
     target_path: Path,
 ) -> dict[str, Any]:
-    source_groups = session_start_groups(source, source_path)
-    if not source_groups or not all(is_managed_group(group) for group in source_groups):
-        raise HooksConfigError(
-            f"{source_path}: expected only Codex2Home-managed SessionStart groups"
-        )
+    source_hooks = source.get("hooks")
+    if not isinstance(source_hooks, dict) or not source_hooks:
+        raise HooksConfigError(f"{source_path}: hooks must be a non-empty object")
 
-    target_groups = session_start_groups(target, target_path)
-    target_groups[:] = [group for group in target_groups if not is_managed_group(group)]
-    target_groups.extend(copy.deepcopy(source_groups))
+    for event in source_hooks:
+        source_groups = event_groups(source, source_path, event)
+        if not source_groups or not all(is_managed_group(group) for group in source_groups):
+            raise HooksConfigError(
+                f"{source_path}: expected only Codex2Home-managed {event} groups"
+            )
+
+        target_groups = event_groups(target, target_path, event)
+        target_groups[:] = [group for group in target_groups if not is_managed_group(group)]
+        target_groups.extend(copy.deepcopy(source_groups))
 
     if "description" not in target and "description" in source:
         target["description"] = source["description"]

@@ -1,16 +1,18 @@
 #!/bin/sh
-# PreToolUse gate for Write|Edit: file changes are substantial work, and substantial work
-# must start with the SKILL CONTEXT block (CORE.md contract). This hook makes the contract
-# mechanical: no block in the session transcript -> the edit is denied with instructions.
+# PreToolUse gate for file-editing tools: file changes are substantial work, and substantial
+# work must start with the SKILL CONTEXT block (CORE.md contract). This hook makes the
+# contract mechanical: no block in the session transcript -> the edit is denied (exit 2)
+# with instructions.
 #
-# Fail-open by design: any parse failure, missing transcript or missing python3 allows the
-# tool call. It blocks only on positive evidence that routing was skipped.
+# Fail-open by design: any parse failure, missing transcript, missing python3, or a
+# transcript format with no recognizable assistant lines allows the tool call. It blocks
+# only on positive evidence that routing was skipped.
 #
-# Escape hatch: CLAUDE_ROUTE_GUARD=off disables the gate.
+# Escape hatch: CODEX_ROUTE_GUARD=off disables the gate.
 
 set -eu
 
-if [ "${CLAUDE_ROUTE_GUARD:-on}" = "off" ]; then
+if [ "${CODEX_ROUTE_GUARD:-on}" = "off" ]; then
   exit 0
 fi
 
@@ -23,7 +25,7 @@ PARSED="$(printf '%s' "$IN" | python3 -c '
 import json, sys
 try:
     d = json.load(sys.stdin)
-    print(d.get("transcript_path", ""))
+    print(d.get("transcript_path") or "")
     print((d.get("tool_input") or {}).get("file_path", ""))
 except Exception:
     pass
@@ -32,9 +34,9 @@ except Exception:
 TRANSCRIPT="$(printf '%s\n' "$PARSED" | sed -n 1p)"
 FILE="$(printf '%s\n' "$PARSED" | sed -n 2p)"
 
-# Never gate scratch space or Claude-internal session data (memory, todos, transcripts).
+# Never gate scratch space.
 case "$FILE" in
-  /tmp/*|/private/tmp/*|*/.claude/projects/*) exit 0 ;;
+  /tmp/*|/private/tmp/*) exit 0 ;;
 esac
 
 if [ -z "$TRANSCRIPT" ] || [ ! -f "$TRANSCRIPT" ]; then

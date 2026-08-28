@@ -52,6 +52,8 @@ For every non-trivial task, use this read order:
 Rules:
 
 - Do not copy core rules into this file; they live in `custom/CORE.md`.
+- `custom/CORE.md` and `custom/RESOLVER.md` arrive via SessionStart injection
+  (`hooks/rules-context.sh`); when no injection is visible, read them directly.
 - Unknown or unclear tasks route through `custom/RESOLVER.md`.
 - Project `AGENTS.override.md` and `AGENTS.md` files loaded later in the Codex
   instruction chain may add or override project-specific guidance.

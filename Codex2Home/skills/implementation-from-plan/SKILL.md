@@ -18,10 +18,12 @@ Before substantial work, output the block from `$CODEX_HOME/custom/_core/skill-c
 For domain work, show loaded knowledge packs. For example:
 
 - Swift: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
+- Swift patterns on signal: `$CODEX_HOME/custom/KNOWLEDGE/swift/patterns/<category>/` (entry: `patterns/_summary-index.md`)
 - iOS: `$CODEX_HOME/custom/KNOWLEDGE/ios/_rules.md`
 - DevOps: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
 - Shell: `$CODEX_HOME/custom/KNOWLEDGE/shell/_rules.md`
 - Python: `$CODEX_HOME/custom/KNOWLEDGE/python/_rules.md`
+- Other stacks, no matching pack: `$CODEX_HOME/custom/KNOWLEDGE/general/_rules.md`
 
 ## Inputs
 
@@ -36,11 +38,12 @@ For domain work, show loaded knowledge packs. For example:
 2. Read `references/delivery-pipeline.md`.
 3. Read domain references only when the scope requires them.
 4. Inspect real files before editing.
-5. Make the smallest change that satisfies the accepted scope.
-6. Add or update tests only when requested, required by the plan or necessary for risky behavior.
-7. Run focused verification where available.
-8. Review the diff against the request and acceptance criteria.
-9. Report changed files, verification and residual risk.
+5. When writing or editing Swift code, load the matching `$CODEX_HOME/custom/KNOWLEDGE/swift/patterns/<category>/` pattern file after a concrete signal; never preload all categories.
+6. Make the smallest change that satisfies the accepted scope.
+7. Add or update tests only when requested, required by the plan or necessary for risky behavior.
+8. Run focused verification where available.
+9. Review the diff against the request and acceptance criteria.
+10. Report changed files, verification and residual risk.
 
 ## Local References
 

@@ -42,8 +42,9 @@ codex
 ```
 
 После первой установки или изменения hook откройте `/hooks` в Codex и подтвердите
-точное определение `project-context`. Codex привязывает доверие к hash определения,
-поэтому изменённый hook не выполняется до повторного review.
+точные определения управляемых hooks: `rules-context`, `project-context` и `route-guard`.
+Codex привязывает доверие к hash определения, поэтому изменённый hook не выполняется до
+повторного review.
 
 ## PROJECT.md на старте сессии
 
@@ -85,8 +86,8 @@ Codex поддерживает symlink-каталоги skills. Для изол�
 | В шаблоне | После установки | Стратегия |
 |---|---|---|
 | `AGENTS.md` | `<target>/AGENTS.md` | заменить с backup |
-| `hooks.json` | `<target>/hooks.json` | заменить только управляемый `project-context` entry, остальные сохранить |
-| `hooks/project-context.sh` | `<target>/hooks/project-context.sh` | заменить с backup |
+| `hooks.json` | `<target>/hooks.json` | заменить только управляемые Codex2Home entries (`rules-context`, `project-context`, `route-guard`), остальные сохранить |
+| `hooks/*.sh` | `<target>/hooks/<name>.sh` | заменить поставляемые hooks с backup |
 | `custom/` | `<target>/custom/` | заменить целиком с backup |
 | `skills/<name>/` | `<target>/skills/<name>/` | заменить только поставляемый skill |
 | link каждого skill | `<user-skills-dir>/<name>` | заменить только одноимённый путь с backup |
@@ -104,15 +105,17 @@ backup явно.
 ```text
 <CODEX_HOME>/
 ├── AGENTS.md                 глобальный auto-loaded anchor
-├── hooks.json                SessionStart lifecycle configuration
+├── hooks.json                lifecycle configuration (SessionStart + PreToolUse)
 ├── hooks/
-│   └── project-context.sh    безопасная загрузка PROJECT.md
+│   ├── rules-context.sh      SessionStart: детерминированная инжекция CORE.md + RESOLVER.md
+│   ├── project-context.sh    SessionStart: безопасная загрузка PROJECT.md
+│   └── route-guard.sh        PreToolUse: запрет правок файлов без блока SKILL CONTEXT
 ├── custom/
 │   ├── CORE.md               SSOT глобальных правил
 │   ├── RESOLVER.md           signal -> ровно один workflow skill
 │   ├── COMMON.md             compatibility bridge
 │   ├── _core/                validation, handoff, skill context, safety
-│   └── KNOWLEDGE/            lazy-loaded доменные packs
+│   └── KNOWLEDGE/            lazy-loaded доменные packs, включая general/ fallback
 └── skills/                   7 workflow skills + task-lab (state layer) + graphify
 ```
 
@@ -129,6 +132,13 @@ $CODEX_HOME/AGENTS.md
   -> только релевантные custom/KNOWLEDGE packs
   -> более близкие project AGENTS.md overrides
 ```
+
+`CORE.md` и `RESOLVER.md` доставляются детерминированно: hook `rules-context.sh` инжектирует
+их как developer context на `startup`, `resume`, `clear` и `compact`; прямое чтение остаётся
+fallback для установки без hooks. Hook `route-guard.sh` делает контракт механическим: правки
+файлов блокируются, пока агент не вывел блок `SKILL CONTEXT` в текущей сессии (аварийное
+отключение: `CODEX_ROUTE_GUARD=off`; при неизвестном формате транскрипта guard пропускает,
+а не блокирует).
 
 `task-lab` поставляется и версионируется вместе с системой, но остаётся state layer, а не восьмым
 workflow skill. При наличии TaskID или пути task-folder `RESOLVER.md` сначала восстанавливает
@@ -149,6 +159,8 @@ state layer и объявляет `TASK: none`.
 ```sh
 bash -n init_codex.sh
 sh -n hooks/project-context.sh
+sh -n hooks/rules-context.sh
+sh -n hooks/route-guard.sh
 python3 -m json.tool hooks.json >/dev/null
 python3 scripts/merge_hooks.py --check hooks.json /path/to/existing/hooks.json
 CODEX_HOME="$PWD" sh skills/skill-maintenance/scripts/skill-lint.sh "$PWD"

@@ -18,6 +18,10 @@ to every project on this machine.
 6. Load only `$CODEX_HOME/custom/KNOWLEDGE/<domain>` packs selected by
    `$CODEX_HOME/custom/RESOLVER.md` or the deliverable-owning workflow skill.
 
+Steps 1 and 2 are delivered deterministically: `$CODEX_HOME/hooks/rules-context.sh` injects
+CORE.md and RESOLVER.md as developer context on SessionStart, resume, clear and compaction.
+When the injection is visible, do not re-read the two files; when it is not, read them directly.
+
 ## Scope And Precedence
 
 1. This file is machine-global. It never describes one concrete project.
@@ -62,6 +66,7 @@ is absent. Task-folder lifecycle requests select `task-lab` alone.
 
 Domain-specific rules live in `$CODEX_HOME/custom/KNOWLEDGE/`.
 Skills must load only the minimum relevant knowledge packs.
+When no domain pack matches the scope, load `$CODEX_HOME/custom/KNOWLEDGE/general/_rules.md` as the fallback pack instead of proceeding with none.
 A project may add `KNOWLEDGE/` inside its own repository; project packs are loaded in addition to global ones.
 Loaded and skipped knowledge must be visible in `SKILL CONTEXT`.
 
@@ -87,3 +92,6 @@ file, read it directly.
 
 Before substantial work, output a short `SKILL CONTEXT` block.
 After substantial work, report references read, knowledge read, patterns or policies applied, verification and residual risk.
+
+Enforcement is mechanical: `$CODEX_HOME/hooks/route-guard.sh` denies file-editing tool calls
+until the block has been emitted in the session. Emit it before the first file change.

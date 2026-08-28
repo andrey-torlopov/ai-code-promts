@@ -109,6 +109,10 @@ esac
 [ -f "$SRC/hooks.json" ] || die "not a Codex Home template: missing $SRC/hooks.json"
 [ -f "$SRC/hooks/project-context.sh" ] || \
   die "not a Codex Home template: missing project-context hook"
+[ -f "$SRC/hooks/rules-context.sh" ] || \
+  die "not a Codex Home template: missing rules-context hook"
+[ -f "$SRC/hooks/route-guard.sh" ] || \
+  die "not a Codex Home template: missing route-guard hook"
 [ -f "$SRC/scripts/merge_hooks.py" ] || \
   die "not a Codex Home template: missing hooks merger"
 [ -f "$SRC/skills/skill-maintenance/scripts/skill-lint.sh" ] || \
@@ -212,19 +216,22 @@ say "installed: AGENTS.md"
 install_directory "$SRC/custom" "$TARGET/custom" "custom"
 
 run mkdir -p "$TARGET/hooks"
-backup_as "$TARGET/hooks/project-context.sh" "hooks/project-context.sh"
-remove_exact_path "$TARGET/hooks/project-context.sh"
-run cp -a "$SRC/hooks/project-context.sh" "$TARGET/hooks/project-context.sh"
-run chmod +x "$TARGET/hooks/project-context.sh"
-say "installed: hooks/project-context.sh"
+for hook_file in "$SRC"/hooks/*.sh; do
+  hook_name="$(basename "$hook_file")"
+  backup_as "$TARGET/hooks/$hook_name" "hooks/$hook_name"
+  remove_exact_path "$TARGET/hooks/$hook_name"
+  run cp -a "$hook_file" "$TARGET/hooks/$hook_name"
+  run chmod +x "$TARGET/hooks/$hook_name"
+  say "installed: hooks/$hook_name"
+done
 
 backup_as "$TARGET/hooks.json" "hooks.json"
 if [ "$DRY_RUN" -eq 1 ]; then
-  say "  would: merge Codex2Home SessionStart entry into $TARGET/hooks.json"
+  say "  would: merge Codex2Home-managed entries into $TARGET/hooks.json"
 else
   "$PYTHON_BIN" "$SRC/scripts/merge_hooks.py" "$SRC/hooks.json" "$TARGET/hooks.json"
 fi
-say "installed: hooks.json (managed SessionStart entry merged)"
+say "installed: hooks.json (managed entries merged)"
 
 run mkdir -p "$TARGET/skills"
 
