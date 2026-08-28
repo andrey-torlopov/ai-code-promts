@@ -37,7 +37,7 @@ Set `mode` to one of:
 1. Read `~/.claude/custom/RESOLVER.md` only if the mode is not already clear.
 2. Read the selected `modes/<mode>.md`.
 3. Read only the references named by that mode.
-4. Load only the minimum `~/.claude/custom/KNOWLEDGE/` packs selected by the mode and scope.
+4. Load only the minimum `~/.claude/custom/KNOWLEDGE/` packs selected by the mode and scope. When no pack matches the scope, load `~/.claude/custom/KNOWLEDGE/general/_rules.md` instead of proceeding with none.
 5. Inspect real files, diffs or sources before making claims.
 6. Separate confirmed facts from assumptions and blockers.
 7. Produce findings, plan, report or spec in the mode-specific format.

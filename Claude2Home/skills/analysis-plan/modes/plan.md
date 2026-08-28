@@ -9,6 +9,7 @@ Load by scope:
 - Swift or `.swift`: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
 - iOS or Xcode app structure: `~/.claude/custom/KNOWLEDGE/ios/_rules.md`
 - CI or pipeline scope: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
+- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
 
 ## References
 

@@ -16,5 +16,8 @@ Load knowledge only when the selected skill or scope needs it.
 | `.sh`, `.zshrc`, `mise`, `brew`, shell errors | `shell` |
 | `.py`, `pyproject.toml`, `requirements.txt` | `python` |
 | Markdown docs, specs, plans | selected skill references first; add docs pack only if created later |
+| Anything else: no row above matches the files or scope | `general` |
+
+`general` is the fallback pack, never an addition: when a specific row matches, load that pack and list `general` under `SKIPPED`.
 
 Always show loaded and skipped packs in `SKILL CONTEXT`.

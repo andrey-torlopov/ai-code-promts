@@ -11,6 +11,7 @@ Load by scope:
 - CI or deploy config review: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
 - Shell scripts: `~/.claude/custom/KNOWLEDGE/shell/_rules.md`
 - Python: `~/.claude/custom/KNOWLEDGE/python/_rules.md`
+- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
 
 ## References
 

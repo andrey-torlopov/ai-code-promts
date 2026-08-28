@@ -19,11 +19,12 @@ No step is required for: explaining what was done and why; pointing at where som
 quoting or summarising an existing file; reading the subject; running `audit_task.py`,
 `restore_task.py` or a search. These produce a reply and nothing else.
 
-Two edits are exempt, and there are no other exemptions:
+Three edits are exempt, and there are no other exemptions:
 
 | Exempt | Why |
 |---|---|
 | scratch written into `Notes/` | it is working material, not task state; nothing durable depends on it |
+| raw output captured into `Logs/` | it is what a command printed, not a claim about the task; the claim is extracted into `Knowledge/` |
 | the drift record in `Context/90-session-restore.md` on resume | it states what the world looks like now, not what was done to it |
 
 Failure modes this rule is written against:

@@ -9,7 +9,7 @@
 - Prefer value types (struct, enum) over reference types (class) unless clearly necessary
 - we use enum only if we plan to check transfers. Otherwise we use struct
 - Use `async/await` instead of completion handlers
-- Use Modern concurrency instead of NSLog, Semaphore and other mechanisms
+- Prefer modern concurrency (`actor`, `async/await`, `AsyncStream`) over `NSLock`, `DispatchSemaphore` and other manual synchronization primitives where possible
 - Use structured concurrency (TaskGroup, async let) instead of unstructured Task {}
 - Mark types as `Sendable` where possible
 - Use `@MainActor` for UI code, not `DispatchQueue.main`
@@ -72,6 +72,7 @@ final class DataManager: Sendable {
 - `class` where `struct` ​​is sufficient
 - completion handlers instead of async/await
 - `DispatchQueue.main` instead of `@MainActor`
+- `NSLock` / `DispatchSemaphore` where an `actor` or structured concurrency fits
 - `Task {}` instead of structured concurrency (TaskGroup, async let)
 - `Task.detached()` without explicit need
 - Force unwrap (`!`) outside IBOutlet/tests

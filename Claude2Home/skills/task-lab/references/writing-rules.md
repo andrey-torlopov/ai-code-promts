@@ -39,8 +39,8 @@ number has one authoritative home; other files link to it or restate it explicit
 
 - Relative and resolvable.
 - Link an entity on first mention; later use its ID.
-- Never link a durable artifact into `Inbox/`; a link into `Notes/` means the claim should have
-  been extracted into `Knowledge/` already.
+- Never link a durable artifact into `Inbox/`; a link into `Notes/` or `Logs/` means the claim
+  should have been extracted into `Knowledge/` already. Quote the log line, do not link the file.
 - Never link from `Results/` outside `Results/`; exported deliverables must stand alone.
 - Link both directions when one claim supersedes or refutes another.
 

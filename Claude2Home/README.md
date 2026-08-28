@@ -38,7 +38,9 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 ├── settings.json             model, permissions, hooks
 ├── hooks/
 │   ├── bash-guard.sh         PreToolUse: deny/ask gate for destructive shell commands
+│   ├── route-guard.sh        PreToolUse: denies Write/Edit until SKILL CONTEXT was emitted
 │   ├── skill-lint.sh         PostToolUse: validates instruction files
+│   ├── rules-context.sh      SessionStart: injects CORE.md + RESOLVER.md deterministically
 │   ├── project-context.sh    SessionStart: injects PROJECT.md when the repository has one
 │   └── skill-context-lint.sh Stop: every active skill still requires SKILL CONTEXT + TRACE
 ├── skills/                   7 workflow skills + task-lab (state layer) + graphify,
@@ -50,14 +52,18 @@ Not copied at all: this `README.md` and `init_claude.sh`.
     ├── _core/                skill-context, handoff, validation, destructive-action policy
     │   └── active-skills.txt registry read by all three linters
     └── KNOWLEDGE/            lazy-loaded domain packs (swift, ios, devops, shell, python, zig)
+                              plus general/ - the fallback pack when no domain matches
 ```
 
 ## How It Gets Loaded
 
 1. Claude Code always loads `~/.claude/CLAUDE.md`.
-2. Its `# AI Runtime` section sends the agent to `~/.claude/custom/CORE.md`, then `RESOLVER.md`.
+2. The `SessionStart` hook `rules-context.sh` injects `CORE.md` and `RESOLVER.md` into context
+   deterministically (also after resume, clear and compaction); the `# AI Runtime` section in
+   `CLAUDE.md` stays as the fallback pointer for installs without the hook.
 3. `RESOLVER.md` picks exactly one skill from `~/.claude/skills/`.
-4. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names.
+4. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names; when none match
+   the scope, the `general/` fallback pack.
 5. When the repository provides `PROJECT.md` (or `.claude/PROJECT.md`), the `SessionStart`
    hook injects it; without it nothing extra is read.
 6. When the request carries a TaskID or points into a task folder and a `task-lab` skill is
@@ -65,8 +71,11 @@ Not copied at all: this `README.md` and `init_claude.sh`.
    restored before the subject, and the selected skill's deliverable is recorded there.
    Without that skill installed, routing is unchanged.
 
-Nothing outside step 1 is read eagerly, so the token cost of the whole system
-is one file until a task actually needs routing.
+The fixed per-session cost is `CLAUDE.md` plus the injected `CORE.md` + `RESOLVER.md`
+(about 16 KB); skills, references and `KNOWLEDGE/` packs stay lazy. The `route-guard` hook
+enforces the contract mechanically: Write/Edit tool calls are denied until the agent has
+emitted the `SKILL CONTEXT` block in the session (escape hatch: `CLAUDE_ROUTE_GUARD=off`;
+scratch space and `~/.claude/projects/` are never gated).
 
 ## Path Rules
 

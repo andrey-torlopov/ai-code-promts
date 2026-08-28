@@ -3,8 +3,9 @@
 
 There is exactly one layout: root-level ``Steps/`` with ``Step-XX.md`` /
 ``Step-XX-result.md`` pairs, root ``steps.md`` history, ``Context/`` (scripts in
-``Context/tools/``), ``Knowledge/``, ``Results/``, ``Notes/`` and optional
-``Inbox/``. Folders that carry another shape (``Process/steps/``,
+``Context/tools/``), ``Knowledge/``, ``Results/``, ``Notes/``, root ``Logs/`` and
+optional ``Inbox/``. ``Logs/`` is a sibling of ``Notes/`` at the root, never a
+subfolder of it. Folders that carry another shape (``Process/steps/``,
 ``Steps/_next.md``) are refused, not overlaid.
 """
 
@@ -35,7 +36,7 @@ STANDARD_FILES = (
     "Results/README.md",
 )
 
-STANDARD_DIRS = ("Steps", "Notes", "Context/tools")
+STANDARD_DIRS = ("Steps", "Notes", "Logs", "Context/tools")
 
 UNSUPPORTED_MARKERS = (
     ("Process/steps", "Process/steps/"),

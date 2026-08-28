@@ -65,8 +65,12 @@ def main() -> int:
             "Results/README.md", "Inbox/README.md",
         ):
             require((standard / relative).is_file(), f"canonical scaffold missed {relative}")
-        for relative in ("Steps", "Notes", "Context/tools"):
+        for relative in ("Steps", "Notes", "Logs", "Context/tools"):
             require((standard / relative).is_dir(), f"canonical scaffold missed {relative}/")
+        require(
+            not (standard / "Notes" / "Logs").exists(),
+            "Logs/ must be a root sibling of Notes/, not nested inside it",
+        )
         for relative in ("Process", "Tools", "Traces", "Hypotheses", "timeline.md",
                          "Steps/README.md", "Steps/_next.md", "Context/10-subject.md",
                          "Context/20-map.md"):
@@ -168,7 +172,8 @@ def main() -> int:
         require(paired_green.returncode == 0, "completed canonical pair must pass", paired_green.stdout)
 
         # An edit to a durable file after the last step closed must be reported;
-        # scratch in Notes/ and the projections synchronised while closing must not.
+        # scratch in Notes/, raw output in Logs/, and the projections synchronised
+        # while closing the step must not be.
         late = time.time() + 40 * 60
         fact_path = standard / "Knowledge" / "F-01-problem-and-targets.md"
         os.utime(fact_path, (late, late))
@@ -181,16 +186,46 @@ def main() -> int:
         os.utime(fact_path, None)
         note = standard / "Notes" / "n1.md"
         note.write_text("черновая заметка\n", encoding="utf-8")
+        raw_log = standard / "Logs" / "run.log"
+        raw_log.write_text("2026-01-02 10:00 старт\n", encoding="utf-8")
         os.utime(note, (late, late))
+        os.utime(raw_log, (late, late))
         for projection in ("README.md", "index.md", "steps.md", "Context/90-session-restore.md"):
             os.utime(standard / projection, (late, late))
         exempt_audit = run("audit_task.py", "123", cwd=parent)
         require(
             "[edit-outside-step]" not in exempt_audit.stdout,
-            "Notes/ and the closing projections are exempt from the every-edit-is-a-step check",
+            "Notes/, Logs/ and the closing projections are exempt from the every-edit-is-a-step check",
             exempt_audit.stdout,
         )
+        require(
+            "[observation-misplaced]" not in exempt_audit.stdout,
+            "a raw .log in root Logs/ is correctly placed",
+            exempt_audit.stdout,
+        )
+
+        # Logs/ is a sibling of Notes/, not its content: the same file inside Notes/ is misplaced.
+        raw_log.rename(standard / "Notes" / "run.log")
+        misplaced_log = run("audit_task.py", "123", cwd=parent)
+        require(
+            "[observation-misplaced]" in misplaced_log.stdout,
+            "a raw .log inside Notes/ must be reported; it belongs in root Logs/",
+            misplaced_log.stdout,
+        )
+        (standard / "Notes" / "run.log").unlink()
         note.unlink()
+
+        nested_logs = standard / "Notes" / "Logs"
+        nested_logs.mkdir()
+        (nested_logs / "run.log").write_text("вложенный лог\n", encoding="utf-8")
+        nested_audit = run("audit_task.py", "123", cwd=parent)
+        require(
+            nested_audit.returncode == 1 and "[logs-nested]" in nested_audit.stdout,
+            "Logs/ nested inside another folder must be an error, not a silent second location",
+            nested_audit.stdout,
+        )
+        (nested_logs / "run.log").unlink()
+        nested_logs.rmdir()
 
         orphan = standard / "Steps" / "Step-02-result.md"
         orphan.write_text("# Шаг 02 — результат: orphan\n", encoding="utf-8")
@@ -254,6 +289,7 @@ def main() -> int:
         require(not (second / "APP-001").exists(), "existing TaskID folder was nested instead of reused")
         for relative in ("Traces", "Tools", "Process"):
             require(not (second / relative).exists(), f"perf mode created {relative}; structure must not depend on mode")
+        require((second / "Logs").is_dir(), "perf mode must create root Logs/ like every other mode")
         fill_standard(second)
         second_green = run("audit_task.py", "APP-001", cwd=parent)
         require(second_green.returncode == 0, "filled perf-mode scaffold must pass", second_green.stdout)

@@ -15,9 +15,10 @@ Keep `general` unless `bug`, `perf`, or `plan` materially improves the gate.
 ## 3. Use the canonical structure
 
 Every new task uses `README.md`, `index.md`, root `steps.md`, `Steps/`, `Context/` (with
-`Context/tools/`), `Knowledge/`, `Results/` and `Notes/`. Do not create `Process/`, `timeline.md`,
-`Steps/README.md`, `_next.md`, root `Tools/` or root `Traces/`. For noisy measurements add
-`Notes/runs.md` and narrowly required context files without changing the step contract.
+`Context/tools/`), `Knowledge/`, `Results/`, `Notes/` and root `Logs/`. `Logs/` is created beside
+`Notes/`, never inside it. Do not create `Process/`, `timeline.md`, `Steps/README.md`, `_next.md`,
+root `Tools/` or root `Traces/`. For noisy measurements add `Notes/runs.md` and narrowly required
+context files without changing the step contract.
 
 ## 4. Resolve TaskID and scaffold
 
@@ -47,8 +48,9 @@ create the folder, leave `Steps/` empty. Generated `{{FILL_*}}` markers are inte
 8. `README.md` and `index.md`: the same waiting state for different audiences.
 
 If input material exists, pass `--with-inbox`, keep only inputs there, and extract durable
-claims into `Knowledge/` without links back to `Inbox/`. Raw material produced while working —
-briefs, logs, observation journals — goes to `Notes/`, which every task has regardless of mode.
+claims into `Knowledge/` without links back to `Inbox/`. Material produced while working splits by
+producer: briefs and observation journals go to `Notes/`, machine-captured output (`.log`,
+`.trace`, `.xcresult`, `.csv`, `.har`) goes to root `Logs/`. Every task has both regardless of mode.
 
 ## 6. Verify
 

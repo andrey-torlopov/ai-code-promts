@@ -29,7 +29,8 @@ rules that nobody remembers.
 │   └── Step-XX-result.md
 ├── Results/
 │   └── README.md            subfolders allowed for sets of like deliverables
-├── Notes/                   scratch material; not a source of truth
+├── Notes/                   scratch prose and journals; not a source of truth
+├── Logs/                    raw captured output; sibling of Notes/, never nested in it
 └── Inbox/                   optional disposable input
 ```
 
@@ -45,7 +46,8 @@ task is waiting for a user request, not that its structure is broken.
 | `Steps/_next.md`, `Steps/README.md` | root `steps.md` holds the pointer and the history |
 | `timeline.md` | root `steps.md` |
 | root `Tools/` | `Context/tools/` |
-| root `Traces/` | `Notes/` |
+| root `Traces/` | root `Logs/` for the raw output, `Notes/` for the journal that reads it |
+| `Notes/Logs/`, `Logs/` under any other folder | root `Logs/`, a sibling of `Notes/` |
 | `Hypotheses/`, `Knowledge/Closed/`, `Archive/` | `Knowledge/` with an explicit status in the file |
 
 A folder that already has one of these shapes is not read as if it were canonical and not migrated
@@ -68,22 +70,28 @@ Add a narrowly required file when the work needs it, without changing the step c
 - Agent route: `index.md` → `Context/00-START-HERE.md` → `steps.md` → the unmatched plan, if any.
 - `steps.md` is a compact newest-first history and current pointer, not the detailed plan or log.
 
-## Inbox and Notes boundary
+## Inbox, Notes and Logs boundary
 
 `Inbox/` may contain stale, duplicated, or contradictory input and is allowed to disappear.
-`Notes/` holds scratch produced while working — a pasted brief, a raw log, an observation journal —
-and is disposable for the same reason.
+`Notes/` holds scratch produced while working — a pasted brief, a working sketch, an observation
+journal — and is disposable for the same reason. `Logs/` holds the raw output that work captured:
+`.log`, `.trace`, `.logarchive`, `.xcresult`, `.csv`, `.har`, `.nettrace`, command dumps.
 
-Read either only to discover candidate claims, recheck them against the real subject, write durable
-claims and evidence into `Knowledge/`, and never link into `Inbox/` from a durable artifact. A
-durable file linking into `Notes/` is a warning: the note has outlived its scratch status and its
-claim belongs in `Knowledge/`. Delete `Inbox/` only with user authorization, after the audit
-confirms no dependency.
+`Logs/` and `Notes/` are two root folders at the same level. Neither contains the other: a raw
+`.log` in `Notes/` is reported as `observation-misplaced`, and a hand-written journal belongs in
+`Notes/runs.md` even when it summarises files in `Logs/`. The split is by producer — machine output
+against human prose — not by topic.
+
+Read any of the three only to discover candidate claims, recheck them against the real subject,
+write durable claims and evidence into `Knowledge/`, and never link into `Inbox/` from a durable
+artifact. A durable file linking into `Notes/` or `Logs/` is a warning: the material has outlived
+its scratch status and its claim belongs in `Knowledge/`, quoted rather than linked. Delete
+`Inbox/` only with user authorization, after the audit confirms no dependency.
 
 ## Results boundary
 
 Treat `Results/` as an export that may be copied alone. It must not require Knowledge IDs,
-task-local relative paths outside `Results/`, Inbox drafts, notes, or chat context. Duplicate the
+task-local relative paths outside `Results/`, Inbox drafts, notes, logs, or chat context. Duplicate the
 minimum necessary explanation inside the result.
 
 ## Projection consistency

@@ -13,7 +13,7 @@
 [ ] Results status matches actual payloads
 [ ] every durable file changed in this turn is covered by the open step, not edited on the side
 [ ] no durable Markdown link targets Inbox/
-[ ] task-local scripts are in Context/tools/; raw material is in Notes/
+[ ] task-local scripts are in Context/tools/; raw output is in Logs/; scratch prose is in Notes/
 [ ] no folder outside the canonical set appeared
 [ ] audit_task.py exits 0
 [ ] restore_task.py reports no open step or the sole request actually in progress

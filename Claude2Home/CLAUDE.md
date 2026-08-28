@@ -45,6 +45,7 @@ Read order for any non-trivial task:
 Rules:
 
 - Do not copy core rules into this file; they live in `CORE.md`.
+- `CORE.md` and `RESOLVER.md` arrive via SessionStart injection (`hooks/rules-context.sh`); when no injection is visible, read them directly.
 - Unknown or unclear tasks route through `RESOLVER.md`.
 - A project's own `CLAUDE.md`, `.claude/settings.json` and `.claude/skills/` override the global set.
 - A project may add `PROJECT.md` (or `.claude/PROJECT.md`) with facts and project rules;

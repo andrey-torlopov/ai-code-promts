@@ -13,6 +13,10 @@ to every project on this machine.
 4. Load only references, scripts or assets named by that selected skill.
 5. Load only `~/.claude/custom/KNOWLEDGE/<domain>` packs selected by `~/.claude/custom/RESOLVER.md` or the selected skill.
 
+Steps 1 and 2 are delivered deterministically: `~/.claude/hooks/rules-context.sh` injects
+CORE.md and RESOLVER.md into context on SessionStart, resume, clear and compaction. When the
+injection is visible, do not re-read the two files; when it is not, read them directly.
+
 ## Scope And Precedence
 
 1. This file is machine-global. It never describes one concrete project.
@@ -52,6 +56,7 @@ own, and the selected skill must still complete its work when the layer is absen
 
 Domain-specific rules live in `~/.claude/custom/KNOWLEDGE/`.
 Skills must load only the minimum relevant knowledge packs.
+When no domain pack matches the scope, load `~/.claude/custom/KNOWLEDGE/general/_rules.md` as the fallback pack instead of proceeding with none.
 A project may add `KNOWLEDGE/` inside its own repository; project packs are loaded in addition to global ones.
 Loaded and skipped knowledge must be visible in `SKILL CONTEXT`.
 
@@ -76,3 +81,6 @@ a gate. When no injection is visible and the repository has the file, read it di
 
 Before substantial work, output a short `SKILL CONTEXT` block.
 After substantial work, report references read, knowledge read, patterns or policies applied, verification and residual risk.
+
+Enforcement is mechanical: `~/.claude/hooks/route-guard.sh` denies Write and Edit tool calls
+until the block has been emitted in the session. Emit it before the first file change.

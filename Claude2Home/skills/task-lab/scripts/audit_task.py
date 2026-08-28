@@ -46,21 +46,24 @@ SCRIPT_EXT = {".py", ".sh", ".bash", ".zsh", ".rb", ".js", ".mjs", ".pl", ".swif
 OBSERVATION_EXT = {".trace", ".logarchive", ".xcresult", ".log", ".csv", ".har", ".nettrace"}
 IGNORED_NAMES = {".DS_Store", ".gitignore", ".gitkeep", ".markdownlint.yaml"}
 
-CANONICAL_DIRS = ("Context", "Knowledge", "Steps", "Results", "Notes", "Inbox")
+CANONICAL_DIRS = ("Context", "Knowledge", "Steps", "Results", "Notes", "Logs", "Inbox")
 # Synchronised while a step is being closed, so they are legitimately newer than its result.
 PROJECTION_FILES = ("README.md", "index.md", "steps.md", "Context/90-session-restore.md")
+# Two root siblings, never nested: Notes/ is human scratch, Logs/ is machine output.
+SCRATCH_DIRS = ("Notes", "Logs")
 # Scratch and inbound material are exempt from the "every edit is a step" rule.
-UNTRACKED_DIRS = ("Notes", "Inbox")
+UNTRACKED_DIRS = SCRATCH_DIRS + ("Inbox",)
 EDIT_TOLERANCE_SECONDS = 15 * 60
 SCRIPT_DIRS = (("Context", "tools"), ("Inbox",), ("Notes",))
-MATERIAL_DIRS = ("Notes", "Inbox")
+# Raw captured output belongs in root Logs/; Inbox/ may carry it as inbound material.
+OBSERVATION_DIRS = ("Logs", "Inbox")
 UNSUPPORTED_MARKERS = (
     ("Process/steps", "Process/steps/", "шаги живут в Steps/ как пары Step-XX.md + Step-XX-result.md"),
     ("Steps/_next.md", "Steps/_next.md", "текущий шаг — это Step-XX.md без парного результата"),
 )
 RETIRED_DIRS = (
     ("Tools", "скрипты задачи живут в Context/tools/"),
-    ("Traces", "сырые наблюдения живут в Notes/"),
+    ("Traces", "сырой вывод живёт в корневой Logs/, журналы наблюдений — в Notes/"),
     ("Hypotheses", "гипотезы живут в Knowledge/ как H-NN-*.md"),
 )
 
@@ -246,6 +249,17 @@ class Audit:
         for relative, hint in RETIRED_DIRS:
             if (self.root / relative).is_dir():
                 self.add(WARN, "retired-dir", relative + "/", f"папки нет в канонической структуре: {hint}")
+        for nested in sorted(self.root.rglob("Logs")):
+            if not nested.is_dir() or nested == self.root / "Logs":
+                continue
+            if any(part in PRUNE_DIRS for part in nested.relative_to(self.root).parts):
+                continue
+            self.add(
+                ERROR,
+                "logs-nested",
+                nested,
+                "Logs/ — корневая папка на одном уровне с Notes/; вложенную копию скилл не читает",
+            )
         known = set(CANONICAL_DIRS) | {name for name, _ in RETIRED_DIRS} | {"Process"}
         for entry in sorted(self.root.iterdir()):
             if not entry.is_dir() or entry.name.startswith(".") or entry.name in known:
@@ -261,7 +275,7 @@ class Audit:
     def check_placeholders(self) -> None:
         for path in self.md:
             parts = path.relative_to(self.root).parts
-            if "Inbox" in parts or "Notes" in parts:
+            if "Inbox" in parts or any(name in parts for name in SCRATCH_DIRS):
                 continue
             hits: list[str] = []
             text = read(path)
@@ -463,8 +477,8 @@ class Audit:
             relative_parts = path.relative_to(self.root).parts
             top = relative_parts[0] if relative_parts else ""
             exported_result = top == "Results"
-            # Notes/ is scratch material: its own links are advisory, not contractual.
-            level = WARN if top == "Notes" else ERROR
+            # Notes/ and Logs/ are scratch material: their own links are advisory, not contractual.
+            level = WARN if top in SCRATCH_DIRS else ERROR
             for _, line in strip_fences(read(path)):
                 inbox_link_found = False
                 result_link_found = False
@@ -481,8 +495,10 @@ class Audit:
                     if inside.parts and inside.parts[0] == "Inbox" and top != "Inbox":
                         self.add(ERROR, "inbox-link", path, f"долговечный файл зависит от Inbox: {target}")
                         inbox_link_found = True
-                    if inside.parts and inside.parts[0] == "Notes" and top not in ("Notes", "Inbox"):
+                    if inside.parts and inside.parts[0] == "Notes" and top not in UNTRACKED_DIRS:
                         self.add(WARN, "notes-link", path, f"долговечный файл зависит от черновика: {target}")
+                    if inside.parts and inside.parts[0] == "Logs" and top not in UNTRACKED_DIRS:
+                        self.add(WARN, "logs-link", path, f"долговечный файл зависит от сырого лога: {target}")
                     if exported_result and inside.parts and inside.parts[0] != "Results":
                         self.add(ERROR, "result-external-link", path, f"Results ссылается наружу: {target}")
                         result_link_found = True
@@ -537,8 +553,8 @@ class Audit:
                     "скрипт задачи должен быть в Context/tools/; входной код — в Inbox/",
                 )
                 continue
-            if suffix in OBSERVATION_EXT and top not in MATERIAL_DIRS and relative.parts[:2] != ("Context", "tools"):
-                self.add(WARN, "observation-misplaced", path, "сырое наблюдение вне Notes/")
+            if suffix in OBSERVATION_EXT and top not in OBSERVATION_DIRS and relative.parts[:2] != ("Context", "tools"):
+                self.add(WARN, "observation-misplaced", path, "сырой машинный вывод вне корневой Logs/")
 
     def check_orders(self) -> None:
         registries = (

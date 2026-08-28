@@ -76,15 +76,21 @@ gates, never the folders.
 ├── Knowledge/      F-NN facts and H-NN hypotheses; one claim per file + README registry
 ├── Steps/          Step-XX.md is a request plan; Step-XX-result.md closes it
 ├── Results/        self-contained deliverables; subfolders allowed
-├── Notes/          scratch material: raw briefs, journals, logs; never a source of truth
+├── Notes/          scratch prose: pasted briefs and observation journals; never a source of truth
+├── Logs/           raw captured output: logs, traces, profiles, measurement dumps
 └── Inbox/          optional disposable input; never a link target from durable artifacts
 ```
+
+`Logs/` sits at the root, beside `Notes/` — it is never nested inside another folder. Machine-made
+output (`.log`, `.trace`, `.logarchive`, `.xcresult`, `.csv`, `.har`, `.nettrace`) goes to `Logs/`;
+the hand-written journal that interprets it stays in `Notes/runs.md`. Both are disposable and
+neither is a source of truth.
 
 `Process/`, `Steps/_next.md`, `timeline.md`, `Steps/README.md`, root `Tools/`, root `Traces/`, and a
 separate `Hypotheses/` are not part of this structure and are never created. Put experimental change
 tracking in `Context/change-log.md`, acceptance criteria in
-`Context/verification-and-acceptance.md`, observation journals and raw logs in `Notes/`, and every
-calculation script in `Context/tools/`.
+`Context/verification-and-acceptance.md`, observation journals in `Notes/`, raw captured output in
+`Logs/`, and every calculation script in `Context/tools/`.
 
 A folder built on another shape is not silently read and not silently migrated: the scripts stop and
 say so. Converting one is a separate, explicitly requested task, because it rewrites history and
@@ -104,7 +110,7 @@ The same state appears in several projections for different readers. Keep them c
 - `Context/90-session-restore.md` carries the current drift assumptions;
 - `Knowledge/README.md` matches the entity files and their statuses;
 - `Results/` is usable after the task folder is gone: no links to `Knowledge/`, `Steps/`,
-  `Context/`, `Notes/`, or `Inbox/`.
+  `Context/`, `Notes/`, `Logs/`, or `Inbox/`.
 
 The state claim lives in the state block of each projection (`## Состояние` / `## Текущий шаг`);
 prose that merely explains the waiting rule is not a status claim and is not kept in sync.
@@ -122,16 +128,22 @@ prose that merely explains the waiting rule is not a status claim and is not kep
 Load [`references/entities.md`](references/entities.md) before creating or changing an entity.
 Load [`references/gates.md`](references/gates.md) before defining a measurement or acceptance gate.
 
-## Inbox, notes, and results boundary
+## Inbox, notes, logs, and results boundary
 
 `Inbox/` is staging, not evidence. Extract each durable claim into `Knowledge/` and cite the real
 subject, command, log, or revision there. Do not create Markdown links from `Knowledge/`, `Steps/`,
 `Context/`, or `Results/` into `Inbox/`. Before removing inbox material, run the audit and verify
 that no durable file depends on it.
 
-`Notes/` is scratch produced during the work — a pasted brief, an observation journal, a raw log.
-It is disposable for the same reason: durable claims are extracted into `Knowledge/`, and a durable
-file that depends on a note is a finding, not a design.
+`Notes/` is scratch produced during the work — a pasted brief, an observation journal, a working
+sketch. It is disposable for the same reason: durable claims are extracted into `Knowledge/`, and a
+durable file that depends on a note is a finding, not a design.
+
+`Logs/` is the raw output the work captured — a command log, a profiler trace, an exported table.
+It is a sibling of `Notes/`, not a subfolder of it and not of anything else, and it is disposable
+under the same rule: a durable file that depends on a log means the number or the line it needs was
+never extracted into `Knowledge/`. Cite the log's content as evidence in the fact; do not link the
+file.
 
 `Results/` is an export boundary. Repeat enough context inside the result for it to stand alone.
 Internal IDs may appear as provenance text only when the user wants them; they must not be required
@@ -187,8 +199,9 @@ request whose whole output is the reply does not.**
 | where something lives, what a file says, what a number means | no |
 | reading the subject, running audit/restore, searching | no |
 
-Exactly two edits are exempt, and no others: scratch dropped into `Notes/`, and the drift record
-written into `Context/90-session-restore.md` when a session resumes.
+Exactly three edits are exempt, and no others: scratch dropped into `Notes/`, raw output captured
+into `Logs/`, and the drift record written into `Context/90-session-restore.md` when a session
+resumes.
 
 The rule starts once the folder exists. Scaffolding it and filling the base context is the
 folder-creation request itself, not a step; `Step-01.md` opens when that same request also carries
@@ -235,25 +248,25 @@ python3 <skill>/scripts/self_test.py
 
 - `resolve_task.py` resolves an explicit path or one exact TaskID match and rejects ambiguity.
 - `init_task.py` needs only TaskID, defaults to the current workspace and `general`, and creates the
-  same structure for every mode: root `Steps/` and `steps.md`, `Notes/`, `Context/tools/`, and no
-  `Process/`, `Tools/`, or `Traces/`.
+  same structure for every mode: root `Steps/` and `steps.md`, `Notes/`, root `Logs/`,
+  `Context/tools/`, and no `Process/`, `Tools/`, or `Traces/`.
 - `restore_task.py` resolves TaskID, emits a bounded brief, and refuses a folder built on another
   shape instead of half-reading it.
 - `audit_task.py` resolves TaskID and checks structure, entry-point agreement, entity evidence,
-  broken links, inbox and notes isolation, result self-containment, unresolved template markers,
+  broken links, inbox/notes/logs isolation, result self-containment, unresolved template markers,
   registry order, artifact placement, and durable files edited while no step was open
   (`edit-outside-step`, a warning: it reads modification times, so a checkout or a copy can move
   them — treat it as a question, not a verdict).
 - `self_test.py` verifies numeric and prefixed TaskIDs, ambiguous-ID rejection, the exact scaffold
   file set, mode-independence of the structure, request-bound plan/result pairs, `Context/tools/`
-  placement, the edit-outside-step warning and its two exemptions, refusal of non-canonical folders,
-  descending history, and Inbox/Results boundary guards.
+  and root-`Logs/` placement, the edit-outside-step warning and its three exemptions, refusal of
+  non-canonical folders, descending history, and Inbox/Results boundary guards.
 
 ## Local References
 
 | File | Load when |
 |---|---|
-| `references/layouts.md` | folder topology, artifact placement, Inbox/Notes/Results rules |
+| `references/layouts.md` | folder topology, artifact placement, Inbox/Notes/Logs/Results rules |
 | `references/bootstrap.md` | creating a task |
 | `references/resume.md` | resuming a task |
 | `references/context-recovery.md` | recovery budget and projection consistency |

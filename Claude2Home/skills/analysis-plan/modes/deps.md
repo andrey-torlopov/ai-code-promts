@@ -8,6 +8,7 @@ Load by scope:
 
 - Swift dependency files: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
 - CI or release impact: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
+- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
 
 ## References
 
