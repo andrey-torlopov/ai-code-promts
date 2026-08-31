@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -276,57 +277,66 @@ class Brief:
         self.head("ГИПОТЕЗЫ")
         self.capped(self.entity_list("Knowledge", "H", True), "нет")
 
-    def kb_sources(self) -> list[tuple[str, str]]:
-        """Rows of the env.md sources table as (path, categories)."""
-        text = read(self.root / "env.md")
-        if not text:
-            return []
-        sources: list[tuple[str, str]] = []
-        for cells in table_rows(section(text, r"источник|source|знан")):
-            if len(cells) < 2 or cells[0].lower() in ("тип", "type"):
-                continue
-            path = cells[1].strip().strip("`")
-            categories = cells[2].strip() if len(cells) > 2 else "—"
-            if path and path != "—":
-                sources.append((path, categories))
-        return sources
+    def kb_pointer(self) -> str | None:
+        """The external_knowledge path from root env.json, or None when unset."""
+        raw = read(self.root / "env.json")
+        if not raw:
+            return None
+        try:
+            data = json.loads(raw)
+        except ValueError:
+            return None
+        value = data.get("external_knowledge", data.get("external_knoledge", "")) if isinstance(data, dict) else ""
+        return value.strip() if isinstance(value, str) and value.strip() else None
 
-    def registry_entries(self, registry: Path, prefix: str) -> list[str]:
-        """Category cell of every `| F-NN | категория | …` row in the base registry."""
+    def registry_entries(self, text: str, prefix: str) -> list[str]:
+        """Tags cell of every `| [F-NN](file.md) | tags | …` registry row."""
         return [
             match.group(1).strip()
             for match in re.finditer(
-                rf"^\|\s*`?{prefix}-\d+`?\s*\|([^|]*)\|", read(registry), re.MULTILINE
+                rf"^\|\s*\[?`?{prefix}-\d+[^|]*\|([^|]*)\|", text, re.MULTILINE
             )
         ]
 
     def s_kb(self) -> None:
-        sources = self.kb_sources()
-        if not sources:
+        raw_path = self.kb_pointer()
+        if raw_path is None:
             return
-        self.head("ВНЕШНЯЯ БАЗА ЗНАНИЙ  (env.md)")
-        for raw_path, categories in sources:
-            base = Path(raw_path).expanduser()
-            if not base.is_absolute():
-                base = (self.root / raw_path).resolve()
-            if not base.is_dir():
-                self.line(f"  {raw_path} — НЕДОСТУПНА: каталога нет; проверить env.md")
-                continue
-            registry = base / "README.md"
-            if not registry.is_file():
-                self.line(f"  {raw_path} — каталог есть, но реестра README.md нет")
-                continue
-            facts = self.registry_entries(registry, "F")
-            hypotheses = self.registry_entries(registry, "H")
-            self.line(f"  {base}")
-            self.line(f"  фактов {len(facts)} · гипотез {len(hypotheses)}")
-            wanted = [part.strip().lower() for part in categories.split(",") if part.strip()]
-            if wanted and categories.strip() != "—":
-                relevant_f = sum(1 for cat in facts if cat.lower() in wanted)
-                relevant_h = sum(1 for cat in hypotheses if cat.lower() in wanted)
-                self.line(
-                    f"  по категориям задачи ({categories}): фактов {relevant_f}, гипотез {relevant_h}"
-                )
+        self.head("ВНЕШНЯЯ БАЗА ЗНАНИЙ  (env.json)")
+        base = Path(raw_path).expanduser()
+        if not base.is_absolute():
+            base = (self.root / raw_path).resolve()
+        if not base.is_dir():
+            self.line(f"  {raw_path} — НЕДОСТУПНА: каталога нет; проверить env.json")
+            return
+        registry = base / "README.md"
+        if not registry.is_file():
+            self.line(f"  {raw_path} — каталог есть, но реестра README.md нет")
+            return
+        text = read(registry)
+        facts = self.registry_entries(text, "F")
+        hypotheses = self.registry_entries(text, "H")
+        self.line(f"  {base}")
+        self.line(f"  фактов {len(facts)} · гипотез {len(hypotheses)}")
+        tags: dict[str, int] = {}
+        for cell in facts + hypotheses:
+            for tag in cell.split(","):
+                tag = tag.strip()
+                if tag and tag != "—":
+                    tags[tag] = tags.get(tag, 0) + 1
+        if tags:
+            ranked = sorted(tags.items(), key=lambda item: (-item[1], item[0]))
+            self.line("  теги: " + " · ".join(f"{name} {count}" for name, count in ranked[: self.limit]))
+        legacy = [
+            line
+            for line in text.splitlines()
+            if re.match(r"^\|\s*\[(?!F-\d|H-\d)[^\]]*\]\([^)]+\)", line)
+        ]
+        if legacy:
+            self.line(
+                f"  строк реестра без ID: {len(legacy)} — формат не приведён к контракту "
+                "(ID | Tags | Описание | Источник / срез); конвертация — отдельная задача"
+            )
 
     def s_questions(self) -> None:
         text = read(self.root / "Context/40-queue.md")

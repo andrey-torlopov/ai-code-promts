@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import sys
 from pathlib import Path
 from typing import NoReturn
@@ -25,6 +26,7 @@ STANDARD_FILES = (
     "README.md",
     "index.md",
     "steps.md",
+    "env.json",
     "Context/00-START-HERE.md",
     "Context/10-repo-and-revisions.md",
     "Context/20-code-map.md",
@@ -80,13 +82,11 @@ def substitute(text: str, values: dict[str, str]) -> str:
     return text
 
 
-def build_plan(with_inbox: bool, with_kb: bool) -> list[str]:
-    """The file set is identical for every mode; only Inbox/ and env.md are optional."""
+def build_plan(with_inbox: bool) -> list[str]:
+    """The file set is identical for every mode; only Inbox/ is optional."""
     files = list(STANDARD_FILES)
     if with_inbox:
         files.append("Inbox/README.md")
-    if with_kb:
-        files.append("env.md")
     return files
 
 
@@ -98,8 +98,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--workspace", default=".", help="область поиска/создания; по умолчанию текущий workspace")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD; по умолчанию сегодня")
     parser.add_argument("--with-inbox", action="store_true", help="создать временную Inbox/")
-    parser.add_argument("--kb", default=None, help="путь к внешней базе знаний; создаёт корневой env.md")
-    parser.add_argument("--kb-categories", default="—", help="категории задачи во внешней базе, через запятую")
+    parser.add_argument("--kb", default=None, help="путь к внешней базе знаний; заполняет external_knowledge в env.json")
     parser.add_argument("--templates", default=None, help="явный корень шаблонов")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
@@ -138,15 +137,15 @@ def main(argv: list[str]) -> int:
         timestamp = now.strftime("%Y-%m-%d %H:%M")
 
     root = template_root(args.templates)
-    files = build_plan(args.with_inbox, bool(args.kb))
+    files = build_plan(args.with_inbox)
     values = {
         "TASK_ID": args.id,
         "TITLE": args.title or args.id,
         "DATE": date,
         "TIMESTAMP": timestamp,
         "MODE": args.mode,
-        "KB_PATH": args.kb or "",
-        "KB_CATEGORIES": args.kb_categories,
+        # JSON-escaped content without the surrounding quotes, safe inside "…" in env.json.
+        "KB_PATH": json.dumps(args.kb or "", ensure_ascii=False)[1:-1],
     }
 
     created: list[str] = []

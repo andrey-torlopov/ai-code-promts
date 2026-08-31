@@ -75,12 +75,12 @@ makes following observations unattributable.
 
 ## Export to an external knowledge base
 
-When a claim is promoted into the external base named by root `env.md` (see
+When a claim is promoted into the external base named by root `env.json` (see
 [`external-knowledge.md`](external-knowledge.md)), the local file stays as a frozen
 historical snapshot and gains `**Экспортировано:** F-12 → <base path>, 2026-08-28`; the
 task registry row carries the same mark. The base copy is canonical from then on —
 refinements happen there. Cite base entries from task files as dated plain text
-(`база F-12 (player), снимок 2026-08-28`), never as a Markdown link, and restate the
+(`база F-12 (Player), снимок 2026-08-28`), never as a Markdown link, and restate the
 load-bearing substance inline so the task stays verifiable if the base entry is later
 deleted.
 

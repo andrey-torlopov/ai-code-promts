@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -57,7 +58,7 @@ def main() -> int:
 
         # The canonical shape is exactly the one of the reference task folder.
         for relative in (
-            "README.md", "index.md", "steps.md",
+            "README.md", "index.md", "steps.md", "env.json",
             "Context/00-START-HERE.md", "Context/10-repo-and-revisions.md",
             "Context/20-code-map.md", "Context/30-method.md",
             "Context/40-queue.md", "Context/90-session-restore.md",
@@ -65,6 +66,11 @@ def main() -> int:
             "Results/README.md", "Inbox/README.md",
         ):
             require((standard / relative).is_file(), f"canonical scaffold missed {relative}")
+        env_default = json.loads((standard / "env.json").read_text(encoding="utf-8"))
+        require(
+            env_default.get("external_knowledge") == "",
+            "default env.json must carry an empty external_knowledge pointer",
+        )
         for relative in ("Steps", "Notes", "Logs", "Context/tools"):
             require((standard / relative).is_dir(), f"canonical scaffold missed {relative}/")
         require(
@@ -75,7 +81,7 @@ def main() -> int:
                          "Steps/README.md", "Steps/_next.md", "Context/10-subject.md",
                          "Context/20-map.md"):
             require(not (standard / relative).exists(), f"canonical scaffold created forbidden {relative}")
-        require(not (standard / "env.md").exists(), "env.md must appear only with --kb")
+        require(not (standard / "env.md").exists(), "legacy env.md must not be scaffolded")
 
         red = run("audit_task.py", "123", cwd=parent)
         require(red.returncode == 1 and "[placeholder]" in red.stdout, "unfilled standard scaffold must fail", red.stdout)
@@ -311,33 +317,30 @@ def main() -> int:
         )
         steps_registry.write_text(original_steps, encoding="utf-8")
 
-        # --- External knowledge base wiring: env.md, restore section, audit checks ---
+        # --- External knowledge base wiring: env.json, restore section, audit checks ---
         kb = parent / "kb"
         kb.mkdir()
         (kb / "README.md").write_text(
-            "# Knowledge — реестр фактов и гипотез\n\n"
+            "# Knowledge — внешняя база знаний\n\n"
             "Последние выданные ID: F-02 · H-01\n\n"
-            "## Категории\n\n"
-            "| Категория | Что покрывает |\n|---|---|\n"
-            "| player | плеер |\n| auth | авторизация |\n\n"
             "## Факты\n\n"
-            "| ID | Категория | Утверждение | Тяжесть | Файл |\n|---|---|---|---|---|\n"
-            "| F-01 | player | плеер держит один экземпляр | высокая | F-01-single-player.md |\n"
-            "| F-02 | auth | токен живёт час | средняя | F-02-token-ttl.md |\n\n"
+            "| ID | Tags | Описание | Источник / срез |\n|---|---|---|---|\n"
+            "| [F-01](single-player.md) | Player | плеер держит один экземпляр | dev abc1234, 2026-01-02<br>Задачи: WIBE-001 |\n"
+            "| [F-02](token-ttl.md) | App, auth | токен живёт час | dev abc1234, 2026-01-02 |\n\n"
             "## Гипотезы\n\n"
-            "| ID | Категория | Вопрос или механизм | Статус | Чем закрывается | Файл |\n"
-            "|---|---|---|---|---|---|\n"
-            "| H-01 | player | буфер слишком мал | кандидат | замер | H-01-small-buffer.md |\n",
+            "| ID | Tags | Вопрос или механизм | Статус | Источник / срез |\n"
+            "|---|---|---|---|---|\n"
+            "| [H-01](small-buffer.md) | Player | буфер слишком мал | кандидат | dev abc1234 |\n",
             encoding="utf-8",
         )
-        (kb / "F-01-single-player.md").write_text(
-            "# F-01 — плеер держит один экземпляр\n\n**Категория:** player\n", encoding="utf-8"
+        (kb / "single-player.md").write_text(
+            "# Плеер держит один экземпляр\n\n> ID: `F-01` · Tags: Player\n", encoding="utf-8"
         )
-        (kb / "F-02-token-ttl.md").write_text(
-            "# F-02 — токен живёт час\n\n**Категория:** auth\n", encoding="utf-8"
+        (kb / "token-ttl.md").write_text(
+            "# Токен живёт час\n\n> ID: `F-02` · Tags: App, auth\n", encoding="utf-8"
         )
-        (kb / "H-01-small-buffer.md").write_text(
-            "# H-01 — буфер слишком мал\n\n**Категория:** player\n", encoding="utf-8"
+        (kb / "small-buffer.md").write_text(
+            "# Буфер слишком мал\n\n> ID: `H-01` · Tags: Player · Статус: кандидат\n", encoding="utf-8"
         )
 
         kb_created = run(
@@ -345,15 +348,17 @@ def main() -> int:
             "--id", "KB-900",
             "--date", "2026-01-02",
             "--kb", str(kb),
-            "--kb-categories", "player",
             cwd=parent,
         )
         require(kb_created.returncode == 0, "scaffold with --kb failed", kb_created.stdout)
         kb_task = parent / "KB-900"
-        env_file = kb_task / "env.md"
-        require(env_file.is_file(), "--kb must create root env.md")
-        env_text = env_file.read_text(encoding="utf-8")
-        require(str(kb) in env_text and "player" in env_text, "env.md must record path and categories")
+        env_file = kb_task / "env.json"
+        require(env_file.is_file(), "scaffold must create root env.json")
+        env_data = json.loads(env_file.read_text(encoding="utf-8"))
+        require(
+            env_data.get("external_knowledge") == str(kb),
+            "--kb must fill external_knowledge with the base path",
+        )
         fill_standard(kb_task)
         kb_green = run("audit_task.py", "KB-900", cwd=parent)
         require(
@@ -366,15 +371,15 @@ def main() -> int:
             "ВНЕШНЯЯ БАЗА" in kb_brief.stdout
             and "фактов 2" in kb_brief.stdout
             and "гипотез 1" in kb_brief.stdout
-            and "фактов 1, гипотез 1" in kb_brief.stdout,
-            "restore must show the base with per-category counts",
+            and "Player 2" in kb_brief.stdout,
+            "restore must show the base with tag counts",
             kb_brief.stdout,
         )
 
         kb_fact = kb_task / "Knowledge" / "F-01-problem-and-targets.md"
         original_kb_fact = kb_fact.read_text(encoding="utf-8")
         kb_fact.write_text(
-            original_kb_fact + f"\n[плеер один]({kb}/F-01-single-player.md)\n", encoding="utf-8"
+            original_kb_fact + f"\n[плеер один]({kb}/single-player.md)\n", encoding="utf-8"
         )
         kb_link = run("audit_task.py", "KB-900", cwd=parent)
         require(
@@ -393,12 +398,19 @@ def main() -> int:
         )
         (parent / "kb-moved").rename(kb)
 
-        env_file.write_text("# env\n\nпросто текст без таблицы источников\n", encoding="utf-8")
+        env_file.write_text("не json\n", encoding="utf-8")
         bad_env = run("audit_task.py", "KB-900", cwd=parent)
         require(
             bad_env.returncode == 1 and "[env-format]" in bad_env.stdout,
-            "env.md without the sources table must fail",
+            "broken env.json must fail",
             bad_env.stdout,
+        )
+        env_file.unlink()
+        missing_env = run("audit_task.py", "KB-900", cwd=parent)
+        require(
+            missing_env.returncode == 0 and "[env-missing]" in missing_env.stdout,
+            "absent env.json must be a warning, not an error",
+            missing_env.stdout,
         )
 
         foreign = parent / "OLD-001" / "Process" / "steps"

@@ -1,8 +1,8 @@
-# H-NN — {{FILL_HYPOTHESIS}}
+# {{FILL_HYPOTHESIS_TITLE}}
 
-**Категория:** {{FILL_CATEGORY_FROM_DICTIONARY}}
-**Статус:** кандидат
-**Открыта:** {{FILL_DATE}}
+> ID: `H-NN` · Tags: {{FILL_TAGS}} · Статус: кандидат
+> Срез: {{FILL_BRANCH_REVISION_DATE}}
+> Задачи: {{FILL_TASK_IDS_OR_NONE}}
 
 ## Вопрос
 
@@ -12,14 +12,6 @@
 
 {{FILL_BASIS_RESTATED_IN_PLACE_OR_EXPLICIT_GUESS}}
 
-## Ожидаемый эффект
-
-1. {{FILL_FALSIFIABLE_PREDICTION_AND_THRESHOLD}}
-
 ## Чем закрывается
 
 {{FILL_CHEAPEST_DISCRIMINATING_GATE}}
-
-## Происхождение
-
-Задача {{FILL_TASK_ID}}, {{FILL_SOURCE_ID}}, {{FILL_DATE}}.

@@ -12,7 +12,7 @@ rules that nobody remembers.
 ├── README.md
 ├── index.md
 ├── steps.md
-├── env.md               optional: external knowledge sources (external-knowledge.md)
+├── env.json             external knowledge pointer; "" when none (external-knowledge.md)
 ├── Context/
 │   ├── 00-START-HERE.md
 │   ├── 10-repo-and-revisions.md
@@ -52,7 +52,7 @@ task is waiting for a user request, not that its structure is broken.
 | `Hypotheses/`, `Knowledge/Closed/`, `Archive/` | `Knowledge/` with an explicit status in the file |
 
 The no-archive rule governs the task folder. An external knowledge base named by root
-`env.md` is a different contract ([`external-knowledge.md`](external-knowledge.md)): a
+`env.json` is a different contract ([`external-knowledge.md`](external-knowledge.md)): a
 flat curated set of current entries where stale records are physically deleted on an
 explicit user request — no `Archive/` there either, and never a silent deletion.
 

@@ -27,7 +27,7 @@ correct recovered action is to wait for the user's request, not to promote a que
 | `README.md` | human status and navigation |
 | `Context/90-session-restore.md` | assumptions that must be rechecked |
 | `Knowledge/README.md` | claim inventory and statuses |
-| root `env.md` (optional) | external knowledge sources for this task |
+| root `env.json` | external knowledge pointer; "" when the task has none |
 
 State duplication is deliberate because audiences differ; contradiction is a defect. Update all
 affected projections in the same turn when a step opens or closes.
@@ -35,7 +35,7 @@ affected projections in the same turn when a step opens or closes.
 ## Bounded brief contents
 
 `restore_task.py` shows structure, state, invariants, open step or waiting state, latest completed
-pairs, facts/hypotheses, the external base named by `env.md` (path, reachability, counts),
+pairs, facts/hypotheses, the external base named by `env.json` (path, reachability, counts),
 blocking queue items, and exact next reads. It must not dump full entities
 or Inbox materials.
 

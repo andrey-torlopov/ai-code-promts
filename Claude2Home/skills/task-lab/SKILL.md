@@ -65,7 +65,7 @@ gates, never the folders.
 ├── README.md       human entry: status and navigation
 ├── index.md        agent entry: read order, hard rules, compact state
 ├── steps.md        newest-first completed-step history plus current pointer
-├── env.md          optional: external knowledge sources for this task
+├── env.json        external knowledge pointer; "" when the task has none
 ├── Context/        agent-only context
 │   ├── 00-START-HERE.md        goal, boundaries, invariants, current phase
 │   ├── 10-repo-and-revisions.md  authoritative subject, revisions, check commands
@@ -152,13 +152,16 @@ to understand or execute the deliverable.
 
 ## External knowledge base
 
-An optional root `env.md` names a shared, long-lived knowledge base — a flat set of
-atomic, self-contained `F-NN`/`H-NN` files plus a `README.md` registry with a mandatory
-category column. The base stores only current knowledge: stale entries are physically
-deleted, not archived. Search it before opening a new hypothesis; cite entries in durable
-task files as dated plain text (`база F-12 (player), снимок 2026-08-28`), never as
-Markdown links. Export into the base and deletion from it happen only on an explicit user
-request, under an open step, with deletions named (ID and file) before execution.
+Every task carries a root `env.json` — `{"external_knowledge": "<path>"}` — pointing at a
+shared, long-lived knowledge base; an empty string means none. The base is a flat set of
+self-contained topic files (free names, permanent IDs pinned in the registry) plus a
+`README.md` registry: `ID | Tags | Описание | Источник / срез`, with the task folders
+that touched the entry listed as `Задачи:` in the source cell. The base stores only
+current knowledge: stale entries are physically deleted, not archived. Search it before
+opening a new hypothesis; cite entries in durable task files as dated plain text
+(`база F-12 (Player), снимок 2026-08-28`), never as Markdown links. Export into the base
+and deletion from it happen only on an explicit user request, under an open step, with
+deletions named (ID and file) before execution.
 
 Load [`references/external-knowledge.md`](references/external-knowledge.md) before
 reading the base, exporting into it, or deleting from it.
@@ -174,8 +177,7 @@ reading the base, exporting into it, or deleting from it.
 
    ```bash
    python3 <skill>/scripts/init_task.py --id APP-001 \
-     [--workspace <root>] [--title "..."] [--mode general] [--with-inbox] \
-     [--kb <path>] [--kb-categories "player, auth"]
+     [--workspace <root>] [--title "..."] [--mode general] [--with-inbox] [--kb <path>]
    ```
 
 4. Replace every generated `{{FILL_*}}` marker. A scaffold with markers is intentionally invalid.
@@ -264,8 +266,8 @@ python3 <skill>/scripts/self_test.py
 - `resolve_task.py` resolves an explicit path or one exact TaskID match and rejects ambiguity.
 - `init_task.py` needs only TaskID, defaults to the current workspace and `general`, and creates the
   same structure for every mode: root `Steps/` and `steps.md`, `Notes/`, root `Logs/`,
-  `Context/tools/`, and no `Process/`, `Tools/`, or `Traces/`. `--kb <path>` additionally
-  writes root `env.md` pointing at an external knowledge base.
+  `Context/tools/`, and no `Process/`, `Tools/`, or `Traces/`. Root `env.json` is always
+  created with an empty pointer; `--kb <path>` fills `external_knowledge` with the base path.
 - `restore_task.py` resolves TaskID, emits a bounded brief, and refuses a folder built on another
   shape instead of half-reading it.
 - `audit_task.py` resolves TaskID and checks structure, entry-point agreement, entity evidence,

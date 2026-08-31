@@ -17,7 +17,7 @@
 [ ] no folder outside the canonical set appeared
 [ ] exported claims carry the export mark and agree with the external base registry
 [ ] base deletions happened only on an explicit user request and are listed in the step result
-[ ] every file exported to the base passes the single-copy test (atomic, self-contained, compact)
+[ ] every file exported to the base passes the single-copy test (self-contained, distilled)
 [ ] audit_task.py exits 0
 [ ] restore_task.py reports no open step or the sole request actually in progress
 ```

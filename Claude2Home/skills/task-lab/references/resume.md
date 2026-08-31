@@ -36,8 +36,8 @@ Canonical order:
 4. the unmatched `Steps/Step-XX.md`, if one exists;
 5. only files required by that plan;
 6. `Knowledge/README.md` only when registry context is needed;
-7. root `env.md` and the external base registry it names — only when the step needs base
-   context.
+7. root `env.json` and the external base registry it names — only when the pointer is
+   non-empty and the step needs base context.
 
 If there is no unmatched plan, wait for the user's concrete request. When it arrives, create the
 next sequential `Step-XX.md` before substantive execution. Never infer and pre-create a future
@@ -45,7 +45,7 @@ step from the queue.
 
 ## 5. Continue, do not restart
 
-Search Knowledge — and the external base named by `env.md`, when present — before
-proposing a direction already tested. Persist findings during the turn.
+Search Knowledge — and the external base named by `env.json`, when the pointer is set —
+before proposing a direction already tested. Persist findings during the turn.
 When execution ends for any reason, write the matching result, update the descending root history,
 synchronize projections, and run audit plus restore.

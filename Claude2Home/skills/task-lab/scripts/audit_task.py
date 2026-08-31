@@ -8,6 +8,7 @@ Exit codes: 0 = no errors, 1 = errors (or warnings with --pedantic),
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from dataclasses import dataclass
@@ -274,44 +275,46 @@ class Audit:
             )
 
     def check_env(self) -> None:
-        """Validate root env.md and resolve the external knowledge bases it names."""
-        path = self.root / "env.md"
+        """Validate root env.json and resolve the external knowledge base it names."""
+        path = self.root / "env.json"
         if not path.is_file():
-            return
-        rows: list[list[str]] = []
-        for _, line in strip_fences(read(path)):
-            stripped = line.strip()
-            if not stripped.startswith("|") or re.fullmatch(r"\|[\s|:-]+\|?", stripped):
-                continue
-            rows.append([cell.strip() for cell in stripped.strip("|").split("|")])
-        header_seen = any(cells and cells[0].lower() in ("тип", "type") for cells in rows)
-        data = [cells for cells in rows if cells and cells[0].lower() not in ("тип", "type")]
-        if not header_seen or not data:
             self.add(
-                ERROR,
-                "env-format",
-                path,
-                "нет таблицы «Источники знаний» (| Тип | Путь | Категории задачи |)",
+                WARN,
+                "env-missing",
+                "env.json",
+                'обязательный файл-указатель отсутствует; создать {"external_knowledge": ""}',
             )
             return
-        self.stats["внешних источников"] = len(data)
-        for cells in data:
-            if len(cells) < 2 or not cells[1] or cells[1] == "—":
-                self.add(ERROR, "env-format", path, "строка источника без пути")
-                continue
-            raw = cells[1].strip("`")
-            base = Path(raw).expanduser()
-            if not base.is_absolute():
-                base = self.root / raw
-            # Canonicalize like resolve_target does, so symlinked paths (/var -> /private/var)
-            # compare equal when link targets are checked against the base.
-            base = base.resolve()
-            if not base.is_dir():
-                self.add(WARN, "kb-unreachable", path, f"путь внешней базы не разрешается: {raw}")
-                continue
-            self.kb_dirs.append(base)
-            if not (base / "README.md").is_file():
-                self.add(WARN, "kb-no-registry", path, f"во внешней базе нет реестра README.md: {raw}")
+        try:
+            data = json.loads(read(path))
+        except ValueError:
+            self.add(ERROR, "env-format", path, "не парсится как JSON")
+            return
+        if not isinstance(data, dict) or (
+            "external_knowledge" not in data and "external_knoledge" not in data
+        ):
+            self.add(ERROR, "env-format", path, 'нет ключа "external_knowledge"')
+            return
+        value = data.get("external_knowledge", data.get("external_knoledge"))
+        if not isinstance(value, str):
+            self.add(ERROR, "env-format", path, '"external_knowledge" должен быть строкой; пустая строка — базы нет')
+            return
+        raw = value.strip()
+        if not raw:
+            return
+        base = Path(raw).expanduser()
+        if not base.is_absolute():
+            base = self.root / raw
+        # Canonicalize like resolve_target does, so symlinked paths (/var -> /private/var)
+        # compare equal when link targets are checked against the base.
+        base = base.resolve()
+        if not base.is_dir():
+            self.add(WARN, "kb-unreachable", path, f"путь внешней базы не разрешается: {raw}")
+            return
+        self.kb_dirs.append(base)
+        self.stats["внешняя база"] = str(base)
+        if not (base / "README.md").is_file():
+            self.add(WARN, "kb-no-registry", path, f"во внешней базе нет реестра README.md: {raw}")
 
     def check_placeholders(self) -> None:
         for path in self.md:

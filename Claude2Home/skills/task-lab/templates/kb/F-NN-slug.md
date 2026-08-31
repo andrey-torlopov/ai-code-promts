@@ -1,27 +1,10 @@
-# F-NN — {{FILL_VERIFIED_CLAIM}}
+# {{FILL_TOPIC_TITLE}}
 
-**Категория:** {{FILL_CATEGORY_FROM_DICTIONARY}}
-**Статус:** подтверждено
-**Проверено:** {{FILL_DATE_AND_METHOD}}
-**Область:** {{FILL_SCOPE_REVISION_ENVIRONMENT}}
+> ID: `F-NN` · Tags: {{FILL_TAGS}}
+> Срез: {{FILL_BRANCH_REVISION_DATE}}
+> Источники: {{FILL_SOURCES_README_CODE_MEASUREMENT}}
+> Задачи: {{FILL_TASK_IDS_OR_NONE}}
 
-## Утверждение
+## {{FILL_FIRST_SECTION_TITLE}}
 
-{{FILL_ATOMIC_CLAIM}}
-
-## Доказательство
-
-{{FILL_ONE_TO_THREE_LINES_COMMAND_RESULT_REVISION}}
-
-## Числа
-
-{{FILL_FORMULA_WITH_NUMERATOR_DENOMINATOR_OR_NOT_APPLICABLE}}
-
-## Чем грозит
-
-{{FILL_CONSEQUENCE_AND_LIMIT}}
-
-## Происхождение
-
-Задача {{FILL_TASK_ID}}, {{FILL_SOURCE_ID}}, {{FILL_DATE}}. Тяжёлые выкладки — в
-задаче-источнике.
+{{FILL_SELF_CONTAINED_BODY_WITH_FILE_LINE_REVISION_AND_FULL_NUMBERS}}
