@@ -28,7 +28,7 @@ For an explicitly new task with no match, create `<workspace>/<TaskID>`. Stop on
 ```bash
 python3 <skill>/scripts/init_task.py \
   --id APP-001 [--workspace <root>] [--title "Task title"] \
-  [--mode general] [--with-inbox]
+  [--mode general] [--with-inbox] [--kb <path>] [--kb-categories "player, auth"]
 ```
 
 The command refuses to overwrite files or overlay a folder built on another shape. It leaves `Steps/`
@@ -51,6 +51,11 @@ If input material exists, pass `--with-inbox`, keep only inputs there, and extra
 claims into `Knowledge/` without links back to `Inbox/`. Material produced while working splits by
 producer: briefs and observation journals go to `Notes/`, machine-captured output (`.log`,
 `.trace`, `.xcresult`, `.csv`, `.har`) goes to root `Logs/`. Every task has both regardless of mode.
+
+When the project keeps an external knowledge base, pass `--kb <path>` so root `env.md` is
+created, and read the base registry — filtered by the task categories — before filling
+`Knowledge/`: relevant settled entries are cited as dated text instead of being
+rediscovered. See [`external-knowledge.md`](external-knowledge.md).
 
 ## 6. Verify
 

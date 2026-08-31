@@ -75,6 +75,7 @@ def main() -> int:
                          "Steps/README.md", "Steps/_next.md", "Context/10-subject.md",
                          "Context/20-map.md"):
             require(not (standard / relative).exists(), f"canonical scaffold created forbidden {relative}")
+        require(not (standard / "env.md").exists(), "env.md must appear only with --kb")
 
         red = run("audit_task.py", "123", cwd=parent)
         require(red.returncode == 1 and "[placeholder]" in red.stdout, "unfilled standard scaffold must fail", red.stdout)
@@ -309,6 +310,96 @@ def main() -> int:
             bad_step_order.stdout,
         )
         steps_registry.write_text(original_steps, encoding="utf-8")
+
+        # --- External knowledge base wiring: env.md, restore section, audit checks ---
+        kb = parent / "kb"
+        kb.mkdir()
+        (kb / "README.md").write_text(
+            "# Knowledge — реестр фактов и гипотез\n\n"
+            "Последние выданные ID: F-02 · H-01\n\n"
+            "## Категории\n\n"
+            "| Категория | Что покрывает |\n|---|---|\n"
+            "| player | плеер |\n| auth | авторизация |\n\n"
+            "## Факты\n\n"
+            "| ID | Категория | Утверждение | Тяжесть | Файл |\n|---|---|---|---|---|\n"
+            "| F-01 | player | плеер держит один экземпляр | высокая | F-01-single-player.md |\n"
+            "| F-02 | auth | токен живёт час | средняя | F-02-token-ttl.md |\n\n"
+            "## Гипотезы\n\n"
+            "| ID | Категория | Вопрос или механизм | Статус | Чем закрывается | Файл |\n"
+            "|---|---|---|---|---|---|\n"
+            "| H-01 | player | буфер слишком мал | кандидат | замер | H-01-small-buffer.md |\n",
+            encoding="utf-8",
+        )
+        (kb / "F-01-single-player.md").write_text(
+            "# F-01 — плеер держит один экземпляр\n\n**Категория:** player\n", encoding="utf-8"
+        )
+        (kb / "F-02-token-ttl.md").write_text(
+            "# F-02 — токен живёт час\n\n**Категория:** auth\n", encoding="utf-8"
+        )
+        (kb / "H-01-small-buffer.md").write_text(
+            "# H-01 — буфер слишком мал\n\n**Категория:** player\n", encoding="utf-8"
+        )
+
+        kb_created = run(
+            "init_task.py",
+            "--id", "KB-900",
+            "--date", "2026-01-02",
+            "--kb", str(kb),
+            "--kb-categories", "player",
+            cwd=parent,
+        )
+        require(kb_created.returncode == 0, "scaffold with --kb failed", kb_created.stdout)
+        kb_task = parent / "KB-900"
+        env_file = kb_task / "env.md"
+        require(env_file.is_file(), "--kb must create root env.md")
+        env_text = env_file.read_text(encoding="utf-8")
+        require(str(kb) in env_text and "player" in env_text, "env.md must record path and categories")
+        fill_standard(kb_task)
+        kb_green = run("audit_task.py", "KB-900", cwd=parent)
+        require(
+            kb_green.returncode == 0 and "предупреждений 0" in kb_green.stdout,
+            "reachable base must audit clean",
+            kb_green.stdout,
+        )
+        kb_brief = run("restore_task.py", "KB-900", "--section", "kb", cwd=parent)
+        require(
+            "ВНЕШНЯЯ БАЗА" in kb_brief.stdout
+            and "фактов 2" in kb_brief.stdout
+            and "гипотез 1" in kb_brief.stdout
+            and "фактов 1, гипотез 1" in kb_brief.stdout,
+            "restore must show the base with per-category counts",
+            kb_brief.stdout,
+        )
+
+        kb_fact = kb_task / "Knowledge" / "F-01-problem-and-targets.md"
+        original_kb_fact = kb_fact.read_text(encoding="utf-8")
+        kb_fact.write_text(
+            original_kb_fact + f"\n[плеер один]({kb}/F-01-single-player.md)\n", encoding="utf-8"
+        )
+        kb_link = run("audit_task.py", "KB-900", cwd=parent)
+        require(
+            kb_link.returncode == 0 and "[kb-link]" in kb_link.stdout,
+            "Markdown link into the base must warn: cite as dated text",
+            kb_link.stdout,
+        )
+        kb_fact.write_text(original_kb_fact, encoding="utf-8")
+
+        kb.rename(parent / "kb-moved")
+        unreachable = run("audit_task.py", "KB-900", cwd=parent)
+        require(
+            unreachable.returncode == 0 and "[kb-unreachable]" in unreachable.stdout,
+            "dead base path must be a warning, not an error",
+            unreachable.stdout,
+        )
+        (parent / "kb-moved").rename(kb)
+
+        env_file.write_text("# env\n\nпросто текст без таблицы источников\n", encoding="utf-8")
+        bad_env = run("audit_task.py", "KB-900", cwd=parent)
+        require(
+            bad_env.returncode == 1 and "[env-format]" in bad_env.stdout,
+            "env.md without the sources table must fail",
+            bad_env.stdout,
+        )
 
         foreign = parent / "OLD-001" / "Process" / "steps"
         foreign.mkdir(parents=True)

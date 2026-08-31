@@ -80,11 +80,13 @@ def substitute(text: str, values: dict[str, str]) -> str:
     return text
 
 
-def build_plan(with_inbox: bool) -> list[str]:
-    """The file set is identical for every mode; only Inbox/ is optional."""
+def build_plan(with_inbox: bool, with_kb: bool) -> list[str]:
+    """The file set is identical for every mode; only Inbox/ and env.md are optional."""
     files = list(STANDARD_FILES)
     if with_inbox:
         files.append("Inbox/README.md")
+    if with_kb:
+        files.append("env.md")
     return files
 
 
@@ -96,6 +98,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--workspace", default=".", help="область поиска/создания; по умолчанию текущий workspace")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD; по умолчанию сегодня")
     parser.add_argument("--with-inbox", action="store_true", help="создать временную Inbox/")
+    parser.add_argument("--kb", default=None, help="путь к внешней базе знаний; создаёт корневой env.md")
+    parser.add_argument("--kb-categories", default="—", help="категории задачи во внешней базе, через запятую")
     parser.add_argument("--templates", default=None, help="явный корень шаблонов")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
@@ -134,13 +138,15 @@ def main(argv: list[str]) -> int:
         timestamp = now.strftime("%Y-%m-%d %H:%M")
 
     root = template_root(args.templates)
-    files = build_plan(args.with_inbox)
+    files = build_plan(args.with_inbox, bool(args.kb))
     values = {
         "TASK_ID": args.id,
         "TITLE": args.title or args.id,
         "DATE": date,
         "TIMESTAMP": timestamp,
         "MODE": args.mode,
+        "KB_PATH": args.kb or "",
+        "KB_CATEGORIES": args.kb_categories,
     }
 
     created: list[str] = []
@@ -178,6 +184,15 @@ def main(argv: list[str]) -> int:
         print(f"\n{prefix}Пропущено, уже существует ({len(skipped)}):")
         for relative in skipped:
             print(f"  = {relative}")
+    if args.kb:
+        kb_path = Path(args.kb).expanduser()
+        if not kb_path.is_absolute():
+            kb_path = (task_dir / kb_path).resolve()
+        if not kb_path.is_dir():
+            print(f"\nВНИМАНИЕ: путь внешней базы не существует: {kb_path}")
+        elif not (kb_path / "README.md").is_file():
+            print(f"\nВНИМАНИЕ: во внешней базе нет реестра README.md: {kb_path}")
+
     print("\nДальше:")
     print("  1. Заполнить Context → Knowledge → queue; будущий шаг заранее не создавать.")
     print("  2. По запросу пользователя создать Steps/Step-01.md, выполнить его и записать Steps/Step-01-result.md.")

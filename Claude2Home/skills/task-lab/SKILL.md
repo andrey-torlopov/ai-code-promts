@@ -65,6 +65,7 @@ gates, never the folders.
 ├── README.md       human entry: status and navigation
 ├── index.md        agent entry: read order, hard rules, compact state
 ├── steps.md        newest-first completed-step history plus current pointer
+├── env.md          optional: external knowledge sources for this task
 ├── Context/        agent-only context
 │   ├── 00-START-HERE.md        goal, boundaries, invariants, current phase
 │   ├── 10-repo-and-revisions.md  authoritative subject, revisions, check commands
@@ -149,6 +150,19 @@ file.
 Internal IDs may appear as provenance text only when the user wants them; they must not be required
 to understand or execute the deliverable.
 
+## External knowledge base
+
+An optional root `env.md` names a shared, long-lived knowledge base — a flat set of
+atomic, self-contained `F-NN`/`H-NN` files plus a `README.md` registry with a mandatory
+category column. The base stores only current knowledge: stale entries are physically
+deleted, not archived. Search it before opening a new hypothesis; cite entries in durable
+task files as dated plain text (`база F-12 (player), снимок 2026-08-28`), never as
+Markdown links. Export into the base and deletion from it happen only on an explicit user
+request, under an open step, with deletions named (ID and file) before execution.
+
+Load [`references/external-knowledge.md`](references/external-knowledge.md) before
+reading the base, exporting into it, or deleting from it.
+
 ## Workflow
 
 ### New task
@@ -160,7 +174,8 @@ to understand or execute the deliverable.
 
    ```bash
    python3 <skill>/scripts/init_task.py --id APP-001 \
-     [--workspace <root>] [--title "..."] [--mode general] [--with-inbox]
+     [--workspace <root>] [--title "..."] [--mode general] [--with-inbox] \
+     [--kb <path>] [--kb-categories "player, auth"]
    ```
 
 4. Replace every generated `{{FILL_*}}` marker. A scaffold with markers is intentionally invalid.
@@ -249,7 +264,8 @@ python3 <skill>/scripts/self_test.py
 - `resolve_task.py` resolves an explicit path or one exact TaskID match and rejects ambiguity.
 - `init_task.py` needs only TaskID, defaults to the current workspace and `general`, and creates the
   same structure for every mode: root `Steps/` and `steps.md`, `Notes/`, root `Logs/`,
-  `Context/tools/`, and no `Process/`, `Tools/`, or `Traces/`.
+  `Context/tools/`, and no `Process/`, `Tools/`, or `Traces/`. `--kb <path>` additionally
+  writes root `env.md` pointing at an external knowledge base.
 - `restore_task.py` resolves TaskID, emits a bounded brief, and refuses a folder built on another
   shape instead of half-reading it.
 - `audit_task.py` resolves TaskID and checks structure, entry-point agreement, entity evidence,
@@ -276,6 +292,7 @@ python3 <skill>/scripts/self_test.py
 | `references/writing-rules.md` | journals, registries, numbers, links, audience split |
 | `references/modes.md` | optional general/bug/perf/plan gate specializations |
 | `references/maintenance.md` | drift, debts, audit, task close |
+| `references/external-knowledge.md` | env.md, external base, export, deletion |
 
 ## Output
 
@@ -300,6 +317,8 @@ every durable fact from the reply.
   user's authorization.
 - Do not change the subject outside the current step or hiddenly broaden the requested scope.
 - Do not claim a clean state while audit fails or restore prints the wrong next action.
+- Do not export task knowledge into an external base, and do not delete base entries,
+  without an explicit user request; name every deletion (ID and file) before executing it.
 
 ## TRACE
 

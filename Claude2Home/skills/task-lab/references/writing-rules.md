@@ -18,6 +18,8 @@ fact/hypothesis ID        → registry → ascending by ID
 
 `Notes/runs.md` is an observation journal. `Knowledge/README.md`, decisions, questions, and
 change logs are registries. Root `steps.md` is a history view, not an ascending ID registry.
+The external base registry adds a mandatory category column:
+`ID | Категория | Утверждение | Тяжесть | Файл`.
 
 For `steps.md`, insert the newest completed pair as the first data row. Never append it below older
 history. Observation journals use local task time as `YYYY-MM-DD HH:MM` and also insert newest rows
@@ -42,6 +44,8 @@ number has one authoritative home; other files link to it or restate it explicit
 - Never link a durable artifact into `Inbox/`; a link into `Notes/` or `Logs/` means the claim
   should have been extracted into `Knowledge/` already. Quote the log line, do not link the file.
 - Never link from `Results/` outside `Results/`; exported deliverables must stand alone.
+- Cite external-base entries as dated plain text (`база F-12 (player), снимок 2026-08-28`),
+  never as a Markdown link; restate the substance you rely on.
 - Link both directions when one claim supersedes or refutes another.
 
 ## Anti-bloat

@@ -15,7 +15,7 @@ LINK_RE = re.compile(r"\[[^\]]*\]\((?!https?:|mailto:|#)([^)\s]+)\)")
 FILL_RE = re.compile(r"\{\{(?:FILL_)?[A-Z0-9_]+\}\}")
 SECTIONS = (
     "task", "state", "invariants", "step", "debts", "timeline", "facts",
-    "hypotheses", "questions", "changes", "forbidden", "next",
+    "hypotheses", "kb", "questions", "changes", "forbidden", "next",
 )
 
 
@@ -276,6 +276,58 @@ class Brief:
         self.head("ГИПОТЕЗЫ")
         self.capped(self.entity_list("Knowledge", "H", True), "нет")
 
+    def kb_sources(self) -> list[tuple[str, str]]:
+        """Rows of the env.md sources table as (path, categories)."""
+        text = read(self.root / "env.md")
+        if not text:
+            return []
+        sources: list[tuple[str, str]] = []
+        for cells in table_rows(section(text, r"источник|source|знан")):
+            if len(cells) < 2 or cells[0].lower() in ("тип", "type"):
+                continue
+            path = cells[1].strip().strip("`")
+            categories = cells[2].strip() if len(cells) > 2 else "—"
+            if path and path != "—":
+                sources.append((path, categories))
+        return sources
+
+    def registry_entries(self, registry: Path, prefix: str) -> list[str]:
+        """Category cell of every `| F-NN | категория | …` row in the base registry."""
+        return [
+            match.group(1).strip()
+            for match in re.finditer(
+                rf"^\|\s*`?{prefix}-\d+`?\s*\|([^|]*)\|", read(registry), re.MULTILINE
+            )
+        ]
+
+    def s_kb(self) -> None:
+        sources = self.kb_sources()
+        if not sources:
+            return
+        self.head("ВНЕШНЯЯ БАЗА ЗНАНИЙ  (env.md)")
+        for raw_path, categories in sources:
+            base = Path(raw_path).expanduser()
+            if not base.is_absolute():
+                base = (self.root / raw_path).resolve()
+            if not base.is_dir():
+                self.line(f"  {raw_path} — НЕДОСТУПНА: каталога нет; проверить env.md")
+                continue
+            registry = base / "README.md"
+            if not registry.is_file():
+                self.line(f"  {raw_path} — каталог есть, но реестра README.md нет")
+                continue
+            facts = self.registry_entries(registry, "F")
+            hypotheses = self.registry_entries(registry, "H")
+            self.line(f"  {base}")
+            self.line(f"  фактов {len(facts)} · гипотез {len(hypotheses)}")
+            wanted = [part.strip().lower() for part in categories.split(",") if part.strip()]
+            if wanted and categories.strip() != "—":
+                relevant_f = sum(1 for cat in facts if cat.lower() in wanted)
+                relevant_h = sum(1 for cat in hypotheses if cat.lower() in wanted)
+                self.line(
+                    f"  по категориям задачи ({categories}): фактов {relevant_f}, гипотез {relevant_h}"
+                )
+
     def s_questions(self) -> None:
         text = read(self.root / "Context/40-queue.md")
         if not text:
@@ -347,6 +399,7 @@ class Brief:
             ("timeline", self.s_timeline),
             ("facts", self.s_facts),
             ("hypotheses", self.s_hypotheses),
+            ("kb", self.s_kb),
             ("questions", self.s_questions),
             ("changes", self.s_changes),
             ("forbidden", self.s_forbidden),

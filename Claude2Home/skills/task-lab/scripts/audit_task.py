@@ -161,6 +161,7 @@ class Audit:
         self.layout = self.detect_layout()
         self.current_step: int | None = None
         self.completed_steps: set[int] = set()
+        self.kb_dirs: list[Path] = []
 
     def walk(self) -> list[Path]:
         result: list[Path] = []
@@ -271,6 +272,46 @@ class Audit:
                 "каталог вне канонической структуры: "
                 + ", ".join(name + "/" for name in CANONICAL_DIRS),
             )
+
+    def check_env(self) -> None:
+        """Validate root env.md and resolve the external knowledge bases it names."""
+        path = self.root / "env.md"
+        if not path.is_file():
+            return
+        rows: list[list[str]] = []
+        for _, line in strip_fences(read(path)):
+            stripped = line.strip()
+            if not stripped.startswith("|") or re.fullmatch(r"\|[\s|:-]+\|?", stripped):
+                continue
+            rows.append([cell.strip() for cell in stripped.strip("|").split("|")])
+        header_seen = any(cells and cells[0].lower() in ("тип", "type") for cells in rows)
+        data = [cells for cells in rows if cells and cells[0].lower() not in ("тип", "type")]
+        if not header_seen or not data:
+            self.add(
+                ERROR,
+                "env-format",
+                path,
+                "нет таблицы «Источники знаний» (| Тип | Путь | Категории задачи |)",
+            )
+            return
+        self.stats["внешних источников"] = len(data)
+        for cells in data:
+            if len(cells) < 2 or not cells[1] or cells[1] == "—":
+                self.add(ERROR, "env-format", path, "строка источника без пути")
+                continue
+            raw = cells[1].strip("`")
+            base = Path(raw).expanduser()
+            if not base.is_absolute():
+                base = self.root / raw
+            # Canonicalize like resolve_target does, so symlinked paths (/var -> /private/var)
+            # compare equal when link targets are checked against the base.
+            base = base.resolve()
+            if not base.is_dir():
+                self.add(WARN, "kb-unreachable", path, f"путь внешней базы не разрешается: {raw}")
+                continue
+            self.kb_dirs.append(base)
+            if not (base / "README.md").is_file():
+                self.add(WARN, "kb-no-registry", path, f"во внешней базе нет реестра README.md: {raw}")
 
     def check_placeholders(self) -> None:
         for path in self.md:
@@ -489,6 +530,14 @@ class Audit:
                     try:
                         inside = resolved.relative_to(self.root)
                     except ValueError:
+                        if any(resolved.is_relative_to(kb_dir) for kb_dir in self.kb_dirs):
+                            self.add(
+                                WARN,
+                                "kb-link",
+                                path,
+                                f"Markdown-ссылка на файл внешней базы: {target}; "
+                                "цитировать текстом с датой",
+                            )
                         continue
                     if not resolved.exists():
                         self.add(level, "dead-link", path, f"ссылка не разрешается: {target}")
@@ -676,6 +725,7 @@ class Audit:
     def run(self) -> None:
         self.stats["структура"] = self.layout
         self.check_surface()
+        self.check_env()
         self.check_placeholders()
         self.check_steps()
         self.check_edits_outside_step()
