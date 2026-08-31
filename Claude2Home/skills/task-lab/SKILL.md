@@ -155,8 +155,9 @@ to understand or execute the deliverable.
 Every task carries a root `env.json` — `{"external_knowledge": "<path>"}` — pointing at a
 shared, long-lived knowledge base; an empty string means none. The base is a flat set of
 self-contained topic files (free names, permanent IDs pinned in the registry) plus a
-`README.md` registry: `ID | Tags | Описание | Источник / срез`, with the task folders
-that touched the entry listed as `Задачи:` in the source cell. The base stores only
+`README.md` registry: `ID | Tags | Problem | Описание | Источник / срез` for facts
+(hypotheses drop the Problem column), with the task folders that touched the entry listed
+as `Задачи:` in the source cell. The base stores only
 current knowledge: stale entries are physically deleted, not archived. Search it before
 opening a new hypothesis; cite entries in durable task files as dated plain text
 (`база F-12 (Player), снимок 2026-08-28`), never as Markdown links. Export into the base

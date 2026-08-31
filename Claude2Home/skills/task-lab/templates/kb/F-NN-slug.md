@@ -1,6 +1,6 @@
 # {{FILL_TOPIC_TITLE}}
 
-> ID: `F-NN` · Tags: {{FILL_TAGS}}
+> ID: `F-NN` · Tags: {{FILL_TAGS}} · Problem: {{FILL_PROBLEM_OR_NONE}}
 > Срез: {{FILL_BRANCH_REVISION_DATE}}
 > Источники: {{FILL_SOURCES_README_CODE_MEASUREMENT}}
 > Задачи: {{FILL_TASK_IDS_OR_NONE}}

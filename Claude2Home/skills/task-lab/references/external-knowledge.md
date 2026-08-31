@@ -48,7 +48,7 @@ Flat: topic files plus a registry. File names are free; IDs are pinned by the re
 Последние выданные ID: F-12 · H-07
 
 ## Факты
-| ID | Tags | Описание | Источник / срез |
+| ID | Tags | Problem | Описание | Источник / срез |
 
 ## Гипотезы
 | ID | Tags | Вопрос или механизм | Статус | Источник / срез |
@@ -61,6 +61,8 @@ Row format:
 - `Tags` — coarse filterable categories, comma-separated (App, SDK, Player,
   marketplace, …). Reuse existing tags before inventing one; `Player` and `player` must
   not coexist.
+- `Problem` (facts table only) — one line naming the problem the fact relates to (feed
+  freezes, broken manifests, branch conflicts, …); `—` when the fact is not tied to one.
 - `Описание` — one line of what is inside.
 - `Источник / срез` — branch/revision and date; on the next line in the same cell —
   `<br>Задачи: WIBE-001, WIBE-1020` — the task-lab folders the entry was extracted from

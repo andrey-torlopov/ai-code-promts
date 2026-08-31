@@ -18,9 +18,9 @@ fact/hypothesis ID        → registry → ascending by ID
 
 `Notes/runs.md` is an observation journal. `Knowledge/README.md`, decisions, questions, and
 change logs are registries. Root `steps.md` is a history view, not an ascending ID registry.
-The external base registry row is `ID | Tags | Описание | Источник / срез`, the ID cell
-linking to the topic file; task folders that touched the entry are listed as `Задачи:`
-inside the source cell.
+The external base fact row is `ID | Tags | Problem | Описание | Источник / срез`
+(hypotheses have no Problem column), the ID cell linking to the topic file; task folders
+that touched the entry are listed as `Задачи:` inside the source cell.
 
 For `steps.md`, insert the newest completed pair as the first data row. Never append it below older
 history. Observation journals use local task time as `YYYY-MM-DD HH:MM` and also insert newest rows
