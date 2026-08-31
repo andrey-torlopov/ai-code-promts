@@ -6,10 +6,10 @@
 |---|---|
 | Fact `F-NN` | `Knowledge/F-NN-*.md` |
 | Hypothesis `H-NN` | `Knowledge/H-NN-*.md` |
-| Decision `D-NN` | `Context/decisions.md`, or a compact registry inside `Context/40-queue.md` |
-| Question `Q-NN` | `Context/40-queue.md` |
-| Experimental change `P-NN` | `Context/change-log.md`, added when the subject is modified |
-| Invariant `INV-NN` | `Context/00-START-HERE.md` |
+| Decision `D-NN` | root `decisions.md`, created on the first decision |
+| Open question | README «Вопросы к вам» (no permanent id; a durable answer becomes a fact) |
+| Experimental change `P-NN` | root `change-log.md`, added when the subject is modified |
+| Invariant `INV-NN` | README «Правила задачи» |
 
 IDs are permanent, never reused, and sorted ascending in registries. Status lives inside the file:
 a finished or refuted claim keeps its ID and its place, with the status written at the top. There is
@@ -56,19 +56,16 @@ Record a decision when it changes scope, ranking, method, or future work. Includ
 rationale, and a revision trigger. When the trigger fires, add a superseding decision; do not edit
 the old row into its opposite.
 
-## Q-NN — question
+## Open question
 
-Include the question, why it matters, what it blocks, and who or what closes it. Do not answer an
-open question from memory. When answered, keep the answer and source discoverable so it is not
-asked again.
-
-`Q-NN` is an internal id: it appears only inside `Context/`. A user-facing file that needs
-the item — the recommended-order block in `steps.md`, a step plan, a fact — restates it in
-plain self-contained words instead of citing the id.
+Lives in README «Вопросы к вам»: the question, why it cannot be decided alone, and the default
+assumed while it is open. No permanent id — the table is small and self-contained. Do not answer
+an open question from memory. When answered, keep the answer discoverable: an answer the task
+relies on becomes a fact with the user's reply as evidence.
 
 ## INV-NN — invariant
 
-Keep invariants in `Context/00-START-HERE.md`. Each says what must remain true and why a violation
+Keep invariants in README «Правила задачи». Each says what must remain true and why a violation
 invalidates the result. Add on evidence; remove only by decision.
 
 ## P-NN — experimental/scaffolding change

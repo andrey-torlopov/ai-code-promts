@@ -102,8 +102,8 @@ INV  read <authoritative source>, not <the local copy that differs>
 ### Baseline: N observations with a measured spread
 
 One run is not a baseline. Report p10 / median / p90 and the CV for every metric you will use, and
-write the band into `Context/00-START-HERE.md` under its own heading. Then never claim an effect
-inside it (`references/gates.md`).
+write the band into the README under its own heading in «Правила задачи». Then never claim an
+effect inside it (`references/gates.md`).
 
 ### Facts here
 
@@ -175,7 +175,7 @@ INV  the observation window includes the tail where deferred work lands
 ### Baseline: what the subject does today, read and cited
 
 Not remembered, not inferred from names, not assumed from convention. Read it. Every premise the
-plan will rest on becomes a verified `F-NN` or a listed `Q-NN` — there is no third option, and a
+plan will rest on becomes a verified `F-NN` or a listed open question — there is no third option, and a
 plan whose premises are neither is not finished.
 
 This is the mode where the most work is thrown away by skipping the baseline, because a plan for a

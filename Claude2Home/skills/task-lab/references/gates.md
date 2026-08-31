@@ -104,8 +104,8 @@ Then:
   impossible in principle. Say so, and switch to composition (see above). Discovering this early
   is worth more than any single fix.
 
-Write the noise floor into `Context/00-START-HERE.md` under its own heading, so no future claim
-gets made below it.
+Write the noise floor into the README under its own heading in «Правила задачи», so no future
+claim gets made below it.
 
 ## Validity — the observation has to count
 
@@ -160,7 +160,7 @@ the observation, not about the change.
 ## Acceptance is more than the metric
 
 A change that passes its number and breaks behaviour has not passed. Define the full bar once in
-`Context/verification-and-acceptance.md`, and require all of it:
+root `acceptance.md`, and require all of it:
 
 ```text
 1  its own gate passed

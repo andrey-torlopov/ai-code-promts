@@ -18,7 +18,7 @@ The task folder and the base are two different contracts:
 
 ## env.json
 
-Root file beside `index.md`; **every task has it**. `init_task.py` creates it with an
+Root file beside `README.md`; **every task has it**. `init_task.py` creates it with an
 empty pointer; `--kb <path>` fills it.
 
 ```json

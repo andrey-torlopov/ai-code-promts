@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Create a canonical task-lab folder without overwriting existing files.
+"""Create a canonical task-lab folder (layout v2) without overwriting existing files.
 
-There is exactly one layout: root-level ``Steps/`` with ``Step-XX.md`` /
-``Step-XX-result.md`` pairs, root ``steps.md`` history, ``Context/`` (scripts in
-``Context/tools/``), ``Knowledge/``, ``Results/``, ``Notes/``, root ``Logs/`` and
-optional ``Inbox/``. ``Logs/`` is a sibling of ``Notes/`` at the root, never a
-subfolder of it. Folders that carry another shape (``Process/steps/``,
-``Steps/_next.md``) are refused, not overlaid.
+There is exactly one layout: root ``README.md`` with the machine-readable state
+line as the only entry point, ``Steps/`` with single-file ``Step-NN.md`` records,
+``Knowledge/``, ``Results/``, ``tools/``, ``Notes/``, root ``Logs/`` and optional
+``Inbox/``. Folders that carry the v1 layout (``index.md``, root ``steps.md``,
+``Context/``) are refused with a ``migrate_task.py`` hint; foreign shapes
+(``Process/steps/``, ``Steps/_next.md``) are refused outright.
 """
 
 from __future__ import annotations
@@ -24,25 +24,24 @@ MODES = ("general", "bug", "perf", "plan")
 
 STANDARD_FILES = (
     "README.md",
-    "index.md",
-    "steps.md",
     "env.json",
-    "Context/00-START-HERE.md",
-    "Context/10-repo-and-revisions.md",
-    "Context/20-code-map.md",
-    "Context/30-method.md",
-    "Context/40-queue.md",
-    "Context/90-session-restore.md",
     "Knowledge/README.md",
     "Knowledge/F-01-problem-and-targets.md",
+    "Knowledge/F-02-environment.md",
     "Results/README.md",
 )
 
-STANDARD_DIRS = ("Steps", "Notes", "Logs", "Context/tools")
+STANDARD_DIRS = ("Steps", "Notes", "Logs", "tools")
 
-UNSUPPORTED_MARKERS = (
+FOREIGN_MARKERS = (
     ("Process/steps", "Process/steps/"),
     ("Steps/_next.md", "Steps/_next.md"),
+)
+
+LEGACY_MARKERS = (
+    ("index.md", "index.md"),
+    ("steps.md", "steps.md"),
+    ("Context", "Context/"),
 )
 
 
@@ -51,9 +50,15 @@ def die(message: str) -> NoReturn:
     raise SystemExit(2)
 
 
-def unsupported_marker(task_dir: Path) -> str | None:
-    """Return the first non-canonical structural marker found in the folder."""
-    for relative, label in UNSUPPORTED_MARKERS:
+def foreign_marker(task_dir: Path) -> str | None:
+    for relative, label in FOREIGN_MARKERS:
+        if (task_dir / relative).exists():
+            return label
+    return None
+
+
+def legacy_marker(task_dir: Path) -> str | None:
+    for relative, label in LEGACY_MARKERS:
         if (task_dir / relative).exists():
             return label
     return None
@@ -91,7 +96,7 @@ def build_plan(with_inbox: bool) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Развернуть durable task folder из task-lab")
+    parser = argparse.ArgumentParser(description="Развернуть durable task folder из task-lab (layout v2)")
     parser.add_argument("--id", required=True, help="TaskID и имя папки, например 123 или APP-001")
     parser.add_argument("--title", default=None, help="название; по умолчанию равно TaskID")
     parser.add_argument("--mode", default="general", choices=MODES, help="внутренний режим; структура одинакова")
@@ -118,11 +123,17 @@ def main(argv: list[str]) -> int:
     if task_dir.exists() and not task_dir.is_dir():
         die(f"путь TaskID уже существует и не является папкой: {task_dir}")
 
-    marker = unsupported_marker(task_dir)
+    marker = foreign_marker(task_dir)
     if marker:
         die(
             f"в {task_dir} найдена неканоническая структура ({marker}); поверх неё нельзя разворачивать "
             "каноническую. Перенос — отдельная явная задача"
+        )
+    marker = legacy_marker(task_dir)
+    if marker:
+        die(
+            f"в {task_dir} найдена структура v1 ({marker}); поверх неё нельзя разворачивать v2. "
+            "Конвертация выполняется явно: python3 migrate_task.py " + args.id
         )
 
     now = dt.datetime.now().astimezone()
@@ -174,7 +185,7 @@ def main(argv: list[str]) -> int:
 
     prefix = "[dry-run] " if args.dry_run else ""
     print(f"{prefix}Папка задачи: {task_dir}")
-    print(f"{prefix}TaskID: {args.id} · режим: {args.mode} · структура: каноническая · дата: {date}")
+    print(f"{prefix}TaskID: {args.id} · режим: {args.mode} · структура: каноническая v2 · дата: {date}")
 
     print(f"\n{prefix}Создано ({len(created)}):")
     for relative in created:
@@ -193,10 +204,10 @@ def main(argv: list[str]) -> int:
             print(f"\nВНИМАНИЕ: во внешней базе нет реестра README.md: {kb_path}")
 
     print("\nДальше:")
-    print("  1. Заполнить Context → Knowledge → queue; будущий шаг заранее не создавать.")
-    print("  2. По запросу пользователя создать Steps/Step-01.md, выполнить его и записать Steps/Step-01-result.md.")
-    print("  3. Синхронизировать README.md, index.md и корневой steps.md.")
-    print("  4. Удалить все {{FILL_*}}; до этого audit обязан быть красным.")
+    print("  1. Заполнить Knowledge/F-01 и F-02, затем README (задача, правила, дрейф, очередность).")
+    print("  2. Будущий шаг заранее не создавать: Steps/Step-01.md появляется по запросу пользователя,")
+    print("     строка состояния README обновляется при открытии и закрытии шага.")
+    print("  3. Удалить все {{FILL_*}}; до этого audit обязан быть красным.")
 
     audit = Path(__file__).resolve().parent / "audit_task.py"
     restore = Path(__file__).resolve().parent / "restore_task.py"

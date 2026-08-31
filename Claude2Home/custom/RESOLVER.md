@@ -18,7 +18,8 @@ A project may override a global skill by defining a skill with the same name in 
 ## Task State Layer
 
 `task-lab` is a state layer, not a deliverable owner. It keeps durable task state on disk — a task
-folder with `Context/`, `Knowledge/`, `Steps/`, `Results/`, `Notes/`, `Inbox/` — so work survives
+folder with `README.md` as the single entry point plus `env.json`, `Knowledge/`, `Steps/`,
+`Results/`, `tools/`, `Notes/`, `Logs/`, `Inbox/` — so work survives
 context loss. It does not consume a routing row: the table below still names exactly one workflow
 skill for the deliverable, and the layer only decides where that deliverable and its evidence are
 recorded.
@@ -36,7 +37,7 @@ Activate the layer without being asked when any signal holds:
 |---|---|
 | the request names a TaskID as a task | `задача 123`, `по APP-001`, `task 42`, `bug 77` |
 | a bare ID resolves to exactly one folder | `<task-lab>/scripts/resolve_task.py 123` exits 0 with one path |
-| the request points into a task folder | a path whose root holds `index.md`, `steps.md` and `Steps/` |
+| the request points into a task folder | a path whose root holds `README.md` with a `**Состояние:**` state line and `Steps/` |
 | the working directory is that folder or below it | same shape at `cwd` or an ancestor |
 | the user creates, resumes, audits or closes durable work | «заведи задачу», «продолжим», «что там по …», «закрой задачу» |
 | the user requires the work to outlive this session | stated in the request |
@@ -54,11 +55,11 @@ layer. Do not scaffold a folder for work that fits one short session; say why in
    drift check, and only then read the project.
 2. The routing table still picks the deliverable owner. The layer adds state, not a second
    deliverable, and never overrides that skill's stop gate.
-3. Every durable change inside the task folder happens under one open `Step-XX.md` and closes with
-   `Step-XX-result.md`. A question the reply itself answers opens no step.
+3. Every durable change inside the task folder happens under one open `Steps/Step-NN.md` and
+   closes with that file's «Результат» block. A question the reply itself answers opens no step.
 4. Artifacts land by kind: exports in `Results/`, verified claims as `Knowledge/F-NN`, open ones as
-   `H-NN`, raw logs and measurements in `Notes/`, task-local scripts in `Context/tools/`, incoming
-   material in `Inbox/`.
+   `H-NN`, raw captured output in `Logs/`, observation journals in `Notes/`, task-local scripts in
+   `tools/`, incoming material in `Inbox/`.
 5. Project files outside the task folder keep their normal location; the step result records what
    changed there.
 6. Finish the turn with the skill's audit and restore before reporting; report the folder path.
@@ -69,10 +70,10 @@ A request whose entire deliverable is the folder itself — create, resume, audi
 | Request inside an active task | Deliverable owner | Where it lands |
 |---|---|---|
 | study, plan, review, research, spec | `analysis-plan` | `Results/` plus `Knowledge/` |
-| implement, apply an approved plan | `implementation-from-plan` | project files plus `Step-XX-result.md` |
+| implement, apply an approved plan | `implementation-from-plan` | project files plus the step's «Результат» block |
 | build, CI, runtime or crash failure | `debug-diagnose` | root cause as `F-NN`, fix plan in `Results/` |
 | Xcode/Swift build time | `swift-build-optimization` | benchmarks in `Notes/`, numbers as `F-NN` |
-| deploy, release, publish, rollout | `deploy-ops` | gated action plus `Step-XX-result.md` |
+| deploy, release, publish, rollout | `deploy-ops` | gated action plus the step's «Результат» block |
 | macOS, shell, local diagnosis | `mac-local-ops` | report plus `Notes/` |
 
 `task-lab` is shipped and versioned by this instruction system: it is listed in
