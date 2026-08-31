@@ -74,7 +74,11 @@ Add a narrowly required file when the work needs it, without changing the step c
 
 - Human route: `README.md` → `steps.md` → one plan/result pair or `Results/`.
 - Agent route: `index.md` → `Context/00-START-HERE.md` → `steps.md` → the unmatched plan, if any.
-- `steps.md` is a compact newest-first history and current pointer, not the detailed plan or log.
+- `steps.md` is a compact newest-first history, the current pointer, and a short
+  recommended-order block for the user — not the detailed plan or log.
+- The recommended-order block is a numbered list (never a table), each item a
+  self-contained one-liner the user can turn into the next request. No `Q-NN`, no links
+  into `Context/`: the full queue with its ranking stays in `Context/40-queue.md`.
 
 ## Inbox, Notes and Logs boundary
 
@@ -105,7 +109,7 @@ minimum necessary explanation inside the result.
 These four projections must agree:
 
 1. the unmatched `Steps/Step-XX.md`, if any — authority for current execution;
-2. `steps.md` — current pointer and descending completed history;
+2. `steps.md` — current pointer, descending completed history, recommended-order block;
 3. `index.md` — agent projection;
 4. `README.md` — human projection.
 

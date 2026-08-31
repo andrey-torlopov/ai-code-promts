@@ -564,6 +564,25 @@ class Audit:
                     if target.startswith("Inbox/") and top != "Inbox":
                         self.add(ERROR, "inbox-link", path, f"wiki-link в Inbox: {target}")
 
+    def check_queue_leak(self) -> None:
+        """Q-NN is a Context/-internal id; user-facing files restate the item in words."""
+        pattern = re.compile(r"\bQ-\d+\b")
+        for path in self.md:
+            top = path.relative_to(self.root).parts[0]
+            if top == "Context" or top in UNTRACKED_DIRS:
+                continue
+            lines = [number for number, line in strip_fences(read(path)) if pattern.search(line)]
+            if lines:
+                shown = ", ".join(map(str, lines[:5]))
+                self.add(
+                    ERROR,
+                    "queue-leak",
+                    path,
+                    f"внутренний ID очереди Q-NN вне Context/ (строки {shown}); пересказать пункт "
+                    "словами — публичная проекция очереди живёт в блоке «Рекомендуемая "
+                    "очередность» корневого steps.md",
+                )
+
     def check_result_status(self) -> None:
         if self.layout != "standard":
             return
@@ -738,6 +757,7 @@ class Audit:
         self.check_registry_coverage()
         self.check_context_companions()
         self.check_links_and_boundaries()
+        self.check_queue_leak()
         self.check_result_status()
         self.check_artifact_placement()
         self.check_orders()

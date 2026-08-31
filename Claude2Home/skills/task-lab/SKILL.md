@@ -64,7 +64,7 @@ gates, never the folders.
 <TaskID>/
 ├── README.md       human entry: status and navigation
 ├── index.md        agent entry: read order, hard rules, compact state
-├── steps.md        newest-first completed-step history plus current pointer
+├── steps.md        history (newest first), current pointer, recommended next work
 ├── env.json        external knowledge pointer; "" when the task has none
 ├── Context/        agent-only context
 │   ├── 00-START-HERE.md        goal, boundaries, invariants, current phase
@@ -108,6 +108,9 @@ The same state appears in several projections for different readers. Keep them c
 - when a step is open, `index.md`, `README.md`, and `steps.md` name the same step;
 - when no step is open, those projections say that the next user request will create it;
 - `steps.md` lists completed steps by descending number: latest first;
+- the recommended-order block in `steps.md` restates the top of `Context/40-queue.md` in
+  short self-contained wording — the user does not read `Context/`, so `Q-NN` and other
+  `Context/`-registry ids never appear outside `Context/`;
 - `Context/90-session-restore.md` carries the current drift assumptions;
 - `Knowledge/README.md` matches the entity files and their statuses;
 - `Results/` is usable after the task folder is gone: no links to `Knowledge/`, `Steps/`,

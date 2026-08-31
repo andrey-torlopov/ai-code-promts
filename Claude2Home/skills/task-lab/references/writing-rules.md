@@ -8,6 +8,11 @@
 
 Use the user's language. Do not mix languages inside one file unless quoting a technical symbol.
 
+The user does not read `Context/`. `Q-NN` and other `Context/`-registry ids appear only
+inside `Context/`; in `README.md`, `steps.md`, `Steps/`, `Knowledge/`, and `Results/` the
+item is restated in plain self-contained words. The user-facing queue projection is the
+recommended-order block in root `steps.md`.
+
 ## Journals and registries
 
 ```text

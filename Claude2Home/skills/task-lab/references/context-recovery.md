@@ -22,7 +22,7 @@ correct recovered action is to wait for the user's request, not to promote a que
 |---|---|
 | unmatched `Steps/Step-XX.md` | current request, scope, actions, completion gate |
 | matching `Step-XX-result.md` | verdict, evidence, outputs, limits, debts |
-| `steps.md` | current pointer and completed history, newest/highest first |
+| `steps.md` | current pointer, completed history (newest first), recommended next work for the user |
 | `index.md` | agent read order, invariants, compact state |
 | `README.md` | human status and navigation |
 | `Context/90-session-restore.md` | assumptions that must be rechecked |

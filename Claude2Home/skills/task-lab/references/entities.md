@@ -62,6 +62,10 @@ Include the question, why it matters, what it blocks, and who or what closes it.
 open question from memory. When answered, keep the answer and source discoverable so it is not
 asked again.
 
+`Q-NN` is an internal id: it appears only inside `Context/`. A user-facing file that needs
+the item — the recommended-order block in `steps.md`, a step plan, a fact — restates it in
+plain self-contained words instead of citing the id.
+
 ## INV-NN — invariant
 
 Keep invariants in `Context/00-START-HERE.md`. Each says what must remain true and why a violation

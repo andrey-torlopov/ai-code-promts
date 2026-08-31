@@ -88,9 +88,12 @@ When execution ends:
    and knowledge changes;
 3. update entities and self-contained results;
 4. prepend the completed row in root `steps.md`, preserving descending step order;
-5. synchronize README, index, `steps.md`, and restore assumptions to say that no step is
+5. refresh the recommended-order block in root `steps.md`: re-rank after the verdict and
+   restate the top candidates as short self-contained items — no `Q-NN`, no `Context/`
+   links; an item is the wording of a future user request, not a pre-numbered step;
+6. synchronize README, index, `steps.md`, and restore assumptions to say that no step is
    open unless a newer user request has already opened one;
-6. run audit and restore.
+7. run audit and restore.
 
 Do not rewrite the plan into a result: keep both files. Do not mutate a completed pair to reflect
 later knowledge; add a correction in a later pair and link the superseding fact.

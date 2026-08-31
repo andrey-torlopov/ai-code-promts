@@ -8,6 +8,7 @@
 [ ] result records evidence, changed artifacts, limits, and debts
 [ ] durable claims are in Knowledge and registered
 [ ] completed pair is the first data row in root steps.md; older steps descend below it
+[ ] recommended-order block in steps.md is re-ranked, self-contained, free of Q-NN and Context/ links
 [ ] no speculative future Step file exists
 [ ] README, index, steps.md, and restore assumptions agree
 [ ] Results status matches actual payloads
@@ -24,7 +25,8 @@
 
 ## Re-rank after evidence
 
-Re-rank the unnumbered queue after each verdict. A queue item is not a step and has no step number.
+Re-rank the unnumbered queue after each verdict, and refresh the user-facing
+recommended-order block in root `steps.md` in the same turn. A queue item is not a step and has no step number.
 A demoted hypothesis stays discoverable; a refuted one records what failed. A debt carried through
 three completed steps is a decision: do it or record why it remains deferred and what it blocks.
 

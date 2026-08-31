@@ -71,6 +71,10 @@ def main() -> int:
             env_default.get("external_knowledge") == "",
             "default env.json must carry an empty external_knowledge pointer",
         )
+        require(
+            "Рекомендуемая очередность" in (standard / "steps.md").read_text(encoding="utf-8"),
+            "steps.md template must carry the recommended-order block",
+        )
         for relative in ("Steps", "Notes", "Logs", "Context/tools"):
             require((standard / relative).is_dir(), f"canonical scaffold missed {relative}/")
         require(
@@ -314,6 +318,18 @@ def main() -> int:
             bad_step_order.returncode == 1 and "[step-registry-order]" in bad_step_order.stdout,
             "ascending completed-step registry must fail",
             bad_step_order.stdout,
+        )
+        steps_registry.write_text(original_steps, encoding="utf-8")
+
+        # Q-NN is Context-internal: leaking it into a user-facing file must fail.
+        steps_registry.write_text(
+            original_steps + "\nСледующим стоит закрыть Q-01 из очереди.\n", encoding="utf-8"
+        )
+        queue_leak = run("audit_task.py", "APP-001", cwd=parent)
+        require(
+            queue_leak.returncode == 1 and "[queue-leak]" in queue_leak.stdout,
+            "Q-NN outside Context/ must fail the audit",
+            queue_leak.stdout,
         )
         steps_registry.write_text(original_steps, encoding="utf-8")
 
