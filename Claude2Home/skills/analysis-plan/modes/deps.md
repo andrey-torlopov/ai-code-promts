@@ -4,11 +4,7 @@ Use for dependency inventory, version constraints, duplication, compatibility an
 
 ## Knowledge
 
-Load by scope:
-
-- Swift dependency files: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
-- CI or release impact: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
-- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; no mode-specific additions.
 
 ## References
 

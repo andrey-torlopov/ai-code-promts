@@ -4,12 +4,7 @@ Use for onboarding-grade architecture documentation from real project files.
 
 ## Knowledge
 
-Load by scope:
-
-- Swift package or app code: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
-- iOS/macOS app module: `~/.claude/custom/KNOWLEDGE/ios/_rules.md`
-- CI/deployment architecture: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
-- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; no mode-specific additions.
 
 ## References
 

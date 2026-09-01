@@ -7,11 +7,15 @@ to every project on this machine.
 
 1. Read this file.
 2. Read `~/.claude/custom/RESOLVER.md`.
-3. Read exactly one selected `~/.claude/skills/<skill>/SKILL.md`.
-   The router may additionally activate one state layer (`task-lab`) when the request carries a
-   TaskID or a task folder; the layer owns durable task state, never the deliverable.
-4. Load only references, scripts or assets named by that selected skill.
-5. Load only `~/.claude/custom/KNOWLEDGE/<domain>` packs selected by `~/.claude/custom/RESOLVER.md` or the selected skill.
+3. When the router activates the state layer (`task-lab`: a TaskID or a task folder in the
+   request), restore its state before the subject; the layer owns durable task state, never
+   the deliverable.
+4. Use the project's `PROJECT.md` when the repository provides one (injected on SessionStart).
+5. Read exactly one selected `~/.claude/skills/<skill>/SKILL.md`.
+6. Load only references, scripts or assets named by that skill, and only
+   `~/.claude/custom/KNOWLEDGE/<domain>` packs selected by the resolver or the skill —
+   in one batched read, not sequentially.
+7. Project-local `KNOWLEDGE/` or `.claude/skills/` only when the project defines them.
 
 Steps 1 and 2 are delivered deterministically: `~/.claude/hooks/rules-context.sh` injects
 CORE.md and RESOLVER.md into context on SessionStart, resume, clear and compaction. When the
@@ -59,6 +63,11 @@ arithmetic in prose.
 Skills are atomic. A selected skill must not require reading sibling skill folders to complete its core deliverable.
 A state layer activated by the router is not a sibling dependency: it carries no deliverable of its
 own, and the selected skill must still complete its work when the layer is absent.
+
+Read/write cohesion: the skill or agent that edits files owns the reading for those edits.
+Never design a write-only skill and never split read and write across agents. A sequential
+handoff (analysis -> implementation, diagnosis -> fix) is a skill switch inside the same
+context: files already inspected stay inspected.
 
 ## Knowledge Contract
 

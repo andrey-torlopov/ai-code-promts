@@ -26,20 +26,18 @@ Always include deploy gate, rollback assumptions, verification assumptions and `
 
 ## Workflow
 
-1. Read `references/release-gates.md`.
-2. Read `references/rollback.md`.
-3. Load `~/.claude/custom/KNOWLEDGE/devops/_rules.md`,
+1. In one batched read, load `references/deploy-gates.md`,
+   `~/.claude/custom/KNOWLEDGE/devops/_rules.md`,
    `~/.claude/custom/KNOWLEDGE/devops/ci-pipelines.md`,
    `~/.claude/custom/KNOWLEDGE/devops/verification.md` and project-specific deploy docs.
-4. Run preflight checks that do not mutate external state.
-5. Show the deploy gate and wait for confirmation before state-changing operations.
-6. Execute only approved steps.
-7. Verify result and report rollback path.
+2. Run preflight checks that do not mutate external state.
+3. Show the deploy gate and wait for confirmation before state-changing operations.
+4. Execute only approved steps.
+5. Verify result and report rollback path.
 
 ## Local References
 
-- `references/release-gates.md`
-- `references/rollback.md`
+- `references/deploy-gates.md` - release gate block plus rollback contract.
 
 CI and verification facts live in `~/.claude/custom/KNOWLEDGE/devops/` (canonical; do not
 duplicate them here).

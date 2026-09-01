@@ -35,17 +35,31 @@ Set `mode` to one of:
 - Optional output path for a Markdown artifact.
 - Optional acceptance criteria, exclusions and recency requirements.
 
+## Knowledge
+
+Load by detected scope, minimum set; `general` is the fallback, never an addition:
+
+- Swift or `.swift`: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
+- Swift patterns, only on a concrete signal: `~/.claude/custom/KNOWLEDGE/swift/patterns/` (entry: `patterns/_summary-index.md`)
+- iOS or Xcode app structure: `~/.claude/custom/KNOWLEDGE/ios/_rules.md`
+- CI, pipeline or deployment scope: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
+- Shell scripts: `~/.claude/custom/KNOWLEDGE/shell/_rules.md`
+- Python: `~/.claude/custom/KNOWLEDGE/python/_rules.md`
+- Zig (`.zig`, `build.zig`): `~/.claude/custom/KNOWLEDGE/zig/_rules.md`
+- No matching pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
+
+Mode files add only mode-specific packs.
+
 ## Workflow
 
 1. Re-read `~/.claude/custom/RESOLVER.md` only when the rules injection is not visible this
    session and the mode is not already clear.
-2. Read the selected `modes/<mode>.md`.
-3. Read only the references named by that mode.
-4. Load only the minimum `~/.claude/custom/KNOWLEDGE/` packs selected by the mode and scope. When no pack matches the scope, load `~/.claude/custom/KNOWLEDGE/general/_rules.md` instead of proceeding with none.
-5. Inspect real files, diffs or sources before making claims.
-6. Separate confirmed facts from assumptions and blockers.
-7. Produce findings, plan, report or spec in the mode-specific format.
-8. Stop at the analysis deliverable.
+2. Read the selected `modes/<mode>.md`; then, in one batched read, load the references it
+   names and the knowledge packs selected by the table above plus the mode's additions.
+3. Inspect real files, diffs or sources before making claims.
+4. Separate confirmed facts from assumptions and blockers.
+5. Produce findings, plan, report or spec in the mode-specific format.
+6. Stop at the analysis deliverable.
 
 ## Local References
 

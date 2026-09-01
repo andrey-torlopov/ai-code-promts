@@ -3,9 +3,11 @@
 Include:
 
 - `~/.claude/skills/*/SKILL.md`
+- `~/.claude/skills/*/modes/*.md`
 - `~/.claude/skills/*/references/*.md`
 - `~/.claude/skills/*/scripts/*`
 - `~/.claude/skills/*/assets/*`
+- `~/.claude/skills/*/schemas/*`
 - global anchor: `~/.claude/CLAUDE.md`
 - project anchors if present: `CLAUDE.md`, `AGENTS.md`, `PROJECT.md`
 - core files: `~/.claude/custom/CORE.md`, `~/.claude/custom/RESOLVER.md`, `~/.claude/custom/COMMON.md`

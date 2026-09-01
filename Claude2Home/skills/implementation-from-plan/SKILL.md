@@ -39,7 +39,9 @@ For domain work, show loaded knowledge packs. For example:
 1. Read the plan or concrete directive.
 2. Read `references/delivery-pipeline.md`.
 3. Read domain references only when the scope requires them.
-4. Inspect real files before editing.
+4. Inspect real files before editing; files already read in this session's analysis or
+   diagnosis phase count as inspected — re-read only the files being edited when staleness
+   is suspected.
 5. When writing or editing Swift code, load the matching `~/.claude/custom/KNOWLEDGE/swift/patterns/<category>/` pattern file after a concrete signal; never preload all categories.
 6. Make the smallest change that satisfies the accepted scope.
 7. Add or update tests only when requested, required by the plan or necessary for risky behavior.

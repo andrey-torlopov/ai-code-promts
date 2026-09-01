@@ -28,6 +28,12 @@ TRACE:
 - Residual risk:
 ```
 
+## Compact Form
+
+When `TASK` and `PROJECT` are `none` and no domain pack beyond the `general` fallback is
+loaded, a three-line form is sufficient: `SKILL:`, `REASON:`, `STOP:`. Every other case uses
+the full block.
+
 ## Validity
 
 A substantial response is invalid if it omits:
@@ -39,3 +45,6 @@ A substantial response is invalid if it omits:
 5. loaded `KNOWLEDGE` packs or explicit `none`;
 6. stop gate;
 7. deliverable boundary.
+
+Exception: when the compact form applies, `SKILL:`, `REASON:` and `STOP:` satisfy this
+contract.

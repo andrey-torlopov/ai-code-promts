@@ -19,3 +19,5 @@ Every active `SKILL.md` must include:
 - The selected skill must not require sibling skill folders.
 - Cross-skill mentions are allowed only as routing notes or follow-up suggestions.
 - Domain-specific rules belong in `~/.claude/custom/KNOWLEDGE/`, not in new top-level skills.
+- A skill that changes files must own the reading required for those changes; do not design
+  a skill that assumes another skill's reads.

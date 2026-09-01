@@ -11,5 +11,6 @@ Read order:
 
 1. `~/.claude/custom/CORE.md`
 2. `~/.claude/custom/RESOLVER.md`
-3. Selected `~/.claude/skills/<skill>/SKILL.md`
-4. Declared references and `~/.claude/custom/KNOWLEDGE/` packs only
+3. Project `PROJECT.md` when the repository provides one
+4. Selected `~/.claude/skills/<skill>/SKILL.md`
+5. Declared references and `~/.claude/custom/KNOWLEDGE/` packs only

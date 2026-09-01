@@ -23,3 +23,6 @@ Destructive work includes:
 - irreversible cache cleanup.
 
 If a dry run is possible, run or propose the dry run first.
+
+Exception (CORE rule 5): when the user explicitly requested that exact destructive action,
+the request itself is the confirmation — show the block for the record and proceed.

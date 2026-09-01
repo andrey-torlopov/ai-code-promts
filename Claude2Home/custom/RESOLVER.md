@@ -8,14 +8,10 @@ the safest stop gate.
 
 ## Invocation
 
-The seven workflow skills below, plus the `task-lab` state layer, are installed as native user
-skills in `~/.claude/skills/`.
-Selecting a row means invoking that skill through the runtime's skill mechanism when one exists,
-otherwise reading `~/.claude/skills/<skill>/SKILL.md` directly. Both paths are equivalent;
-the `SKILL CONTEXT` block is mandatory either way.
-
-A project may override a global skill by defining a skill with the same name in its own
-`.claude/skills/`. The project version wins.
+Selecting a row means invoking that skill through the runtime's skill mechanism, or reading
+`~/.claude/skills/<skill>/SKILL.md` directly — equivalent paths; the `SKILL CONTEXT` block is
+mandatory either way. A project skill with the same name in `.claude/skills/` wins over the
+global one.
 
 ## Task State Layer
 
@@ -53,17 +49,17 @@ layer. Do not scaffold a folder for work that fits one short session; say why in
 
 ### Composition
 
-1. State before subject: resolve the folder, run `<task-lab>/scripts/restore_task.py`, perform the
-   drift check, and only then read the project.
-2. The routing table still picks the deliverable owner. The layer adds state, not a second
+1. State before subject: resolve the folder, run `<task-lab>/scripts/restore_task.py`, do the
+   drift check, only then read the project.
+2. The routing table still picks the deliverable owner; the layer adds state, never a second
    deliverable, and never overrides that skill's stop gate.
 3. Every durable change inside the task folder happens under one open `Steps/Step-NN.md` and
-   closes with that file's «Результат» block. A question the reply itself answers opens no step.
-4. Artifacts land by kind: exports in `Results/`, verified claims as `Knowledge/F-NN`, open ones as
-   `H-NN`, raw captured output in `Logs/`, observation journals in `Notes/`, task-local scripts in
-   `tools/`, incoming material in `Inbox/`.
-5. Project files outside the task folder keep their normal location; the step result records what
-   changed there.
+   closes with its «Результат» block; a question the reply itself answers opens no step.
+4. Artifacts land by kind: exports in `Results/`, verified claims as `Knowledge/F-NN`, open ones
+   as `H-NN`, raw output in `Logs/`, journals in `Notes/`, task-local scripts in `tools/`,
+   incoming material in `Inbox/`.
+5. Project files outside the task folder keep their normal location; the step result records
+   what changed there.
 6. Finish the turn with the skill's audit and restore before reporting; report the folder path.
 
 A request whose entire deliverable is the folder itself — create, resume, audit, restructure, close
@@ -113,6 +109,10 @@ TRACE:
 - Residual risk:
 ```
 
+When `TASK` and `PROJECT` are `none` and no domain pack beyond the `general` fallback is
+loaded, a three-line form is sufficient: `SKILL:`, `REASON:`, `STOP:`. Every other case uses
+the full block.
+
 ## Routing Table
 
 Row order aids scanning; matching is by specificity (see the meta-rule above), not by table
@@ -138,8 +138,8 @@ position.
    even when the request says analyze, study or investigate.
 3. An audit of skills, instructions, routing or knowledge packs routes to `skill-maintenance`
    before `analysis-plan` mode `review`.
-4. If a request contains analysis and code changes, choose `analysis-plan` first unless there is an approved plan or a concrete edit directive.
-5. If a request contains debug and "fix it now", choose `debug-diagnose` first, then hand off to `implementation-from-plan` only after a root cause is stated.
+4. If a request contains analysis and code changes, choose `analysis-plan` first unless there is an approved plan or a concrete edit directive. The later implementation is a skill switch inside the same context: files already inspected stay inspected.
+5. If a request contains debug and "fix it now", choose `debug-diagnose` first, then hand off to `implementation-from-plan` only after a root cause is stated. That handoff is a skill switch inside the same context, not a new agent or session.
 6. Deploy/release/publish/rollout never routes to `mac-local-ops`.
 7. Destructive local operations require the destructive-action confirmation gate.
 8. `analysis-plan` does not change project files except an explicitly requested Markdown artifact.
@@ -167,24 +167,7 @@ position.
     explicit selection and wins. A plugin skill that has no local counterpart — Office documents,
     scheduling, artifacts, browser work — is used normally and consumes no routing row.
 
-## Canonical Read Order
+## Read Order
 
-```text
-~/.claude/CLAUDE.md  (or project CLAUDE.md / AGENTS.md)
-  -> ~/.claude/custom/CORE.md
-  -> ~/.claude/custom/RESOLVER.md
-  -> ~/.claude/skills/task-lab/ when the task state layer is active (state before subject)
-  -> project PROJECT.md when the repository provides one (injected on SessionStart)
-  -> ~/.claude/skills/<selected-skill>/SKILL.md
-  -> references/scripts/assets named by selected skill
-  -> ~/.claude/custom/KNOWLEDGE/<domain> packs named by resolver or selected skill
-  -> project-local KNOWLEDGE/ or .claude/skills/ only when the project defines them
-```
-
-Forbidden active read order:
-
-```text
-selected skill -> sibling skill
-selected skill -> legacy prompt layers
-selected skill -> random role notes
-```
+The canonical read order lives in `~/.claude/custom/CORE.md`. Forbidden active reads:
+selected skill -> sibling skill, legacy prompt layers or random role notes.

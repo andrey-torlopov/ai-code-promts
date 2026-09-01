@@ -49,7 +49,7 @@ Not copied at all: this `README.md` and `init_claude.sh`.
     ├── CORE.md               SSOT for global rules
     ├── RESOLVER.md           routing table: request signal -> skill
     ├── COMMON.md             compatibility bridge
-    ├── _core/                skill-context, handoff, validation, destructive-action policy
+    ├── _core/                skill-context, instruction-style, validation, destructive-action policy
     │   └── active-skills.txt registry read by all three linters
     └── KNOWLEDGE/            lazy-loaded domain packs (swift, ios, devops, shell, python, zig)
                               plus general/ - the fallback pack when no domain matches
@@ -97,6 +97,10 @@ The `Bash(...)` deny rules and `hooks/bash-guard.sh` are path-independent either
 
 Edit here, then re-run `./init_claude.sh`. Editing `~/.claude/custom/` directly makes the
 source tree stale; the installer overwrites those edits on the next run.
+
+Edit the injected files (`custom/CORE.md`, `custom/RESOLVER.md`) rarely and in batches, and
+keep them free of volatile content (dates, counters): their bytes are a stable prompt-cache
+prefix for every session, and every change invalidates that cache.
 
 ## Validation
 

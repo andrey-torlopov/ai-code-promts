@@ -4,12 +4,8 @@ Use for prioritized refactoring plans with risk, dependencies and execution orde
 
 ## Knowledge
 
-Load by scope:
-
-- Swift: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
-- Swift patterns only when signals are present: `~/.claude/custom/KNOWLEDGE/swift/patterns/<category>/`
-- iOS architecture: `~/.claude/custom/KNOWLEDGE/ios/architecture-feature-first.md`
-- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; plus, for iOS feature-first architecture scope:
+`~/.claude/custom/KNOWLEDGE/ios/architecture-feature-first.md`.
 
 ## References
 

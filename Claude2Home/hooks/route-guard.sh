@@ -3,8 +3,10 @@
 # must start with the SKILL CONTEXT block (CORE.md contract). This hook makes the contract
 # mechanical: no block in the session transcript -> the edit is denied with instructions.
 #
-# Fail-open by design: any parse failure, missing transcript or missing python3 allows the
+# Fail-open by design: any parse failure, missing transcript or missing jq allows the
 # tool call. It blocks only on positive evidence that routing was skipped.
+# After the first success the verdict is cached in a per-transcript flag file, so the
+# steady-state cost is one existence check.
 #
 # Escape hatch: CLAUDE_ROUTE_GUARD=off disables the gate.
 
@@ -19,18 +21,10 @@ if [ -z "$IN" ]; then
   exit 0
 fi
 
-PARSED="$(printf '%s' "$IN" | python3 -c '
-import json, sys
-try:
-    d = json.load(sys.stdin)
-    print(d.get("transcript_path", ""))
-    print((d.get("tool_input") or {}).get("file_path", ""))
-except Exception:
-    pass
-' 2>/dev/null || true)"
+command -v jq >/dev/null 2>&1 || exit 0
 
-TRANSCRIPT="$(printf '%s\n' "$PARSED" | sed -n 1p)"
-FILE="$(printf '%s\n' "$PARSED" | sed -n 2p)"
+TRANSCRIPT="$(printf '%s' "$IN" | jq -r '.transcript_path // empty' 2>/dev/null || true)"
+FILE="$(printf '%s' "$IN" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)"
 
 # Never gate scratch space or Claude-internal session data (memory, todos, transcripts).
 case "$FILE" in
@@ -41,6 +35,10 @@ if [ -z "$TRANSCRIPT" ] || [ ! -f "$TRANSCRIPT" ]; then
   exit 0
 fi
 
+# A block never disappears from a transcript, so one success is cached for the session.
+FLAG="${TMPDIR:-/tmp}/route-guard-ok-$(basename "$TRANSCRIPT")"
+[ -f "$FLAG" ] && exit 0
+
 # Unknown transcript format or nothing flushed yet: fail open rather than false-block.
 if ! grep -q '"role":"assistant"' "$TRANSCRIPT" 2>/dev/null; then
   exit 0
@@ -50,6 +48,7 @@ fi
 # fields on assistant transcript lines, so the injected rules (user/system lines) and this
 # hook's own message can never satisfy the gate.
 if grep '"role":"assistant"' "$TRANSCRIPT" 2>/dev/null | grep 'SKILL:' | grep -q 'STOP:'; then
+  : > "$FLAG" 2>/dev/null || true
   exit 0
 fi
 

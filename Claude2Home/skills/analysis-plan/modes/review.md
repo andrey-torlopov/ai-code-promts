@@ -4,21 +4,11 @@ Use for read-only code, diff or PR review.
 
 ## Knowledge
 
-Load by scope:
-
-- Swift: `~/.claude/custom/KNOWLEDGE/swift/_rules.md`
-- Swift patterns on signal: `~/.claude/custom/KNOWLEDGE/swift/patterns/<category>/`
-- CI or deploy config review: `~/.claude/custom/KNOWLEDGE/devops/_rules.md`
-- Shell scripts: `~/.claude/custom/KNOWLEDGE/shell/_rules.md`
-- Python: `~/.claude/custom/KNOWLEDGE/python/_rules.md`
-- No matching domain pack: `~/.claude/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; no mode-specific additions.
 
 ## References
 
-- `../references/review-checklist.md`
-- `../references/review-severity-model.md`
-- `../references/diff-review-mode.md` - when reviewing a diff or PR
-- `../references/critical-only-review-mode.md` - when the user asks for critical-only findings
+- `../references/review-guide.md` - checklist, severity model, diff and critical-only procedures
 - Swift scope only: `../references/swift-concurrency-review-rules.md`, `../references/swift-pattern-loading.md`
 
 ## Workflow
