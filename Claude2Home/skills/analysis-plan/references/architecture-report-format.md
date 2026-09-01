@@ -3,7 +3,7 @@
 Use this when the requested deliverable is onboarding or architecture documentation.
 
 ```markdown
-# Swift Architecture Report
+# Architecture Report
 
 ## Scope
 

@@ -61,11 +61,11 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 2. The `SessionStart` hook `rules-context.sh` injects `CORE.md` and `RESOLVER.md` into context
    deterministically (also after resume, clear and compaction); the `# AI Runtime` section in
    `CLAUDE.md` stays as the fallback pointer for installs without the hook.
-3. `RESOLVER.md` picks exactly one skill from `~/.claude/skills/`.
-4. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names; when none match
-   the scope, the `general/` fallback pack.
-5. When the repository provides `PROJECT.md` (or `.claude/PROJECT.md`), the `SessionStart`
+3. When the repository provides `PROJECT.md` (or `.claude/PROJECT.md`), the `SessionStart`
    hook injects it; without it nothing extra is read.
+4. `RESOLVER.md` picks exactly one skill from `~/.claude/skills/`.
+5. That skill loads only the `~/.claude/custom/KNOWLEDGE/` packs it names; when none match
+   the scope, the `general/` fallback pack.
 6. When the request carries a TaskID or points into a task folder and a `task-lab` skill is
    installed, `RESOLVER.md` also activates it as a state layer: the folder is resolved and
    restored before the subject, and the selected skill's deliverable is recorded there.
@@ -101,8 +101,8 @@ source tree stale; the installer overwrites those edits on the next run.
 ## Validation
 
 ```sh
-sh skills/skill-maintenance/scripts/skill-lint.sh .        # this source tree
-sh ~/.claude/skills/skill-maintenance/scripts/skill-lint.sh # installed system
+sh skills/skill-maintenance/scripts/validate-system.sh .        # this source tree
+sh ~/.claude/skills/skill-maintenance/scripts/validate-system.sh # installed system
 ```
 
 Checks anchors, the registry, every registered skill, and that every absolute

@@ -7,7 +7,8 @@ Use for auditing AI instruction files, skills, stale references and non-atomic d
 - `../references/skill-audit-rules.md`
 - `../references/stale-reference-signatures.md`
 - `../references/skill-contract.md`
-- `../scripts/skill-lint.sh`
+- `~/.claude/custom/_core/validation.md` - structural checks and regression prompts
+- `../scripts/validate-system.sh`
 
 ## Workflow
 

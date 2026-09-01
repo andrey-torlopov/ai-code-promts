@@ -9,10 +9,13 @@
 7. Avoid flaky tests based on sleep; prefer deterministic waits.
 8. Use typed models for stable API data instead of `[String: Any]`.
 9. Avoid `String(describing:)`, `"\(T.self)"` and `"\(type(of: x))"` in hot paths, at startup and as cache or registry keys; prefer `_typeName`, `ObjectIdentifier` or `CustomStringConvertible` (details: `patterns/performance/string-describing-reflection.md`).
-10. Verification should be focused and named explicitly.
+10. Verification should be focused and named explicitly; commands and the build gate live in `verification.md` in this pack.
 11. Load pattern categories only when concrete signals appear (entry: `patterns/_summary-index.md`).
 12. For any crash, hang or stackshot artifact, classify with `debugging/crash-triage.md` before decoding constants or reading a backtrace.
 13. Decode hex constants from `debugging/hex-codes.md` using the field they came from; never guess a code and never quote a community-only code as documented.
 14. Treat a decoded termination code as the kill reason, not the root cause; the root cause stays in the backtrace of the blocked or faulting thread.
 15. Do not quote an unsymbolicated backtrace as evidence; state symbolication status first.
 16. When backtraces differ across otherwise identical crashes, escalate to `debugging/memory-diagnostics.md` instead of reading individual stacks.
+17. Avoid force unwraps and `try!` outside narrow, justified test setup; avoid empty `catch`.
+18. Mark classes `final` unless inheritance is intended; prefer `@MainActor` for UI state over manual `DispatchQueue.main`.
+19. For escaping closures, check retain cycles and use capture lists when needed.

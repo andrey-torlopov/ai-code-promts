@@ -1,7 +1,7 @@
 # Architecture Document Format
 
 ```markdown
-# Swift Architecture Document
+# Architecture Document
 
 ## Scope
 

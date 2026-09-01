@@ -5,8 +5,8 @@ Use these checks after instruction-system changes.
 ## Automated Check
 
 ```sh
-sh ~/.claude/skills/skill-maintenance/scripts/skill-lint.sh            # installed system
-sh <Home>/skills/skill-maintenance/scripts/skill-lint.sh <Home>   # source tree
+sh ~/.claude/skills/skill-maintenance/scripts/validate-system.sh            # installed system
+sh <Home>/skills/skill-maintenance/scripts/validate-system.sh <Home>   # source tree
 ```
 
 It validates anchors, the registry, every registered skill and every `~/.claude/...`

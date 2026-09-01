@@ -1,7 +1,7 @@
 # Refactor Plan Report Format
 
 ```markdown
-# Swift Refactor Plan
+# Refactor Plan
 
 ## Scope
 

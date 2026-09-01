@@ -1,7 +1,7 @@
 # Dependency Check Report Format
 
 ```markdown
-# Swift Dependency Check Report
+# Dependency Check Report
 
 ## Scope
 
@@ -31,3 +31,6 @@
 
 ## Verification
 ```
+
+Adapt manager-specific rows (SwiftPM/CocoaPods/Carthage) to the package managers actually
+detected in the project.

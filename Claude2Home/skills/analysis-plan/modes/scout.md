@@ -13,7 +13,7 @@ Load by scope:
 
 ## References
 
-- `../references/ios-detection-patterns.md`
+- `../references/ios-detection-patterns.md` - only when Apple-platform signals are present
 - `../references/repo-scout-report-template.md`
 - `../references/evidence-rules.md`
 

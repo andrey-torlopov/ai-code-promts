@@ -9,11 +9,14 @@ Skill root: `~/.claude/skills/analysis-plan/`. Reference paths such as `referenc
 `scripts/...` or `../references/...` resolve against the file that names them, inside this
 skill root - never against the current project directory.
 
-This skill is read-only except for explicitly requested Markdown artifacts.
+This skill is read-only except for explicitly requested Markdown artifacts and, with
+explicit user consent, visual-companion HTML mockups under a temporary directory
+(`references/visual-companion.md`).
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `~/.claude/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `~/.claude/custom/_core/skill-context.md`).
 Set `mode` to one of:
 
 - `plan`
@@ -34,7 +37,8 @@ Set `mode` to one of:
 
 ## Workflow
 
-1. Read `~/.claude/custom/RESOLVER.md` only if the mode is not already clear.
+1. Re-read `~/.claude/custom/RESOLVER.md` only when the rules injection is not visible this
+   session and the mode is not already clear.
 2. Read the selected `modes/<mode>.md`.
 3. Read only the references named by that mode.
 4. Load only the minimum `~/.claude/custom/KNOWLEDGE/` packs selected by the mode and scope. When no pack matches the scope, load `~/.claude/custom/KNOWLEDGE/general/_rules.md` instead of proceeding with none.
@@ -55,7 +59,8 @@ Mode files name additional local references.
 
 Return or write the requested artifact. For reviews, findings come first and summaries are secondary.
 
-For substantial work, finish with `TRACE` from `~/.claude/custom/_core/skill-context.md`.
+For substantial work, finish with the `TRACE` block (template in the injected RESOLVER.md;
+fallback: `~/.claude/custom/_core/skill-context.md`).
 
 ## Stop Conditions
 

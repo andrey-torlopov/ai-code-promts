@@ -18,6 +18,7 @@ domain material into `KNOWLEDGE/<domain>/`.
 - Test:
 - Lint:
 - Format:
+- Build policy (CORE rule 9): `builds allowed for verification` or `builds need per-request approval`; absent means per-request approval.
 
 ## Layout
 

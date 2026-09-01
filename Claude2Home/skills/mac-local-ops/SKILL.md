@@ -13,7 +13,8 @@ This skill is atomic and must not depend on other skill folders.
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `~/.claude/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `~/.claude/custom/_core/skill-context.md`).
 For shell tasks, show whether `~/.claude/custom/KNOWLEDGE/shell/_rules.md` was loaded.
 For destructive work, show the destructive-action gate before executing.
 
@@ -26,7 +27,7 @@ For destructive work, show the destructive-action gate before executing.
 ## Workflow
 
 1. Inspect before acting.
-2. Read `references/destructive-actions-policy.md`.
+2. Read `~/.claude/custom/_core/destructive-actions-policy.md`.
 3. Load `~/.claude/custom/KNOWLEDGE/shell/_rules.md` when shell, zsh, mise or brew behavior matters.
 4. If the request is unclear, produce a safe plan or ask one narrow question.
 5. Prefer inventory and dry-run for file operations.
@@ -34,9 +35,9 @@ For destructive work, show the destructive-action gate before executing.
 7. Verify the result.
 8. Report commands run, changed paths and rollback notes.
 
-## Local References
+## References
 
-- `references/destructive-actions-policy.md` - confirmation gate.
+- `~/.claude/custom/_core/destructive-actions-policy.md` - confirmation gate.
 - `references/completion-format.md` - final report format.
 
 ## Output

@@ -36,6 +36,12 @@ injection is visible, do not re-read the two files; when it is not, read them di
 6. Stop at Deliverable Boundary: analysis, review and planning do not imply implementation.
 7. No Silent Deploy: release, deploy, publish and rollout require the `deploy-ops` gated flow.
 8. Never Touch Global Config Silently: changes under `~/.claude/` require explicit user intent.
+9. No Unrequested Builds: never launch a project build — `xcodebuild`, `swift build`,
+   `zig build`, `npm run build`, `make`, Gradle, or any equivalent compile step, including a
+   test command that triggers one — unless the current user request explicitly asks for a
+   build (or for an action that names one, such as a build benchmark), or the project's
+   `PROJECT.md` declares a build policy that allows builds. These two are the only grant
+   sources. Without a grant, name the command that would run and report it as not executed.
 
 ## Language
 
@@ -45,6 +51,8 @@ Instruction files may stay English when that improves interoperability with agen
 ## Math
 
 When presenting calculated metrics, show numerator, denominator and total.
+Compute non-trivial calculations with a script and show its output instead of doing
+arithmetic in prose.
 
 ## Skill Contract
 
@@ -63,8 +71,10 @@ Loaded and skipped knowledge must be visible in `SKILL CONTEXT`.
 ## Project Context Contract
 
 A repository may provide `PROJECT.md` in its root, or `.claude/PROJECT.md` as an explicit
-override slot. It holds verified facts and project-specific rules: stack, commands, layout,
-CI, glossary, constraints, paths not to touch and local knowledge packs.
+override slot. It holds verified facts and project-specific rules: stack, commands, build
+policy, layout, CI, glossary, constraints, paths not to touch and local knowledge packs.
+A `Build policy` line is the standing grant for rule 9; when it is absent, builds stay
+gated on the explicit request.
 
 1. Present: use it before substantial work and declare its path in `SKILL CONTEXT` as `PROJECT:`.
 2. Absent: proceed on the global path. Do not search further and do not ask.
@@ -83,4 +93,6 @@ Before substantial work, output a short `SKILL CONTEXT` block.
 After substantial work, report references read, knowledge read, patterns or policies applied, verification and residual risk.
 
 Enforcement is mechanical: `~/.claude/hooks/route-guard.sh` denies Write and Edit tool calls
-until the block has been emitted in the session. Emit it before the first file change.
+until the block has been emitted in the session. Emit it in its own message before the first
+file change: the guard reads the flushed transcript, so a block emitted in the same message
+as the edit may not be visible to it yet.

@@ -14,9 +14,11 @@ Load by scope:
 ## References
 
 - `../references/module-analysis-checklist.md`
-- `../references/module-architecture-doc-format.md`
-- `../references/architecture-report-format.md`
+- `../references/module-architecture-doc-format.md` - output format for a single module or package scope
+- `../references/architecture-report-format.md` - output format for whole-repository onboarding documentation
 - `../references/evidence-rules.md`
+
+Pick exactly one output format by scope; do not load both.
 
 ## Workflow
 

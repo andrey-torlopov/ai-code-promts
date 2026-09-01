@@ -123,7 +123,7 @@ done
 # --- validation -------------------------------------------------------------
 if [ "$DRY_RUN" -eq 0 ]; then
   say ""
-  if sh "$TARGET/skills/skill-maintenance/scripts/skill-lint.sh" "$TARGET"; then
+  if sh "$TARGET/skills/skill-maintenance/scripts/validate-system.sh" "$TARGET"; then
     say "validation: ok"
   else
     say "validation: FAILED (see findings above)"

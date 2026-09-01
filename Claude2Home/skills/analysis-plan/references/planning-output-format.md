@@ -21,7 +21,7 @@ Next Step:
 For saved Markdown, use:
 
 ```markdown
-# Swift Analysis Plan
+# Analysis Plan
 
 ## Task
 

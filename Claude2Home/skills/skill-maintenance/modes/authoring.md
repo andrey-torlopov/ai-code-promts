@@ -9,6 +9,7 @@ Use for creating or updating Markdown-only skill folders.
 - `../references/validation-checklist.md`
 - `../references/interaction-guide.md`
 - `../references/skill-contract.md`
+- `~/.claude/custom/_core/instruction-style.md` - entry-point and SSOT layout rules
 - `../scripts/init_skill.sh`
 
 ## Workflow

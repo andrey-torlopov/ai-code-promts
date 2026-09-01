@@ -2,8 +2,8 @@
 # Full validator for the global instruction system.
 #
 # Usage:
-#   sh skill-lint.sh                 # validate the installed system in ~/.claude
-#   sh skill-lint.sh <root>          # validate a Home template source tree
+#   sh validate-system.sh            # validate the installed system in ~/.claude
+#   sh validate-system.sh <root>     # validate a Home template source tree
 #
 # <root> is a directory that contains custom/ and skills/, i.e. either ~/.claude
 # or a Home template checkout.
@@ -15,7 +15,7 @@ CUSTOM="$ROOT/custom"
 SKILLS="$ROOT/skills"
 REGISTRY="$CUSTOM/_core/active-skills.txt"
 FAILED=0
-LIST_FILE="${TMPDIR:-/tmp}/skill-lint-$$.list"
+LIST_FILE="${TMPDIR:-/tmp}/validate-system-$$.list"
 
 fail() {
   echo "CRITICAL $1"

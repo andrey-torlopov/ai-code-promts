@@ -13,7 +13,8 @@ This skill diagnoses failures. It does not silently transition into implementati
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `~/.claude/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `~/.claude/custom/_core/skill-context.md`).
 Set `mode` to `build`, `ci`, `runtime` or `environment`.
 
 ## Inputs
@@ -28,7 +29,9 @@ Set `mode` to `build`, `ci`, `runtime` or `environment`.
 1. Read the selected `modes/<mode>.md`.
 2. Read only the references named by that mode.
 3. Inspect logs and files before claiming root cause.
-4. Reproduce or narrow the failure when safe and useful.
+4. Reproduce or narrow the failure when safe and useful. A reproduction that launches a
+   project build needs the CORE rule 9 grant (explicit request or `PROJECT.md` build policy);
+   without it, diagnose from existing logs and name the command that would verify.
 5. Separate symptom, evidence, root cause, fix plan and verification.
 6. Stop with a diagnosis unless the user explicitly asks to implement the fix after the root cause is stated.
 

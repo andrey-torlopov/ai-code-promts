@@ -17,10 +17,9 @@ Load by scope:
 
 - `../references/review-checklist.md`
 - `../references/review-severity-model.md`
-- `../references/diff-review-mode.md`
-- `../references/critical-only-review-mode.md`
-- `../references/swift-concurrency-review-rules.md`
-- `../references/swift-pattern-loading.md`
+- `../references/diff-review-mode.md` - when reviewing a diff or PR
+- `../references/critical-only-review-mode.md` - when the user asks for critical-only findings
+- Swift scope only: `../references/swift-concurrency-review-rules.md`, `../references/swift-pattern-loading.md`
 
 ## Workflow
 

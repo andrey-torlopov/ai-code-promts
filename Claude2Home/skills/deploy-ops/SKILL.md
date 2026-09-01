@@ -13,7 +13,8 @@ This skill owns high-blast-radius release and rollout operations.
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `~/.claude/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `~/.claude/custom/_core/skill-context.md`).
 Always include deploy gate, rollback assumptions, verification assumptions and `No silent deploy`.
 
 ## Inputs
@@ -27,20 +28,21 @@ Always include deploy gate, rollback assumptions, verification assumptions and `
 
 1. Read `references/release-gates.md`.
 2. Read `references/rollback.md`.
-3. Read `references/ci-cd.md`.
-4. Read `references/verification.md`.
-5. Load `~/.claude/custom/KNOWLEDGE/devops/_rules.md` and project-specific deploy docs.
-6. Run preflight checks that do not mutate external state.
-7. Show the deploy gate and wait for confirmation before state-changing operations.
-8. Execute only approved steps.
-9. Verify result and report rollback path.
+3. Load `~/.claude/custom/KNOWLEDGE/devops/_rules.md`,
+   `~/.claude/custom/KNOWLEDGE/devops/ci-pipelines.md`,
+   `~/.claude/custom/KNOWLEDGE/devops/verification.md` and project-specific deploy docs.
+4. Run preflight checks that do not mutate external state.
+5. Show the deploy gate and wait for confirmation before state-changing operations.
+6. Execute only approved steps.
+7. Verify result and report rollback path.
 
 ## Local References
 
 - `references/release-gates.md`
 - `references/rollback.md`
-- `references/ci-cd.md`
-- `references/verification.md`
+
+CI and verification facts live in `~/.claude/custom/KNOWLEDGE/devops/` (canonical; do not
+duplicate them here).
 
 ## Output
 
