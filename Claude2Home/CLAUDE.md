@@ -46,10 +46,3 @@ Rules:
 - Trivial conversational turns skip the router; substantial work does not.
 - A TaskID (`123`, `APP-001`) or a task-folder path is never a trivial turn: route it and let
   `RESOLVER.md` decide whether the optional `task-lab` state layer applies.
-
-# graphify
-- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
-When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else.
-When `graphify-out/` exists in the project, a question about the codebase or corpus content is a
-graphify query first (declare `SKILL: graphify (mode=direct)`); without a built graph, such
-questions follow the normal `RESOLVER.md` routing.

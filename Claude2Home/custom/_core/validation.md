@@ -25,7 +25,7 @@ reference target. Exit code 0 means clean.
 9. Deploy/release/publish/rollout routes only to `deploy-ops`.
 10. Xcode build-time optimization routes to `swift-build-optimization`.
 11. Every registered skill in `~/.claude/custom/_core/active-skills.txt` exists in `~/.claude/skills/`.
-12. Skills not in the registry (graphify, plugin skills) are never structurally linted.
+12. Skills not in the registry (plugin skills) are never structurally linted.
 13. Every absolute `~/.claude/...` reference resolves to an existing file.
 14. `~/.claude/settings.json` hook paths point at existing scripts in `~/.claude/hooks/`.
 15. `~/.claude/settings.json` registers the `SessionStart` project-context hook and

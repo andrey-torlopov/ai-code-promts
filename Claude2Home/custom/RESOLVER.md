@@ -80,11 +80,8 @@ A request whose entire deliverable is the folder itself — create, resume, audi
 
 `task-lab` is shipped and versioned by this instruction system: it is listed in
 `~/.claude/custom/_core/active-skills.txt` and structurally linted like any workflow skill, even
-though it never consumes a routing row. `graphify` is shipped too but stays out of the registry and
-out of the structural lint; it is invoked directly, not through this table. A direct invocation
-outside the table still emits the context block, declaring `SKILL: graphify (mode=direct)`. When
-`graphify-out/` exists and the request is a question about the corpus content, treat it as a
-graphify query first; without a built graph, route normally.
+though it never consumes a routing row. A skill invoked directly outside this table (one that
+consumes no routing row) still emits the context block, declaring `SKILL: <name> (mode=direct)`.
 
 ## Skill Context Template
 
@@ -141,21 +138,18 @@ position.
    even when the request says analyze, study or investigate.
 3. An audit of skills, instructions, routing or knowledge packs routes to `skill-maintenance`
    before `analysis-plan` mode `review`.
-4. A question about corpus or codebase content routes to `graphify` as a direct query instead
-   of `analysis-plan` mode `scout`/`architecture` when `graphify-out/` exists or `/graphify`
-   is named; without a built graph it follows the table.
-5. If a request contains analysis and code changes, choose `analysis-plan` first unless there is an approved plan or a concrete edit directive.
-6. If a request contains debug and "fix it now", choose `debug-diagnose` first, then hand off to `implementation-from-plan` only after a root cause is stated.
-7. Deploy/release/publish/rollout never routes to `mac-local-ops`.
-8. Destructive local operations require the destructive-action confirmation gate.
-9. `analysis-plan` does not change project files except an explicitly requested Markdown artifact.
-10. `implementation-from-plan` does not change architecture beyond the approved plan or concrete directive.
-11. Do not create a new top-level skill for a new language or stack; add `~/.claude/custom/KNOWLEDGE/<domain>/` first.
-12. Xcode build-time optimization routes to `swift-build-optimization` before generic `analysis-plan`, `debug-diagnose` or `implementation-from-plan`; its approval gate decides whether the turn stops at a plan or proceeds to edits.
-13. `task-lab` never replaces the deliverable owner; it wraps it. Only a request about the task folder itself routes to `task-lab` alone.
-14. When the layer is active, the deliverable is written into the task folder, but the selected skill's stop gate still decides whether project files may change at all.
-15. An unresolvable TaskID stops the turn: ask for the path or the search root instead of inventing a folder.
-16. On a name or signal collision, a skill from `~/.claude/skills/` wins over a plugin or built-in
+4. If a request contains analysis and code changes, choose `analysis-plan` first unless there is an approved plan or a concrete edit directive.
+5. If a request contains debug and "fix it now", choose `debug-diagnose` first, then hand off to `implementation-from-plan` only after a root cause is stated.
+6. Deploy/release/publish/rollout never routes to `mac-local-ops`.
+7. Destructive local operations require the destructive-action confirmation gate.
+8. `analysis-plan` does not change project files except an explicitly requested Markdown artifact.
+9. `implementation-from-plan` does not change architecture beyond the approved plan or concrete directive.
+10. Do not create a new top-level skill for a new language or stack; add `~/.claude/custom/KNOWLEDGE/<domain>/` first.
+11. Xcode build-time optimization routes to `swift-build-optimization` before generic `analysis-plan`, `debug-diagnose` or `implementation-from-plan`; its approval gate decides whether the turn stops at a plan or proceeds to edits.
+12. `task-lab` never replaces the deliverable owner; it wraps it. Only a request about the task folder itself routes to `task-lab` alone.
+13. When the layer is active, the deliverable is written into the task folder, but the selected skill's stop gate still decides whether project files may change at all.
+14. An unresolvable TaskID stops the turn: ask for the path or the search root instead of inventing a folder.
+15. On a name or signal collision, a skill from `~/.claude/skills/` wins over a plugin or built-in
     skill of the same purpose, because only the local one carries the `SKILL CONTEXT` and `TRACE`
     contract. Known collisions and their winners:
 
@@ -169,7 +163,7 @@ position.
 | deploy, release checklist | `deploy-ops` | `engineering:deploy-checklist` |
 | create or audit a skill | `skill-maintenance` | `anthropic-skills:skill-creator` |
 
-17. Rule 16 yields to rule 1: naming a plugin skill explicitly (`/engineering:code-review`) is an
+16. Rule 15 yields to rule 1: naming a plugin skill explicitly (`/engineering:code-review`) is an
     explicit selection and wins. A plugin skill that has no local counterpart — Office documents,
     scheduling, artifacts, browser work — is used normally and consumes no routing row.
 

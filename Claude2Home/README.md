@@ -43,7 +43,7 @@ Not copied at all: this `README.md` and `init_claude.sh`.
 │   ├── rules-context.sh      SessionStart: injects CORE.md + RESOLVER.md deterministically
 │   ├── project-context.sh    SessionStart: injects PROJECT.md when the repository has one
 │   └── skill-context-lint.sh Stop: every active skill still requires SKILL CONTEXT + TRACE
-├── skills/                   7 workflow skills + task-lab (state layer) + graphify,
+├── skills/                   7 workflow skills + task-lab (state layer),
 │                             auto-discovered by Claude Code
 └── custom/
     ├── CORE.md               SSOT for global rules
