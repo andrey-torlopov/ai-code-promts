@@ -12,6 +12,9 @@ Prefer focused verification and name the command in the report.
    comptime code and the chain of instantiations is unclear.
 7. `zig env` when the failure looks like a toolchain, cache or target problem.
 8. If verification is not run, report the exact blocker instead of implying success.
+9. Launching `zig build`, `zig build test` or `zig test` is gated by CORE rule 9: it needs
+   the user's explicit request or a `PROJECT.md` build policy. `zig version`, `zig env` and
+   `zig fmt --check` are not builds and stay free.
 
 Notes:
 

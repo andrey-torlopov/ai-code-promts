@@ -115,7 +115,7 @@ esac
   die "not a Codex Home template: missing route-guard hook"
 [ -f "$SRC/scripts/merge_hooks.py" ] || \
   die "not a Codex Home template: missing hooks merger"
-[ -f "$SRC/skills/skill-maintenance/scripts/skill-lint.sh" ] || \
+[ -f "$SRC/skills/skill-maintenance/scripts/validate-system.sh" ] || \
   die "not a Codex Home template: missing validator"
 
 PYTHON_BIN="$(command -v python3 || true)"
@@ -270,7 +270,7 @@ fi
 
 if [ "$DRY_RUN" -eq 0 ]; then
   say ""
-  if CODEX_HOME="$TARGET" sh "$TARGET/skills/skill-maintenance/scripts/skill-lint.sh" "$TARGET"; then
+  if CODEX_HOME="$TARGET" sh "$TARGET/skills/skill-maintenance/scripts/validate-system.sh" "$TARGET"; then
     say "validation: ok"
   else
     say "validation: FAILED (see findings above)" >&2

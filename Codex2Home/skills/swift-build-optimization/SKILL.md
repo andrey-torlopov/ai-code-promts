@@ -15,7 +15,8 @@ Use this skill for evidence-backed Xcode build optimization. Wall-clock build ti
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `$CODEX_HOME/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `$CODEX_HOME/custom/_core/skill-context.md`).
 Set `mode` to one of:
 
 - `benchmark`
@@ -24,6 +25,10 @@ Set `mode` to one of:
 - `verify`
 
 Load `$CODEX_HOME/custom/KNOWLEDGE/swift` and `$CODEX_HOME/custom/KNOWLEDGE/ios` for Xcode, Swift, iOS, macOS, `.xcodeproj`, `.xcworkspace`, `Package.swift` or `Package.resolved` work. Skip unrelated knowledge packs unless the project scope requires them.
+
+An explicit build-time optimization or benchmark request is itself the CORE rule 9 grant
+for the benchmark and verification builds this skill runs; still list the planned build
+commands before running them.
 
 ## Inputs
 
@@ -84,7 +89,7 @@ percent faster = ((baseline_median_seconds - post_change_median_seconds) / basel
 
 Show the substituted numerator and denominator in user-facing reports.
 
-Every substantial run ends with the final `TRACE` block from `$CODEX_HOME/custom/RESOLVER.md`, reporting references read, knowledge read, patterns or policies applied, verification and residual risk.
+Every substantial run ends with the final `TRACE` block (template in the injected RESOLVER.md; fallback: `$CODEX_HOME/custom/_core/skill-context.md`), reporting references read, knowledge read, patterns or policies applied, verification and residual risk.
 
 ## Stop Conditions
 

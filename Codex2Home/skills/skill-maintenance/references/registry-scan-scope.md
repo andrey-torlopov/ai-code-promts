@@ -3,9 +3,11 @@
 Include:
 
 - `$CODEX_HOME/skills/*/SKILL.md`
+- `$CODEX_HOME/skills/*/modes/*.md`
 - `$CODEX_HOME/skills/*/references/*.md`
 - `$CODEX_HOME/skills/*/scripts/*`
 - `$CODEX_HOME/skills/*/assets/*`
+- `$CODEX_HOME/skills/*/schemas/*`
 - global anchor: `$CODEX_HOME/AGENTS.md`
 - project anchors if present: `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `PROJECT.md`, `.codex/PROJECT.md`
 - core files: `$CODEX_HOME/custom/CORE.md`, `$CODEX_HOME/custom/RESOLVER.md`, `$CODEX_HOME/custom/COMMON.md`

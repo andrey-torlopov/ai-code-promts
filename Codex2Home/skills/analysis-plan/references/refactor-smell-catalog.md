@@ -1,4 +1,7 @@
-# Swift Smell Catalog
+# Smell Catalog
+
+Structural and Design sections apply to any language; the Swift-Specific section applies
+only to Swift scope.
 
 ## Structural
 

@@ -2,8 +2,8 @@
 # Full validator for the global instruction system.
 #
 # Usage:
-#   sh skill-lint.sh                 # validate the installed system in $CODEX_HOME
-#   sh skill-lint.sh <root>          # validate a Home template source tree
+#   sh validate-system.sh            # validate the installed system in $CODEX_HOME
+#   sh validate-system.sh <root>     # validate a Home template source tree
 #
 # <root> is a directory that contains custom/ and skills/, i.e. either $CODEX_HOME
 # or a Home template checkout.
@@ -15,7 +15,7 @@ CUSTOM="$ROOT/custom"
 SKILLS="$ROOT/skills"
 REGISTRY="$CUSTOM/_core/active-skills.txt"
 FAILED=0
-LIST_FILE="${TMPDIR:-/tmp}/skill-lint-$$.list"
+LIST_FILE="${TMPDIR:-/tmp}/validate-system-$$.list"
 
 fail() {
   echo "CRITICAL $1"
@@ -42,6 +42,8 @@ require_file "$REGISTRY"
 require_file "$ROOT/AGENTS.md"
 require_file "$ROOT/hooks.json"
 require_file "$ROOT/hooks/project-context.sh"
+require_file "$ROOT/hooks/rules-context.sh"
+require_file "$ROOT/hooks/route-guard.sh"
 
 if [ -f "$ROOT/hooks.json" ]; then
   if command -v python3 >/dev/null 2>&1; then
@@ -50,12 +52,17 @@ if [ -f "$ROOT/hooks.json" ]; then
     warn "hooks.json: Python 3 unavailable; JSON syntax was not validated"
   fi
   contains "$ROOT/hooks.json" '"SessionStart"' || fail "hooks.json: missing SessionStart hook"
+  contains "$ROOT/hooks.json" '"PreToolUse"' || fail "hooks.json: missing PreToolUse hook"
   contains "$ROOT/hooks.json" 'hooks/project-context.sh' || fail "hooks.json: missing project-context command"
+  contains "$ROOT/hooks.json" 'hooks/rules-context.sh' || fail "hooks.json: missing rules-context command"
+  contains "$ROOT/hooks.json" 'hooks/route-guard.sh' || fail "hooks.json: missing route-guard command"
 fi
 
-if [ -f "$ROOT/hooks/project-context.sh" ] && [ ! -x "$ROOT/hooks/project-context.sh" ]; then
-  fail "hooks/project-context.sh: not executable"
-fi
+for hook in project-context rules-context route-guard; do
+  if [ -f "$ROOT/hooks/$hook.sh" ] && [ ! -x "$ROOT/hooks/$hook.sh" ]; then
+    fail "hooks/$hook.sh: not executable"
+  fi
+done
 
 if [ -s "$ROOT/AGENTS.override.md" ]; then
   warn "AGENTS.override.md: shadows AGENTS.md in the global Codex scope"

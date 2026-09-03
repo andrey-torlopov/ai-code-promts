@@ -13,7 +13,8 @@ This skill owns high-blast-radius release and rollout operations.
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `$CODEX_HOME/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `$CODEX_HOME/custom/_core/skill-context.md`).
 Always include deploy gate, rollback assumptions, verification assumptions and `No silent deploy`.
 
 ## Inputs
@@ -25,22 +26,21 @@ Always include deploy gate, rollback assumptions, verification assumptions and `
 
 ## Workflow
 
-1. Read `references/release-gates.md`.
-2. Read `references/rollback.md`.
-3. Read `references/ci-cd.md`.
-4. Read `references/verification.md`.
-5. Load `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md` and project-specific deploy docs.
-6. Run preflight checks that do not mutate external state.
-7. Show the deploy gate and wait for confirmation before state-changing operations.
-8. Execute only approved steps.
-9. Verify result and report rollback path.
+1. In one batched read, load `references/deploy-gates.md`,
+   `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`,
+   `$CODEX_HOME/custom/KNOWLEDGE/devops/ci-pipelines.md`,
+   `$CODEX_HOME/custom/KNOWLEDGE/devops/verification.md` and project-specific deploy docs.
+2. Run preflight checks that do not mutate external state.
+3. Show the deploy gate and wait for confirmation before state-changing operations.
+4. Execute only approved steps.
+5. Verify result and report rollback path.
 
 ## Local References
 
-- `references/release-gates.md`
-- `references/rollback.md`
-- `references/ci-cd.md`
-- `references/verification.md`
+- `references/deploy-gates.md` - release gate block plus rollback contract.
+
+CI and verification facts live in `$CODEX_HOME/custom/KNOWLEDGE/devops/` (canonical; do not
+duplicate them here).
 
 ## Output
 

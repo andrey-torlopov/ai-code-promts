@@ -32,3 +32,4 @@ Atomic skill exception:
 
 - A standalone skill may duplicate minimal safety rules from other skills if that is required to work without sibling folders.
 - The duplicate must be short and task-specific.
+- The exception never applies to `$CODEX_HOME/custom/_core/` policies: every skill may read `_core/` directly, so those are referenced, never copied.

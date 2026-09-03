@@ -4,19 +4,16 @@ Use for onboarding-grade architecture documentation from real project files.
 
 ## Knowledge
 
-Load by scope:
-
-- Swift package or app code: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
-- iOS/macOS app module: `$CODEX_HOME/custom/KNOWLEDGE/ios/_rules.md`
-- CI/deployment architecture: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
-- No matching domain pack: `$CODEX_HOME/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; no mode-specific additions.
 
 ## References
 
 - `../references/module-analysis-checklist.md`
-- `../references/module-architecture-doc-format.md`
-- `../references/architecture-report-format.md`
+- `../references/module-architecture-doc-format.md` - output format for a single module or package scope
+- `../references/architecture-report-format.md` - output format for whole-repository onboarding documentation
 - `../references/evidence-rules.md`
+
+Pick exactly one output format by scope; do not load both.
 
 ## Workflow
 

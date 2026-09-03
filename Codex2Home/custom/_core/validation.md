@@ -5,8 +5,8 @@ Use these checks after instruction-system changes.
 ## Automated Check
 
 ```sh
-CODEX_HOME="$CODEX_HOME" sh "$CODEX_HOME/skills/skill-maintenance/scripts/skill-lint.sh"
-CODEX_HOME="<Home>" sh <Home>/skills/skill-maintenance/scripts/skill-lint.sh <Home>
+CODEX_HOME="$CODEX_HOME" sh "$CODEX_HOME/skills/skill-maintenance/scripts/validate-system.sh"
+CODEX_HOME="<Home>" sh <Home>/skills/skill-maintenance/scripts/validate-system.sh <Home>
 ```
 
 It validates anchors, the registry, every registered skill and every `$CODEX_HOME/...`
@@ -16,8 +16,8 @@ reference target. Exit code 0 means clean.
 
 1. Runtime anchors point to `$CODEX_HOME/custom/CORE.md` and `$CODEX_HOME/custom/RESOLVER.md`.
 2. `$CODEX_HOME/custom/COMMON.md` is only a compatibility bridge.
-3. Top-level `$CODEX_HOME/skills/` contains shipped workflow/direct skills and state layers, never
-   legacy routing skills.
+3. Top-level `$CODEX_HOME/skills/` contains workflow skills and the `task-lab` state layer,
+   never legacy routing or external direct skills.
 4. Active instructions do not reference legacy prompt layers.
 5. Every `SKILL.md` has YAML frontmatter with only `name` and `description`.
 6. Every active `SKILL.md` contains Inputs, Workflow, Output and Stop Conditions.
@@ -26,13 +26,13 @@ reference target. Exit code 0 means clean.
 9. Deploy/release/publish/rollout routes only to `deploy-ops`.
 10. Xcode build-time optimization routes to `swift-build-optimization`.
 11. Every registered skill in `$CODEX_HOME/custom/_core/active-skills.txt` exists in `$CODEX_HOME/skills/`.
-12. Skills not in the registry (`graphify`, plugin skills) are never structurally linted.
+12. Plugin skills not shipped by this template are never structurally linted.
 13. Every absolute `$CODEX_HOME/...` reference resolves to an existing file.
 14. `$CODEX_HOME/AGENTS.md` is the only required global runtime anchor.
 15. Native discovery links are managed separately in `$HOME/.agents/skills/`; the
     validator checks canonical skill contents under `$CODEX_HOME/skills/`.
-16. `$CODEX_HOME/hooks.json` registers the `SessionStart` project-context hook and
-    `$CODEX_HOME/hooks/project-context.sh` exists.
+16. `$CODEX_HOME/hooks.json` registers `rules-context`, `project-context` and `route-guard`, and
+    all three executable hook scripts exist.
 17. `SKILL CONTEXT` templates require `TASK:` and `PROJECT:` lines.
 18. `task-lab` is shipped, registered and exposed through native discovery; composition reads the
     resolved `SKILL.md`, keeps the workflow skill as deliverable owner and uses

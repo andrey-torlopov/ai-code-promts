@@ -1,7 +1,7 @@
 # Repo Scout Report Template
 
 ```markdown
-# Swift Repo Scout Report
+# Repo Scout Report
 
 ## Project Profile
 
@@ -37,3 +37,4 @@
 ```
 
 Every claim must be tied to a detected file, grep signal or explicit absence.
+Adapt build-system and manager examples to the stack actually detected in the project.

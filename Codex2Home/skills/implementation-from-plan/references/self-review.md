@@ -1,6 +1,7 @@
 # Review and Audit Checklist
 
-Before final response, check the changed Swift scope for:
+Before final response, check the changed scope for (Swift-specific items apply only to
+Swift code):
 
 - Correctness against acceptance criteria.
 - Potential crashes.

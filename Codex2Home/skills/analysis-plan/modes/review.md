@@ -4,23 +4,12 @@ Use for read-only code, diff or PR review.
 
 ## Knowledge
 
-Load by scope:
-
-- Swift: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
-- Swift patterns on signal: `$CODEX_HOME/custom/KNOWLEDGE/swift/patterns/<category>/`
-- CI or deploy config review: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
-- Shell scripts: `$CODEX_HOME/custom/KNOWLEDGE/shell/_rules.md`
-- Python: `$CODEX_HOME/custom/KNOWLEDGE/python/_rules.md`
-- No matching domain pack: `$CODEX_HOME/custom/KNOWLEDGE/general/_rules.md`
+Per the scope table in `../SKILL.md`; no mode-specific additions.
 
 ## References
 
-- `../references/review-checklist.md`
-- `../references/review-severity-model.md`
-- `../references/diff-review-mode.md`
-- `../references/critical-only-review-mode.md`
-- `../references/swift-concurrency-review-rules.md`
-- `../references/swift-pattern-loading.md`
+- `../references/review-guide.md` - checklist, severity model, diff and critical-only procedures
+- Swift scope only: `../references/swift-concurrency-review-rules.md`, `../references/swift-pattern-loading.md`
 
 ## Workflow
 

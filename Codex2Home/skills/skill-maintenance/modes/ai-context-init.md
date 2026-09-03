@@ -16,8 +16,8 @@ A project therefore gets a thin anchor plus verified facts, not a second copy of
 
 1. Detect whether the global system exists: `$CODEX_HOME/custom/CORE.md` and `$CODEX_HOME/custom/RESOLVER.md`.
 2. Inspect the target project for language, build system, dependencies, tests, linting and CI.
-3. If `AGENTS.override.md`, `AGENTS.md` or `PROJECT.md` already exists in the project,
-   stop and ask before overwrite.
+3. If any of `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` or `PROJECT.md`
+   already exists in the project, stop and ask before overwrite.
 4. Global system present: generate a thin Codex `AGENTS.md` anchor from
    `agents-md-template.md` plus `PROJECT.md` from `project-facts-template.md`.
 5. Global system absent: generate the standalone set from the fallback assets.

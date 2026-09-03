@@ -11,5 +11,6 @@ Read order:
 
 1. `$CODEX_HOME/custom/CORE.md`
 2. `$CODEX_HOME/custom/RESOLVER.md`
-3. Selected `$CODEX_HOME/skills/<skill>/SKILL.md`
-4. Declared references and `$CODEX_HOME/custom/KNOWLEDGE/` packs only
+3. Project `PROJECT.md` when the repository provides one
+4. Selected native skill or `$CODEX_HOME/skills/<skill>/SKILL.md` fallback
+5. Declared references and `$CODEX_HOME/custom/KNOWLEDGE/` packs only

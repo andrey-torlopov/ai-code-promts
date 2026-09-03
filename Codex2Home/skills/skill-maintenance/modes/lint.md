@@ -8,13 +8,14 @@ Use for fast validation or fixing documentation/instruction lint issues.
 - `../references/doc-check-rules.md`
 - `../references/documentation-practices.md`
 - `../references/skill-contract.md`
-- `../scripts/skill-lint.sh`
+- `$CODEX_HOME/custom/_core/validation.md` - structural checks and regression prompts
+- `../scripts/validate-system.sh`
 
 ## Workflow
 
 1. Inventory requested Markdown and instruction files.
 2. Apply size, structure, duplicate-content and link checks.
-3. Run `../scripts/skill-lint.sh` when the scope includes skills.
+3. Run `../scripts/validate-system.sh` when the scope includes skills.
 4. Apply safe fixes only when requested.
 5. Report remaining findings.
 

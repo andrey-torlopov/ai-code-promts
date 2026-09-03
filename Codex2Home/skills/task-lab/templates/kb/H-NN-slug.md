@@ -1,0 +1,17 @@
+# {{FILL_HYPOTHESIS_TITLE}}
+
+> ID: `H-NN` · Tags: {{FILL_TAGS}} · Статус: кандидат
+> Срез: {{FILL_BRANCH_REVISION_DATE}}
+> Задачи: {{FILL_TASK_IDS_OR_NONE}}
+
+## Вопрос
+
+{{FILL_CAUSAL_MECHANISM_OR_QUESTION}}
+
+## На чём основана
+
+{{FILL_BASIS_RESTATED_IN_PLACE_OR_EXPLICIT_GUESS}}
+
+## Чем закрывается
+
+{{FILL_CHEAPEST_DISCRIMINATING_GATE}}

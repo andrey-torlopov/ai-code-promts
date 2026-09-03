@@ -7,16 +7,16 @@ to every project on this machine.
 
 1. Read this file.
 2. Read `$CODEX_HOME/custom/RESOLVER.md`.
-3. When the resolver activates `task-lab`, invoke that native skill or read its resolved
-   `SKILL.md` before inspecting the task subject. It owns durable task state, never the subject
-   deliverable.
-4. Invoke exactly one workflow skill for the deliverable, or read its resolved `SKILL.md`.
-   Shipped workflow skills fall back to `$CODEX_HOME/skills/<skill>/SKILL.md`. When the entire
-   deliverable is task-folder lifecycle work, `task-lab` is the sole selected skill and this step
-   is skipped.
-5. Load only references, scripts or assets named by the skills that are actually active.
-6. Load only `$CODEX_HOME/custom/KNOWLEDGE/<domain>` packs selected by
-   `$CODEX_HOME/custom/RESOLVER.md` or the deliverable-owning workflow skill.
+3. When the router activates the state layer (`task-lab`: a TaskID or a task folder in the
+   request), restore its state before the subject; the layer owns durable task state, never
+   the deliverable.
+4. Use the project's `PROJECT.md` when the repository provides one (injected on SessionStart).
+5. Invoke exactly one selected native skill, or read
+   `$CODEX_HOME/skills/<skill>/SKILL.md` when native invocation is unavailable.
+6. Load only references, scripts or assets named by that skill, and only
+   `$CODEX_HOME/custom/KNOWLEDGE/<domain>` packs selected by the resolver or the skill —
+   in one batched read, not sequentially.
+7. Project-local `KNOWLEDGE/` or `.agents/skills/` only when the project defines them.
 
 Steps 1 and 2 are delivered deterministically: `$CODEX_HOME/hooks/rules-context.sh` injects
 CORE.md and RESOLVER.md as developer context on SessionStart, resume, clear and compaction.
@@ -45,6 +45,12 @@ When the injection is visible, do not re-read the two files; when it is not, rea
 7. No Silent Deploy: release, deploy, publish and rollout require the `deploy-ops` gated flow.
 8. Never Touch Global Config Silently: changes under `$CODEX_HOME/` or
    `$HOME/.agents/skills/` require explicit user intent.
+9. No Unrequested Builds: never launch a project build — `xcodebuild`, `swift build`,
+   `zig build`, `npm run build`, `make`, Gradle, or any equivalent compile step, including a
+   test command that triggers one — unless the current user request explicitly asks for a
+   build (or for an action that names one, such as a build benchmark), or the project's
+   `PROJECT.md` declares a build policy that allows builds. These two are the only grant
+   sources. Without a grant, name the command that would run and report it as not executed.
 
 ## Language
 
@@ -54,13 +60,19 @@ Instruction files may stay English when that improves interoperability with agen
 ## Math
 
 When presenting calculated metrics, show numerator, denominator and total.
+Compute non-trivial calculations with a script and show its output instead of doing
+arithmetic in prose.
 
 ## Skill Contract
 
-Skills are atomic. A selected skill must not require reading sibling skill folders to complete its
-core deliverable. Resolver-level composition may activate `task-lab` plus one workflow skill, but
-the workflow skill must not load `task-lab` itself and must still complete its work when that layer
-is absent. Task-folder lifecycle requests select `task-lab` alone.
+Skills are atomic. A selected skill must not require reading sibling skill folders to complete its core deliverable.
+A state layer activated by the router is not a sibling dependency: it carries no deliverable of its
+own, and the selected skill must still complete its work when the layer is absent.
+
+Read/write cohesion: the skill or agent that edits files owns the reading for those edits.
+Never design a write-only skill and never split read and write across agents. A sequential
+handoff (analysis -> implementation, diagnosis -> fix) is a skill switch inside the same
+context: files already inspected stay inspected.
 
 ## Knowledge Contract
 
@@ -73,13 +85,15 @@ Loaded and skipped knowledge must be visible in `SKILL CONTEXT`.
 ## Project Context Contract
 
 A repository may provide `PROJECT.md` in its root, or `.codex/PROJECT.md` as an explicit
-override slot. It holds verified facts and project-specific rules: stack, commands, layout,
-CI, glossary, constraints, paths not to touch and local knowledge packs.
+override slot. It holds verified facts and project-specific rules: stack, commands, build
+policy, layout, CI, glossary, constraints, paths not to touch and local knowledge packs.
+A `Build policy` line is the standing grant for rule 9; when it is absent, builds stay
+gated on the explicit request.
 
 1. Present: use it before substantial work and declare its path in `SKILL CONTEXT` as `PROJECT:`.
 2. Absent: proceed on the global path. Do not search further and do not ask.
 3. It adds facts and narrows scope. It never restates or relaxes the rules in this file.
-4. Safety gates stay global: rules 5, 7 and 8 above cannot be overridden by a repository file.
+4. Safety gates stay global: rules 5, 7, 8 and 9 above cannot be overridden by a repository file.
 5. On technical conflict (commands, style, architecture, deliverable format) the project wins.
 6. Keep it under 200 lines. Deep domain material belongs in `KNOWLEDGE/<domain>/`, loaded on demand.
 

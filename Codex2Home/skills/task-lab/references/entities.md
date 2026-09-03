@@ -6,10 +6,10 @@
 |---|---|
 | Fact `F-NN` | `Knowledge/F-NN-*.md` |
 | Hypothesis `H-NN` | `Knowledge/H-NN-*.md` |
-| Decision `D-NN` | `Context/decisions.md`, or a compact registry inside `Context/40-queue.md` |
-| Question `Q-NN` | `Context/40-queue.md` |
-| Experimental change `P-NN` | `Context/change-log.md`, added when the subject is modified |
-| Invariant `INV-NN` | `Context/00-START-HERE.md` |
+| Decision `D-NN` | root `decisions.md`, created on the first decision |
+| Open question | README «Вопросы к вам» (no permanent id; a durable answer becomes a fact) |
+| Experimental change `P-NN` | root `change-log.md`, added when the subject is modified |
+| Invariant `INV-NN` | README «Правила задачи» |
 
 IDs are permanent, never reused, and sorted ascending in registries. Status lives inside the file:
 a finished or refuted claim keeps its ID and its place, with the status written at the top. There is
@@ -56,15 +56,16 @@ Record a decision when it changes scope, ranking, method, or future work. Includ
 rationale, and a revision trigger. When the trigger fires, add a superseding decision; do not edit
 the old row into its opposite.
 
-## Q-NN — question
+## Open question
 
-Include the question, why it matters, what it blocks, and who or what closes it. Do not answer an
-open question from memory. When answered, keep the answer and source discoverable so it is not
-asked again.
+Lives in README «Вопросы к вам»: the question, why it cannot be decided alone, and the default
+assumed while it is open. No permanent id — the table is small and self-contained. Do not answer
+an open question from memory. When answered, keep the answer discoverable: an answer the task
+relies on becomes a fact with the user's reply as evidence.
 
 ## INV-NN — invariant
 
-Keep invariants in `Context/00-START-HERE.md`. Each says what must remain true and why a violation
+Keep invariants in README «Правила задачи». Each says what must remain true and why a violation
 invalidates the result. Add on evidence; remove only by decision.
 
 ## P-NN — experimental/scaffolding change
@@ -72,6 +73,17 @@ invalidates the result. Add on evidence; remove only by decision.
 Use only when the subject is temporarily modified for observation. Record it before applying it,
 including purpose, exact diff/revision, and `reverted: yes/no`. An unrecorded or unreverted probe
 makes following observations unattributable.
+
+## Export to an external knowledge base
+
+When a claim is promoted into the external base named by root `env.json` (see
+[`external-knowledge.md`](external-knowledge.md)), the local file stays as a frozen
+historical snapshot and gains `**Экспортировано:** F-12 → <base path>, 2026-08-28`; the
+task registry row carries the same mark. The base copy is canonical from then on —
+refinements happen there. Cite base entries from task files as dated plain text
+(`база F-12 (Player), снимок 2026-08-28`), never as a Markdown link, and restate the
+load-bearing substance inline so the task stays verifiable if the base entry is later
+deleted.
 
 ## File versus registry row
 

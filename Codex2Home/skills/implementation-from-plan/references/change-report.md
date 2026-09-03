@@ -14,6 +14,7 @@ Residual risk:
 
 TRACE:
 - Skill: implementation-from-plan
+- Task folder:
 - References read:
 - Knowledge read:
 - Patterns/policies applied:

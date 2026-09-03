@@ -7,6 +7,8 @@
 # Fail-open by design: any parse failure, missing transcript, missing python3, or a
 # transcript format with no recognizable assistant lines allows the tool call. It blocks
 # only on positive evidence that routing was skipped.
+# After the first success the verdict is cached in a per-transcript flag file, avoiding
+# repeated scans of the full transcript.
 #
 # Escape hatch: CODEX_ROUTE_GUARD=off disables the gate.
 
@@ -43,6 +45,10 @@ if [ -z "$TRANSCRIPT" ] || [ ! -f "$TRANSCRIPT" ]; then
   exit 0
 fi
 
+# A block never disappears from a transcript, so one success is cached for the session.
+FLAG="${TMPDIR:-/tmp}/codex-route-guard-ok-$(basename "$TRANSCRIPT")"
+[ -f "$FLAG" ] && exit 0
+
 # Unknown transcript format or nothing flushed yet: fail open rather than false-block.
 if ! grep -q '"role":"assistant"' "$TRANSCRIPT" 2>/dev/null; then
   exit 0
@@ -52,6 +58,7 @@ fi
 # fields on assistant transcript lines, so the injected rules (user/system lines) and this
 # hook's own message can never satisfy the gate.
 if grep '"role":"assistant"' "$TRANSCRIPT" 2>/dev/null | grep 'SKILL:' | grep -q 'STOP:'; then
+  : > "$FLAG" 2>/dev/null || true
   exit 0
 fi
 

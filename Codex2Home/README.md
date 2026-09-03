@@ -114,9 +114,9 @@ backup явно.
 │   ├── CORE.md               SSOT глобальных правил
 │   ├── RESOLVER.md           signal -> ровно один workflow skill
 │   ├── COMMON.md             compatibility bridge
-│   ├── _core/                validation, handoff, skill context, safety
+│   ├── _core/                validation, instruction style, skill context, safety
 │   └── KNOWLEDGE/            lazy-loaded доменные packs, включая general/ fallback
-└── skills/                   7 workflow skills + task-lab (state layer) + graphify
+└── skills/                   7 workflow skills + task-lab (state layer)
 ```
 
 ## Порядок загрузки
@@ -146,9 +146,6 @@ durable task state, после чего обычный workflow skill остаё
 deliverable. При неполной установке без `task-lab` routing деградирует безопасно: работает без
 state layer и объявляет `TASK: none`.
 
-`graphify` тоже поставляется вместе с шаблоном, но не входит в workflow-реестр: он вызывается
-напрямую по `/graphify` или для запросов к уже построенному `graphify-out/`.
-
 `AGENTS.override.md` имеет приоритет над `AGENTS.md` на соответствующем уровне.
 Не помещайте глобальный `AGENTS.override.md` рядом с установленным `AGENTS.md`,
 если хотите, чтобы Codex загрузил этот шаблон: в глобальном scope Codex использует
@@ -163,12 +160,16 @@ sh -n hooks/rules-context.sh
 sh -n hooks/route-guard.sh
 python3 -m json.tool hooks.json >/dev/null
 python3 scripts/merge_hooks.py --check hooks.json /path/to/existing/hooks.json
-CODEX_HOME="$PWD" sh skills/skill-maintenance/scripts/skill-lint.sh "$PWD"
+CODEX_HOME="$PWD" sh skills/skill-maintenance/scripts/validate-system.sh "$PWD"
 ```
 
 После изменения source tree повторно запустите `init_codex.sh`. Редактирование
 установленной копии напрямую приводит к расхождению с шаблоном и будет
 перезаписано следующей установкой.
+
+Инжектируемые файлы `custom/CORE.md` и `custom/RESOLVER.md` меняйте редко и пакетно. Не
+добавляйте в них даты и счётчики: их байты образуют стабильный prompt-cache prefix, а каждое
+изменение инвалидирует этот кэш.
 
 ## Добавление skill
 

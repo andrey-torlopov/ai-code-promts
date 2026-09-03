@@ -1,6 +1,6 @@
 # Source Attribution
 
-This local atomic skill was derived from the public `AvdLee/Xcode-Build-Optimization-Agent-Skill` repository and adapted to the local `Main/SKILLS` contract.
+This local atomic skill was derived from the public `AvdLee/Xcode-Build-Optimization-Agent-Skill` repository and adapted to this instruction system's skill contract.
 
 Source repository:
 

@@ -13,11 +13,13 @@ This skill changes files only when implementation is explicitly requested.
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `$CODEX_HOME/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `$CODEX_HOME/custom/_core/skill-context.md`).
 
 For domain work, show loaded knowledge packs. For example:
 
 - Swift: `$CODEX_HOME/custom/KNOWLEDGE/swift/_rules.md`
+- Swift verification commands: `$CODEX_HOME/custom/KNOWLEDGE/swift/verification.md`
 - Swift patterns on signal: `$CODEX_HOME/custom/KNOWLEDGE/swift/patterns/<category>/` (entry: `patterns/_summary-index.md`)
 - iOS: `$CODEX_HOME/custom/KNOWLEDGE/ios/_rules.md`
 - DevOps: `$CODEX_HOME/custom/KNOWLEDGE/devops/_rules.md`
@@ -37,21 +39,26 @@ For domain work, show loaded knowledge packs. For example:
 1. Read the plan or concrete directive.
 2. Read `references/delivery-pipeline.md`.
 3. Read domain references only when the scope requires them.
-4. Inspect real files before editing.
+4. Inspect real files before editing; files already read in this session's analysis or
+   diagnosis phase count as inspected — re-read only the files being edited when staleness
+   is suspected.
 5. When writing or editing Swift code, load the matching `$CODEX_HOME/custom/KNOWLEDGE/swift/patterns/<category>/` pattern file after a concrete signal; never preload all categories.
 6. Make the smallest change that satisfies the accepted scope.
 7. Add or update tests only when requested, required by the plan or necessary for risky behavior.
-8. Run focused verification where available.
+8. Run focused verification where available. Launching a build, or a test command that
+   triggers one, needs the CORE rule 9 grant (explicit request or `PROJECT.md` build
+   policy); without it, name the commands and report them as not run.
 9. Review the diff against the request and acceptance criteria.
 10. Report changed files, verification and residual risk.
 
 ## Local References
 
 - `references/delivery-pipeline.md`
-- `references/swift-development-rules.md`
-- `references/swift-verification-rules.md`
 - `references/self-review.md`
 - `references/change-report.md`
+
+Swift rules and verification commands live in `$CODEX_HOME/custom/KNOWLEDGE/swift/`
+(canonical; do not duplicate them here).
 
 ## Output
 

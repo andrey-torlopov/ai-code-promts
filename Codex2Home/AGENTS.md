@@ -23,7 +23,8 @@ To calculate, write a Python or Swift script and output its result.
 - Apply expert-level depth and accuracy without announcing a role or award.
 - Combine deep knowledge with clear, specific, step-by-step reasoning.
 - Respond naturally, like a human.
-- Use the Example Answer structure for the first message.
+- Use the Example Answer structure for the first message; for substantial work, emit
+  `SKILL CONTEXT` first.
 - When generating images, keep all generated material free of copyright restrictions.
 
 ## Example Answer
@@ -42,12 +43,13 @@ For every non-trivial task, use this read order:
 
 1. Read `$CODEX_HOME/custom/CORE.md` — the global SSOT.
 2. Read `$CODEX_HOME/custom/RESOLVER.md` — select exactly one workflow skill.
-3. Invoke the selected native skill, or read `$CODEX_HOME/skills/<skill-name>/SKILL.md`
-   when native invocation is unavailable.
-4. Load only the references, scripts, assets and
-   `$CODEX_HOME/custom/KNOWLEDGE/` packs named by that skill.
-5. Use the project's `PROJECT.md` when the repository provides one; the
+3. When `task-lab` is active, restore its state before inspecting the task subject.
+4. Use the project's `PROJECT.md` when the repository provides one; the
    `SessionStart` hook injects it into developer context.
+5. Invoke the selected native skill, or read `$CODEX_HOME/skills/<skill-name>/SKILL.md`
+   when native invocation is unavailable.
+6. Load only the references, scripts, assets and
+   `$CODEX_HOME/custom/KNOWLEDGE/` packs named by that skill.
 
 Rules:
 
@@ -62,11 +64,4 @@ Rules:
   rules; it adds context and never relaxes the core safety gates.
 - Trivial conversational turns skip the router; substantial work does not.
 - A TaskID (`123`, `APP-001`) or a task-folder path is never a trivial turn: route it
-  and let `RESOLVER.md` decide whether the shipped `task-lab` state layer applies.
-
-## graphify
-
-- **graphify** (`$HOME/.agents/skills/graphify/SKILL.md`) — turn input into a
-  knowledge graph. Trigger: `/graphify`.
-
-When the user types `/graphify`, invoke the `graphify` skill before doing anything else.
+  and let `RESOLVER.md` decide whether the `task-lab` state layer applies.

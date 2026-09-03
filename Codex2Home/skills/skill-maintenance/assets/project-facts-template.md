@@ -3,8 +3,9 @@
 Verified facts and project-specific operational constraints. No persona text, response rules
 or invented commands.
 Every line must be checked against the repository before it is written.
-This file is loaded before substantial work; keep it under 200 lines and move deep
-domain material into `KNOWLEDGE/<domain>/`.
+This file is loaded before substantial work; keep it under 200 lines — aim for 100 — and
+move deep domain material into `KNOWLEDGE/<domain>/`. Keep `## Commands` and the build
+policy in the first 30 lines: the injection truncates the tail at 20 KB.
 
 ## Stack
 
@@ -18,6 +19,7 @@ domain material into `KNOWLEDGE/<domain>/`.
 - Test:
 - Lint:
 - Format:
+- Build policy (CORE rule 9): `builds allowed for verification` or `builds need per-request approval`; absent means per-request approval.
 
 ## Layout
 

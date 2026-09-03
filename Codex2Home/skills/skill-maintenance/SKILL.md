@@ -13,7 +13,8 @@ This skill maintains the instruction system itself.
 
 ## SKILL CONTEXT
 
-Before substantial work, output the block from `$CODEX_HOME/custom/_core/skill-context.md`.
+Before substantial work, output the SKILL CONTEXT block (the template is already in the
+injected RESOLVER.md; fallback: `$CODEX_HOME/custom/_core/skill-context.md`).
 Set `mode` to one of:
 
 - `authoring`
@@ -44,7 +45,7 @@ Set `mode` to one of:
 
 - `references/skill-contract.md`
 - `references/migration-checklist.md`
-- `scripts/skill-lint.sh`
+- `scripts/validate-system.sh`
 
 Mode files name additional local references.
 
